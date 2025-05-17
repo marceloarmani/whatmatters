@@ -1,81 +1,37 @@
-const apiKey = "JCEPmwMrTPyj5nEP9gEuFuSKOKCxPlQp";
-
-function formatNumber(value) {
-  return Number(value).toLocaleString('en-US', {
+function formatNumber(num) {
+  return Number(num).toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
 }
 
-async function fetchQuote(symbol, elementId, isPercentage = false) {
+async function fetchData(symbol, elementId, label, source = 'fmp') {
   try {
-    const res = await fetch(`https://financialmodelingprep.com/api/v3/quote/${symbol}?apikey=${apiKey}`);
-    const data = await res.json();
-    if (!data || data.length === 0) throw new Error("No data");
-    const value = isPercentage ? `${data[0].price.toFixed(2)}%` : `$${formatNumber(data[0].price)}`;
-    document.getElementById(elementId).textContent = value;
-  } catch (e) {
-    console.error(`Error loading ${symbol}`, e);
-    document.getElementById(elementId).textContent = "Error loading";
+    let price;
+    if (source === 'fmp') {
+      const url = `https://financialmodelingprep.com/api/v3/quote/${symbol}?apikey=JCEPmwMrTPyj5nEP9gEuFuSKOKCxPlQp`;
+      const response = await fetch(url);
+      const data = await response.json();
+      price = data[0]?.price;
+    } else if (source === 'alphavantage') {
+      const url = `https://www.alphavantage.co/query?function=TREASURY_YIELD&interval=daily&maturity=10year&apikey=AYD0CU34ZWEG2WM2`;
+      const response = await fetch(url);
+      const data = await response.json();
+      const latest = data['data']?.at(-1);
+      price = latest?.value;
+    }
+
+    if (!price) throw new Error("No data");
+
+    document.getElementById(elementId).textContent = `${label}: ${formatNumber(price)}${label === '10Y US Treasury Yield' ? '%' : ' USD'}`;
+  } catch (err) {
+    console.error(`${label} error:`, err);
+    document.getElementById(elementId).textContent = `${label}: Error loading`;
   }
 }
 
-async function drawChart(symbol, canvasId, label, isPercentage = false) {
-  try {
-    const res = await fetch(`https://financialmodelingprep.com/api/v3/historical-price-full/${symbol}?timeseries=30&apikey=${apiKey}`);
-    const data = await res.json();
-    if (!data.historical || data.historical.length === 0) throw new Error("No historical data");
-    const prices = data.historical.map(day => day.close).reverse();
-    const labels = data.historical.map(day => day.date).reverse();
-
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: label,
-          data: prices,
-          borderColor: 'rgb(75, 192, 192)',
-          backgroundColor: 'rgba(75, 192, 192, 0.1)',
-          tension: 0.3,
-          fill: true,
-          pointRadius: 0,
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            ticks: {
-              callback: function(value) {
-                return isPercentage ? value + '%' : '$' + formatNumber(value);
-              }
-            }
-          }
-        },
-        plugins: {
-          legend: {
-            display: true,
-            position: 'top'
-          }
-        },
-        responsive: false,
-      }
-    });
-  } catch (e) {
-    console.error(`Error drawing chart for ${symbol}`, e);
-  }
-}
-
-// Executa tudo junto
-fetchQuote("BTCUSD", "btc");
-fetchQuote("XAUUSD", "gold");
-fetchQuote("XAGUSD", "silver");
-fetchQuote("USDBRL", "usdbrl");
-fetchQuote("US10Y", "us10y", true);
-
-drawChart("BTCUSD", "btcChart", "Bitcoin (USD)");
-drawChart("XAUUSD", "goldChart", "Gold (USD)");
-drawChart("XAGUSD", "silverChart", "Silver (USD)");
-drawChart("USDBRL", "usdbrlChart", "USD to BRL");
-drawChart("US10Y", "us10yChart", "10Y US Treasury Yield", true);
+fetchData('USD/BRL', 'usdbrl', 'USD/BRL');
+fetchData('BTCUSD', 'btc', 'Bitcoin');
+fetchData('GCUSD', 'gold', 'Gold');
+fetchData('SIUSD', 'silver', 'Silver');
+fetchData(null, 'us10y', '10Y US Treasury Yield', 'alphavantage');
