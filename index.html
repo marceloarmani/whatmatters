@@ -1,60 +1,60 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>What Matters - Dashboard Financeiro</title>
-<style>
-  body { font-family: Arial, sans-serif; margin: 20px; background: #f7f9fc; color: #222; }
-  h1 { text-align: center; margin-bottom: 30px; }
-  .asset { background: #fff; padding: 20px; margin-bottom: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-  .asset h2 { margin-bottom: 8px; }
-  .price { font-size: 1.5em; margin-bottom: 12px; color: #007acc; }
-  canvas { max-width: 100%; height: 150px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>What Matters - Indicadores Financeiros</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+  <header>
+    <h1>What Matters</h1>
+    <p>Indicadores financeiros em tempo real</p>
+  </header>
 
-<h1>What Matters - Dashboard Financeiro</h1>
+  <main>
+    <section class="indicator">
+      <h2>Bitcoin (BTC)</h2>
+      <div class="price" id="btc-price">Carregando...</div>
+      <canvas id="btc-chart" height="80"></canvas>
+    </section>
 
-<div class="asset">
-  <h2>Bitcoin (BTC/USD)</h2>
-  <p class="price" id="btc-price">Carregando...</p>
-  <canvas id="btc-chart"></canvas>
-</div>
+    <section class="indicator">
+      <h2>Ouro (XAU/USD)</h2>
+      <div class="price" id="gold-price">Carregando...</div>
+      <canvas id="gold-chart" height="80"></canvas>
+    </section>
 
-<div class="asset">
-  <h2>Ouro (XAU/USD)</h2>
-  <p class="price" id="gold-price">Carregando...</p>
-  <canvas id="gold-chart"></canvas>
-</div>
+    <section class="indicator">
+      <h2>Prata (XAG/USD)</h2>
+      <div class="price" id="silver-price">Carregando...</div>
+      <canvas id="silver-chart" height="80"></canvas>
+    </section>
 
-<div class="asset">
-  <h2>Prata (XAG/USD)</h2>
-  <p class="price" id="silver-price">Carregando...</p>
-  <canvas id="silver-chart"></canvas>
-</div>
+    <section class="indicator">
+      <h2>USD/BRL</h2>
+      <div class="price" id="usdbrl-price">Carregando...</div>
+      <canvas id="usdbrl-chart" height="80"></canvas>
+    </section>
 
-<div class="asset">
-  <h2>10Y US Treasury Yield</h2>
-  <p class="price" id="yield-price">Carregando...</p>
-  <canvas id="yield-chart"></canvas>
-</div>
+    <section class="indicator">
+      <h2>10Y US Treasury Yield</h2>
+      <div class="price" id="treasury-yield">Carregando...</div>
+      <canvas id="treasury-chart" height="80"></canvas>
+    </section>
 
-<div class="asset">
-  <h2>USD/BRL</h2>
-  <p class="price" id="usdbrl-price">Carregando...</p>
-  <canvas id="usdbrl-chart"></canvas>
-</div>
+    <section class="indicator">
+      <h2>UUP ETF (US Dollar Index Proxy)</h2>
+      <div class="price" id="uup-price">Carregando...</div>
+      <canvas id="uup-chart" height="80"></canvas>
+    </section>
+  </main>
 
-<div class="asset">
-  <h2>UUP ETF (US Dollar Index Proxy)</h2>
-  <p class="price" id="uup-price">Carregando...</p>
-  <canvas id="uup-chart"></canvas>
-</div>
+  <footer>
+    <p>Dados via Alpha Vantage, GoldAPI, CoinGecko e FRED API.</p>
+  </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="script.js"></script>
-
+  <script src="script.js"></script>
 </body>
 </html>
