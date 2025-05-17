@@ -2,15 +2,19 @@ const ALPHA_VANTAGE_API_KEY = 'AYD0CU34ZWEG2WM2';
 const GOLDAPI_KEY = 'goldapi-4czjlk1mmar2m084-io';
 
 function formatNumber(num) {
-  return Number(num).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 4});
+  return Number(num).toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4
+  });
 }
 
 async function fetchUSD_BRL() {
   try {
-    const res = await fetch(`https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=BRL&apikey=${ALPHA_VANTAGE_API_KEY}`);
+    const res = await fetch(`https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=USD&to_symbol=BRL&apikey=${ALPHA_VANTAGE_API_KEY}`);
     const data = await res.json();
-    const rate = data['Realtime Currency Exchange Rate']['5. Exchange Rate'];
-    document.querySelector('#usdbrl .price').textContent = formatNumber(rate);
+    const lastDate = Object.keys(data['Time Series FX (Daily)'])[0];
+    const rate = data['Time Series FX (Daily)'][lastDate]['4. close'];
+    document.querySelector('#usdbrl .price').textContent = `R$ ${formatNumber(rate)}`;
   } catch {
     document.querySelector('#usdbrl .price').textContent = 'Error loading';
   }
@@ -18,10 +22,9 @@ async function fetchUSD_BRL() {
 
 async function fetchDXY() {
   try {
-    // Alpha Vantage não tem DXY, usar FRED ou outra API
-    // Aqui vamos usar a Alpha Vantage função FX_DAILY USD index proxy (exemplo)
-    // Se quiser, podemos remover DXY para evitar erro.
-    document.querySelector('#dxy .price').textContent = 'Unavailable';
+    // DXY não é diretamente suportado pela Alpha Vantage com conta gratuita
+    // Vamos mostrar "Unavailable" por enquanto
+    document.querySelector('#dxy .price').textContent = 'Unavailable (API limit)';
   } catch {
     document.querySelector('#dxy .price').textContent = 'Error loading';
   }
@@ -29,11 +32,14 @@ async function fetchDXY() {
 
 async function fetch10YYield() {
   try {
-    const res = await fetch(`https://www.alphavantage.co/query?function=TREASURY_YIELD&interval=weekly&maturity=10year&apikey=${ALPHA_VANTAGE_API_KEY}`);
+    const res = await fetch(`https://www.alphavantage.co/query?function=TREASURY_YIELD&interval=monthly&maturity=10year&apikey=${ALPHA_VANTAGE_API_KEY}`);
     const data = await res.json();
-    const lastDate = Object.keys(data['data']).pop();
-    const yieldValue = data['data'].find(d => d['date'] === lastDate)['value'];
-    document.querySelector('#us10y .price').textContent = `${formatNumber(yieldValue)}%`;
+    const lastItem = data?.data?.[0];
+    if (lastItem && lastItem.value) {
+      document.querySelector('#us10y .price').textContent = `${formatNumber(lastItem.value)}%`;
+    } else {
+      document.querySelector('#us10y .price').textContent = 'Data not available';
+    }
   } catch {
     document.querySelector('#us10y .price').textContent = 'Error loading';
   }
