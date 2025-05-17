@@ -2,40 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Market Dashboard</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>What Matters Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0d1117;
+      color: #c9d1d9;
+      margin: 0;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .asset {
+      background-color: #161b22;
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 8px rgba(0,0,0,0.3);
+    }
+    .asset strong {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+    .price {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #58a6ff;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Market Dashboard</h1>
-  </header>
-  <main>
-    <div class="card" id="usdbrl">
-      <h2>USD/BRL</h2>
-      <p class="price">Loading...</p>
-    </div>
-    <div class="card" id="dxy">
-      <h2>DXY (US Dollar Index)</h2>
-      <p class="price">Loading...</p>
-    </div>
-    <div class="card" id="us10y">
-      <h2>10Y US Treasury Yield</h2>
-      <p class="price">Loading...</p>
-    </div>
-    <div class="card" id="bitcoin">
-      <h2>Bitcoin (BTC)</h2>
-      <p class="price">Loading...</p>
-    </div>
-    <div class="card" id="gold">
-      <h2>Gold (XAU)</h2>
-      <p class="price">Loading...</p>
-    </div>
-    <div class="card" id="silver">
-      <h2>Silver (XAG)</h2>
-      <p class="price">Loading...</p>
-    </div>
-  </main>
+  <h1>What Matters</h1>
+  <div class="dashboard">
+    <div id="usdbrl" class="asset"><strong>USD/BRL</strong>: <span class="price">Loading...</span></div>
+    <div id="dxy" class="asset"><strong>DXY (US Dollar Index)</strong>: <span class="price">Loading...</span></div>
+    <div id="us10y" class="asset"><strong>10Y US Treasury Yield</strong>: <span class="price">Loading...</span></div>
+    <div id="bitcoin" class="asset"><strong>Bitcoin</strong>: <span class="price">Loading...</span></div>
+    <div id="gold" class="asset"><strong>Gold</strong>: <span class="price">Loading...</span></div>
+    <div id="silver" class="asset"><strong>Silver</strong>: <span class="price">Loading...</span></div>
+  </div>
   <script src="script.js"></script>
 </body>
 </html>
