@@ -1,35 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>What Matters</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <h1>What Matters Now</h1>
-    <div class="dashboard">
-      <div class="asset">
-        <h2>Bitcoin (BTC)</h2>
-        <p id="btc">Loading...</p>
-      </div>
-      <div class="asset">
-        <h2>10Y US Treasury Yield (US10Y)</h2>
-        <p id="us10y">Loading...</p>
-      </div>
-      <div class="asset">
-        <h2>Gold (GOLD)</h2>
-        <p id="gold">Loading...</p>
-      </div>
-      <div class="asset">
-        <h2>Silver (SILVER)</h2>
-        <p id="silver">Loading...</p>
-      </div>
-      <div class="asset">
-        <h2>US Dollar Index (DXY)</h2>
-        <p id="usd">Loading...</p>
-      </div>
-    </div>
-    <script src="script.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Market Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background-color: #f4f4f4;
+      color: #333;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: white;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Market Dashboard</h1>
+  <ul>
+    <li><span>Bitcoin (BTC):</span> <span id="btc">Loading...</span></li>
+    <li><span>10Y US Treasury Yield:</span> <span id="us10y">Loading...</span></li>
+    <li><span>Gold (XAU):</span> <span id="gold">Loading...</span></li>
+    <li><span>Silver (XAG):</span> <span id="silver">Loading...</span></li>
+    <li><span>USD/BRL:</span> <span id="usdbrl">Loading...</span></li>
+  </ul>
+  <script src="script.js"></script>
+</body>
 </html>
