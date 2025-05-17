@@ -2,46 +2,100 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Market Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 2rem;
-      background-color: #f4f4f4;
-      color: #333;
-      max-width: 600px;
-      margin: auto;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+      background: #f9f9f9;
+      color: #222;
     }
     h1 {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 40px;
     }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      background: white;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      border-radius: 8px;
-      font-size: 1.2rem;
+    .quote-container {
       display: flex;
-      justify-content: space-between;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      flex-wrap: wrap;
+      justify-content: space-around;
+      margin-bottom: 50px;
+    }
+    .quote-box {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgb(0 0 0 / 0.1);
+      width: 170px;
+      margin: 10px;
+      padding: 20px;
+      text-align: center;
+    }
+    .quote-label {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .quote-value {
+      font-size: 1.6rem;
+      color: #007bff;
+    }
+    .chart-container {
+      margin-bottom: 60px;
+      text-align: center;
+    }
+    canvas {
+      max-width: 100%;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgb(0 0 0 / 0.1);
     }
   </style>
 </head>
 <body>
+
   <h1>Market Dashboard</h1>
-  <ul>
-    <li><span>Bitcoin (BTC):</span> <span id="btc">Loading...</span></li>
-    <li><span>10Y US Treasury Yield:</span> <span id="us10y">Loading...</span></li>
-    <li><span>Gold (XAU):</span> <span id="gold">Loading...</span></li>
-    <li><span>Silver (XAG):</span> <span id="silver">Loading...</span></li>
-    <li><span>USD/BRL:</span> <span id="usdbrl">Loading...</span></li>
-  </ul>
+
+  <div class="quote-container">
+    <div class="quote-box">
+      <div class="quote-label">Bitcoin (BTC)</div>
+      <div class="quote-value" id="btc">Loading...</div>
+    </div>
+    <div class="quote-box">
+      <div class="quote-label">Gold (XAU)</div>
+      <div class="quote-value" id="gold">Loading...</div>
+    </div>
+    <div class="quote-box">
+      <div class="quote-label">Silver (XAG)</div>
+      <div class="quote-value" id="silver">Loading...</div>
+    </div>
+    <div class="quote-box">
+      <div class="quote-label">USD to BRL</div>
+      <div class="quote-value" id="usdbrl">Loading...</div>
+    </div>
+    <div class="quote-box">
+      <div class="quote-label">10Y US Treasury Yield</div>
+      <div class="quote-value" id="us10y">Loading...</div>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <canvas id="btcChart" width="800" height="300"></canvas>
+  </div>
+  <div class="chart-container">
+    <canvas id="goldChart" width="800" height="300"></canvas>
+  </div>
+  <div class="chart-container">
+    <canvas id="silverChart" width="800" height="300"></canvas>
+  </div>
+  <div class="chart-container">
+    <canvas id="usdbrlChart" width="800" height="300"></canvas>
+  </div>
+  <div class="chart-container">
+    <canvas id="us10yChart" width="800" height="300"></canvas>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
