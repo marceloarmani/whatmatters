@@ -2,41 +2,87 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Market Dashboard</title>
-  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f5f7fa;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+    .asset {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .asset h2 {
+      margin-top: 0;
+    }
+    .price {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    canvas {
+      max-width: 100%;
+      height: 150px;
+    }
+    .error {
+      color: red;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h1>What Matters</h1>
-    <div class="asset" id="dxy">
-      <h2>Dollar Index (DXY)</h2>
-      <p id="dxy-price">Loading...</p>
-    </div>
+    <h1>Market Dashboard</h1>
+
     <div class="asset" id="usdbrl">
-      <h2>USD/BRL</h2>
-      <p id="usdbrl-price">Loading...</p>
+      <h2>USD/BRL Exchange Rate</h2>
+      <div class="price" id="usdbrl-price">Loading...</div>
+      <canvas id="usdbrl-chart"></canvas>
     </div>
-    <div class="asset" id="us10y">
-      <h2>10Y US Treasury Yield</h2>
-      <p id="us10y-price">Loading...</p>
+
+    <div class="asset" id="dxy">
+      <h2>US Dollar Index (DXY)</h2>
+      <div class="price" id="dxy-price">Loading...</div>
+      <canvas id="dxy-chart"></canvas>
     </div>
+
     <div class="asset" id="btc">
       <h2>Bitcoin (BTC/USD)</h2>
-      <p id="btc-price">Loading...</p>
+      <div class="price" id="btc-price">Loading...</div>
       <canvas id="btc-chart"></canvas>
     </div>
+
     <div class="asset" id="gold">
       <h2>Gold (XAU/USD)</h2>
-      <p id="gold-price">Loading...</p>
+      <div class="price" id="gold-price">Loading...</div>
       <canvas id="gold-chart"></canvas>
     </div>
+
     <div class="asset" id="silver">
       <h2>Silver (XAG/USD)</h2>
-      <p id="silver-price">Loading...</p>
+      <div class="price" id="silver-price">Loading...</div>
       <canvas id="silver-chart"></canvas>
     </div>
+
+    <div class="asset" id="us10y">
+      <h2>10Y US Treasury Yield</h2>
+      <div class="price" id="us10y-price">Loading...</div>
+      <canvas id="us10y-chart"></canvas>
+    </div>
   </div>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js"></script>
 </body>
