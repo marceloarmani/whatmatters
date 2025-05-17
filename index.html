@@ -1,44 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>What Matters — Market Dashboard</title>
-  <link rel="stylesheet" href="style.css"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Market Dashboard - WhatMatters</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Market Dashboard</h1>
+    <header>
+        <h1>Market Dashboard</h1>
+        <p>Real-time prices & yields for key assets</p>
+    </header>
 
-  <div class="card" id="btc">
-    <h2>Bitcoin</h2>
-    <p class="price">Loading...</p>
-  </div>
+    <main>
+        <section class="card" id="btc-card">
+            <h2>Bitcoin (BTC/USD)</h2>
+            <div class="price" id="btc-price">Loading...</div>
+            <canvas id="btc-chart"></canvas>
+        </section>
 
-  <div class="card" id="usdbrl">
-    <h2>USD/BRL</h2>
-    <p class="price">Loading...</p>
-  </div>
+        <section class="card" id="gold-card">
+            <h2>Gold (XAU/USD)</h2>
+            <div class="price" id="gold-price">Loading...</div>
+            <canvas id="gold-chart"></canvas>
+        </section>
 
-  <div class="card" id="us10y">
-    <h2>10Y US Treasury Yield</h2>
-    <p class="price">Loading...</p>
-  </div>
+        <section class="card" id="silver-card">
+            <h2>Silver (XAG/USD)</h2>
+            <div class="price" id="silver-price">Loading...</div>
+            <canvas id="silver-chart"></canvas>
+        </section>
 
-  <div class="card" id="gold">
-    <h2>Gold (XAU/USD)</h2>
-    <p class="price">Loading...</p>
-  </div>
+        <section class="card" id="usbrl-card">
+            <h2>USD/BRL Exchange Rate</h2>
+            <div class="price" id="usbrl-price">Loading...</div>
+            <canvas id="usbrl-chart"></canvas>
+        </section>
 
-  <div class="card" id="silver">
-    <h2>Silver (XAG/USD)</h2>
-    <p class="price">Loading...</p>
-  </div>
+        <section class="card" id="yield-card">
+            <h2>10Y US Treasury Yield</h2>
+            <div class="price" id="yield-price">Loading...</div>
+            <canvas id="yield-chart"></canvas>
+        </section>
 
-  <div class="card" id="dxy">
-    <h2>USD Strength (via UUP ETF)</h2>
-    <p class="price">Loading...</p>
-  </div>
+        <section class="card" id="uup-card">
+            <h2>UUP ETF (US Dollar Index Proxy)</h2>
+            <div class="price" id="uup-price">Loading...</div>
+            <canvas id="uup-chart"></canvas>
+        </section>
+    </main>
 
-  <script src="script.js"></script>
+    <footer>
+        <p>Data sources: CoinGecko, GoldAPI, AwesomeAPI, FRED, FinancialModelingPrep</p>
+        <p>© WhatMatters Dashboard</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
