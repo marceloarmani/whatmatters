@@ -1,210 +1,205 @@
-// Chaves das APIs
-const ALPHA_API_KEY = 'AYD0CU34ZWEG2WM2';
-const GOLDAPI_API_KEY = 'goldapi-4czjlk1mmar2m084-io';
-const FRED_API_KEY = '5cea6c897e85a36d7573bcf686ef03fe';
+// script.js
 
-const formatNumber = (num) => {
-  if (num === null || num === undefined || isNaN(num)) return 'N/A';
-  return num.toLocaleString('en-US', { maximumFractionDigits: 2 });
+const alphaApiKey = "AYD0CU34ZWEG2WM2"; // Sua chave Alpha Vantage
+const goldApiKey = "goldapi-4czjlk1mmar2m084-io"; // Sua chave GoldAPI
+
+// IDs dos elementos no HTML para atualizar
+const elements = {
+  btcPrice: document.getElementById("btc-price"),
+  goldPrice: document.getElementById("gold-price"),
+  silverPrice: document.getElementById("silver-price"),
+  usdbrlPrice: document.getElementById("usdbrl-price"),
+  treasuryYield: document.getElementById("treasury-yield"),
+  uupPrice: document.getElementById("uup-price"),
 };
 
-const fetchJSON = async (url, headers = {}) => {
+const charts = {};
+
+// Função para formatar números com vírgula como separador de milhar e 2 decimais
+function formatNumber(num) {
+  return num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// Função para exibir erro no elemento
+function showError(el, message) {
+  el.textContent = message;
+}
+
+// --- BUSCA PREÇOS ---
+
+// Bitcoin preço (usando CoinGecko)
+async function fetchBitcoinPrice() {
   try {
-    const response = await fetch(url, { headers });
-    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-    return await response.json();
-  } catch (error) {
-    console.error('Fetch error:', error);
-    return null;
+    const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
+    const data = await res.json();
+    const price = data.bitcoin.usd;
+    elements.btcPrice.textContent = "$" + formatNumber(price);
+    updateChart("btcChart", price);
+  } catch {
+    showError(elements.btcPrice, "Error loading");
   }
-};
-
-// Atualizar preço e gráfico do Bitcoin (BTC/USD)
-async function updateBTC() {
-  const url = `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=USD&apikey=${ALPHA_API_KEY}`;
-  const data = await fetchJSON(url);
-  if (!data || !data['Time Series (Digital Currency Daily)']) {
-    document.getElementById('btc-price').innerText = 'Error loading';
-    return;
-  }
-
-  const timeSeries = data['Time Series (Digital Currency Daily)'];
-  const dates = Object.keys(timeSeries).slice(0, 30).reverse();
-  const prices = dates.map(date => parseFloat(timeSeries[date]['4a. close (USD)']));
-  const latestPrice = prices[prices.length - 1];
-
-  document.getElementById('btc-price').innerText = `$${formatNumber(latestPrice)}`;
-
-  drawChart('btc-chart', dates, prices, 'BTC/USD');
 }
 
-// Atualizar preço e gráfico do Ouro (XAU/USD)
-async function updateGold() {
-  const url = 'https://www.goldapi.io/api/XAU/USD';
-  const headers = { 'x-access-token': GOLDAPI_API_KEY, 'Content-Type': 'application/json' };
-  const data = await fetchJSON(url, headers);
-  if (!data || !data.price) {
-    document.getElementById('gold-price').innerText = 'Error loading';
-    return;
+// Ouro e prata (usando GoldAPI)
+async function fetchGoldAndSilver() {
+  try {
+    const res = await fetch("https://www.goldapi.io/api/XAU/USD", {
+      headers: { "x-access-token": goldApiKey, "Content-Type": "application/json" },
+    });
+    const dataGold = await res.json();
+    elements.goldPrice.textContent = "$" + formatNumber(dataGold.price);
+    updateChart("goldChart", dataGold.price);
+  } catch {
+    showError(elements.goldPrice, "Error loading");
   }
-  document.getElementById('gold-price').innerText = `$${formatNumber(data.price)}`;
 
-  // Para o gráfico do ouro vamos pegar os preços do Alpha Vantage como fallback:
-  const avUrl = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=GLD&apikey=${ALPHA_API_KEY}`;
-  const avData = await fetchJSON(avUrl);
-  if (!avData || !avData['Time Series (Daily)']) {
-    drawChart('gold-chart', [], [], 'Gold');
-    return;
+  try {
+    const res = await fetch("https://www.goldapi.io/api/XAG/USD", {
+      headers: { "x-access-token": goldApiKey, "Content-Type": "application/json" },
+    });
+    const dataSilver = await res.json();
+    elements.silverPrice.textContent = "$" + formatNumber(dataSilver.price);
+    updateChart("silverChart", dataSilver.price);
+  } catch {
+    showError(elements.silverPrice, "Error loading");
   }
-  const timeSeries = avData['Time Series (Daily)'];
-  const dates = Object.keys(timeSeries).slice(0, 30).reverse();
-  const prices = dates.map(date => parseFloat(timeSeries[date]['4. close']));
-  drawChart('gold-chart', dates, prices, 'Gold');
 }
 
-// Atualizar preço e gráfico da Prata (XAG/USD)
-async function updateSilver() {
-  const url = 'https://www.goldapi.io/api/XAG/USD';
-  const headers = { 'x-access-token': GOLDAPI_API_KEY, 'Content-Type': 'application/json' };
-  const data = await fetchJSON(url, headers);
-  if (!data || !data.price) {
-    document.getElementById('silver-price').innerText = 'Error loading';
-    return;
+// USD/BRL câmbio (Alpha Vantage)
+async function fetchUSDToBRL() {
+  try {
+    const url = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=BRL&apikey=${alphaApiKey}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const rate = parseFloat(data["Realtime Currency Exchange Rate"]["5. Exchange Rate"]);
+    elements.usdbrlPrice.textContent = formatNumber(rate);
+    updateChart("usdbrlChart", rate);
+  } catch {
+    showError(elements.usdbrlPrice, "Error loading");
   }
-  document.getElementById('silver-price').innerText = `$${formatNumber(data.price)}`;
-
-  // Gráfico similar ao ouro com fallback Alpha Vantage (usando SLV ETF)
-  const avUrl = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=SLV&apikey=${ALPHA_API_KEY}`;
-  const avData = await fetchJSON(avUrl);
-  if (!avData || !avData['Time Series (Daily)']) {
-    drawChart('silver-chart', [], [], 'Silver');
-    return;
-  }
-  const timeSeries = avData['Time Series (Daily)'];
-  const dates = Object.keys(timeSeries).slice(0, 30).reverse();
-  const prices = dates.map(date => parseFloat(timeSeries[date]['4. close']));
-  drawChart('silver-chart', dates, prices, 'Silver');
 }
 
-// Atualizar yield do título de 10 anos dos EUA
-async function updateYield() {
-  const url = `https://api.stlouisfed.org/fred/series/observations?series_id=GS10&api_key=${FRED_API_KEY}&file_type=json&limit=30`;
-  const data = await fetchJSON(url);
-  if (!data || !data.observations) {
-    document.getElementById('yield-price').innerText = 'Error loading';
-    return;
-  }
-  const observations = data.observations.filter(obs => obs.value !== '.');
-  const dates = observations.map(obs => obs.date).reverse();
-  const values = observations.map(obs => parseFloat(obs.value)).reverse();
-  const latestValue = values[values.length - 1];
-
-  document.getElementById('yield-price').innerText = `${formatNumber(latestValue)}%`;
-
-  drawChart('yield-chart', dates, values, '10Y Yield (%)');
-}
-
-// Atualizar cotação USD/BRL
-async function updateUSD_BRL() {
-  const url = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=BRL&apikey=${ALPHA_API_KEY}`;
-  const data = await fetchJSON(url);
-  if (!data || !data['Realtime Currency Exchange Rate']) {
-    document.getElementById('usdbrl-price').innerText = 'Error loading';
-    return;
-  }
-  const price = parseFloat(data['Realtime Currency Exchange Rate']['5. Exchange Rate']);
-  document.getElementById('usdbrl-price').innerText = `R$ ${formatNumber(price)}`;
-
-  // Gráfico - pegar histórico (usando Alpha Vantage FX_DAILY)
-  const histUrl = `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=USD&to_symbol=BRL&apikey=${ALPHA_API_KEY}`;
-  const histData = await fetchJSON(histUrl);
-  if (!histData || !histData['Time Series FX (Daily)']) {
-    drawChart('usdbrl-chart', [], [], 'USD/BRL');
-    return;
-  }
-  const timeSeries = histData['Time Series FX (Daily)'];
-  const dates = Object.keys(timeSeries).slice(0, 30).reverse();
-  const prices = dates.map(date => parseFloat(timeSeries[date]['4. close']));
-  drawChart('usdbrl-chart', dates, prices, 'USD/BRL');
-}
-
-// Atualizar cotação do ETF UUP (proxy para o índice dólar)
-async function updateUUP() {
-  const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=UUP&apikey=${ALPHA_API_KEY}`;
-  const data = await fetchJSON(url);
-  if (!data || !data['Time Series (Daily)']) {
-    document.getElementById('uup-price').innerText = 'Error loading';
-    return;
-  }
-  const timeSeries = data['Time Series (Daily)'];
-  const dates = Object.keys(timeSeries).slice(0, 30).reverse();
-  const prices = dates.map(date => parseFloat(timeSeries[date]['4. close']));
-  const latestPrice = prices[prices.length - 1];
-
-  document.getElementById('uup-price').innerText = `$${formatNumber(latestPrice)}`;
-  drawChart('uup-chart', dates, prices, 'UUP ETF');
-}
-
-// Função para desenhar gráficos com Chart.js
-function drawChart(canvasId, labels, data, label) {
-  const ctx = document.getElementById(canvasId).getContext('2d');
-
-  // Limpar gráfico anterior se houver
-  if (window[canvasId]) {
-    window[canvasId].destroy();
-  }
-
-  window[canvasId] = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label,
-        data,
-        borderColor: '#007acc',
-        backgroundColor: 'rgba(0, 122, 204, 0.2)',
-        fill: true,
-        tension: 0.3,
-        pointRadius: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        x: { display: false },
-        y: {
-          beginAtZero: false,
-          ticks: {
-            callback: function(value) {
-              return value.toLocaleString('en-US');
-            }
-          }
-        }
-      },
-      plugins: {
-        legend: { display: true }
-      },
-      elements: {
-        line: {
-          borderWidth: 2
-        }
+// 10Y US Treasury Yield (FRED API)
+async function fetch10YYield() {
+  try {
+    // FRED API Key (já está na URL)
+    const fredApiKey = "5cea6c897e85a36d7573bcf686ef03fe";
+    const url = `https://api.stlouisfed.org/fred/series/observations?series_id=GS10&api_key=${fredApiKey}&file_type=json`;
+    const res = await fetch(url);
+    const data = await res.json();
+    // Pega o último valor disponível (última observação)
+    const observations = data.observations;
+    let lastValid = null;
+    for (let i = observations.length - 1; i >= 0; i--) {
+      if (observations[i].value !== ".") {
+        lastValid = parseFloat(observations[i].value);
+        break;
       }
     }
-  });
+    if (lastValid !== null) {
+      elements.treasuryYield.textContent = lastValid.toFixed(2) + "%";
+      updateChart("treasuryChart", lastValid);
+    } else {
+      showError(elements.treasuryYield, "No data");
+    }
+  } catch {
+    showError(elements.treasuryYield, "Error loading");
+  }
 }
 
-// Função principal para atualizar tudo
-async function updateAll() {
+// UUP ETF preço (Alpha Vantage - símbolo: UUP)
+async function fetchUUP() {
+  try {
+    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=UUP&apikey=${alphaApiKey}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const price = parseFloat(data["Global Quote"]["05. price"]);
+    if (!isNaN(price)) {
+      elements.uupPrice.textContent = "$" + formatNumber(price);
+      updateChart("uupChart", price);
+    } else {
+      showError(elements.uupPrice, "Unavailable");
+    }
+  } catch {
+    showError(elements.uupPrice, "Error loading");
+  }
+}
+
+// --- GRÁFICOS ---
+
+// Inicializa gráficos vazios
+function initCharts() {
+  const ctxs = {
+    btcChart: document.getElementById("btc-chart").getContext("2d"),
+    goldChart: document.getElementById("gold-chart").getContext("2d"),
+    silverChart: document.getElementById("silver-chart").getContext("2d"),
+    usdbrlChart: document.getElementById("usdbrl-chart").getContext("2d"),
+    treasuryChart: document.getElementById("treasury-chart").getContext("2d"),
+    uupChart: document.getElementById("uup-chart").getContext("2d"),
+  };
+
+  for (const key in ctxs) {
+    charts[key] = new Chart(ctxs[key], {
+      type: "line",
+      data: {
+        labels: [],
+        datasets: [{
+          label: "Price",
+          data: [],
+          borderColor: "#0073e6",
+          backgroundColor: "rgba(0, 115, 230, 0.2)",
+          fill: true,
+          tension: 0.3,
+          pointRadius: 0,
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: false,
+        scales: {
+          x: { display: false },
+          y: { beginAtZero: false }
+        },
+        plugins: {
+          legend: { display: false }
+        },
+        elements: { line: { borderWidth: 2 } }
+      }
+    });
+  }
+}
+
+// Atualiza gráfico adicionando novo valor, mantém últimos 30 pontos
+function updateChart(chartId, value) {
+  if (!charts[chartId]) return;
+  const chart = charts[chartId];
+  const now = new Date().toLocaleTimeString();
+
+  chart.data.labels.push(now);
+  chart.data.datasets[0].data.push(value);
+
+  if (chart.data.labels.length > 30) {
+    chart.data.labels.shift();
+    chart.data.datasets[0].data.shift();
+  }
+  chart.update();
+}
+
+// --- MAIN ---
+
+async function updateData() {
   await Promise.all([
-    updateBTC(),
-    updateGold(),
-    updateSilver(),
-    updateYield(),
-    updateUSD_BRL(),
-    updateUUP()
+    fetchBitcoinPrice(),
+    fetchGoldAndSilver(),
+    fetchUSDToBRL(),
+    fetch10YYield(),
+    fetchUUP(),
   ]);
 }
 
-// Atualizar a página toda vez que carregar e depois a cada 5 minutos
-updateAll();
-setInterval(updateAll, 300000); // 300.000 ms = 5 min
+// Inicialização
+initCharts();
+updateData();
+
+// Atualiza a cada 5 minutos (300000 ms)
+setInterval(updateData, 300000);
