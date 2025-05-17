@@ -3,8 +3,8 @@ const apiKey = 'JCEPmwMrTPyj5nEP9gEuFuSKOKCxPlQp';
 const assets = {
   btc: 'BTCUSD',
   us10y: 'US10Y',
-  gold: 'GOLD',
-  silver: 'SILVER',
+  gold: 'XAUUSD',
+  silver: 'XAGUSD',
   usd: 'DXY'
 };
 
