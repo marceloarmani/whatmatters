@@ -1,22 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Live Market Dashboard</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <div class="container">
-    <h1>Live Market Prices (USD)</h1>
-    <div id="quotes">
-      <div class="quote" id="btc">Loading Bitcoin...</div>
-      <div class="quote" id="us10y">Loading 10Y Yield...</div>
-      <div class="quote" id="gold">Loading Gold...</div>
-      <div class="quote" id="silver">Loading Silver...</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>What Matters</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>What Matters Now</h1>
+    <div class="dashboard">
+      <div class="asset">
+        <h2>Bitcoin (BTC)</h2>
+        <p id="btc">Loading...</p>
+      </div>
+      <div class="asset">
+        <h2>10Y US Treasury Yield (US10Y)</h2>
+        <p id="us10y">Loading...</p>
+      </div>
+      <div class="asset">
+        <h2>Gold (GOLD)</h2>
+        <p id="gold">Loading...</p>
+      </div>
+      <div class="asset">
+        <h2>Silver (SILVER)</h2>
+        <p id="silver">Loading...</p>
+      </div>
+      <div class="asset">
+        <h2>US Dollar Index (DXY)</h2>
+        <p id="usd">Loading...</p>
+      </div>
     </div>
-    <p class="update-note">Prices auto-refresh every 30 seconds</p>
-  </div>
-  <script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
