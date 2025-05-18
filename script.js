@@ -250,4 +250,12 @@ async function loadNews() {
 }
 
 loadNews();
+const quotesContainer = document.getElementById("quotes");
+
+// Limpa o container antes de adicionar indicadores
+quotesContainer.innerHTML = "";
+
+assets.forEach(asset => {
+  // restante do código que cria os elementos e carrega dados
+});
 
