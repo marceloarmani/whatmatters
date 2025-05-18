@@ -1,60 +1,20 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>What Matters - Indicadores Financeiros</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Market Dashboard</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>
-    <h1>What Matters</h1>
-    <p>Indicadores financeiros em tempo real</p>
-  </header>
-
-  <main>
-    <section class="indicator">
-      <h2>Bitcoin (BTC)</h2>
-      <div class="price" id="btc-price">Carregando...</div>
-      <canvas id="btc-chart" height="80"></canvas>
-    </section>
-
-    <section class="indicator">
-      <h2>Ouro (XAU/USD)</h2>
-      <div class="price" id="gold-price">Carregando...</div>
-      <canvas id="gold-chart" height="80"></canvas>
-    </section>
-
-    <section class="indicator">
-      <h2>Prata (XAG/USD)</h2>
-      <div class="price" id="silver-price">Carregando...</div>
-      <canvas id="silver-chart" height="80"></canvas>
-    </section>
-
-    <section class="indicator">
-      <h2>USD/BRL</h2>
-      <div class="price" id="usdbrl-price">Carregando...</div>
-      <canvas id="usdbrl-chart" height="80"></canvas>
-    </section>
-
-    <section class="indicator">
-      <h2>10Y US Treasury Yield</h2>
-      <div class="price" id="treasury-yield">Carregando...</div>
-      <canvas id="treasury-chart" height="80"></canvas>
-    </section>
-
-    <section class="indicator">
-      <h2>UUP ETF (US Dollar Index Proxy)</h2>
-      <div class="price" id="uup-price">Carregando...</div>
-      <canvas id="uup-chart" height="80"></canvas>
-    </section>
-  </main>
-
-  <footer>
-    <p>Dados via Alpha Vantage, GoldAPI, CoinGecko e FRED API.</p>
-  </footer>
-
+  <div class="container">
+    <h1>Market Dashboard</h1>
+    <div class="card" id="usdbrl">USD/BRL: <span>Loading...</span></div>
+    <div class="card" id="btc">Bitcoin (BTC): <span>Loading...</span></div>
+    <div class="card" id="gold">Gold (XAU): <span>Loading...</span></div>
+    <div class="card" id="silver">Silver (XAG): <span>Loading...</span></div>
+    <div class="card" id="yield">10Y US Treasury Yield: <span>Loading...</span></div>
+  </div>
   <script src="script.js"></script>
 </body>
 </html>
