@@ -7,6 +7,7 @@ const assets = [
 ];
 
 const quotesContainer = document.getElementById("quotes");
+quotesContainer.innerHTML = ""; // Limpa o container antes de adicionar
 
 assets.forEach(asset => {
   const wrapper = document.createElement("div");
@@ -16,12 +17,6 @@ assets.forEach(asset => {
   quote.className = "quote";
   quote.innerHTML = `<strong>${asset.name}:</strong> <em>Loading...</em>`;
 
-  // Botão para mostrar/ocultar gráfico
-  const toggleBtn = document.createElement("button");
-  toggleBtn.textContent = "Mostrar gráfico ▼";
-  toggleBtn.style.marginLeft = "1rem";
-  toggleBtn.style.cursor = "pointer";
-
   const chartContainer = document.createElement("div");
   chartContainer.className = "chart-container";
   chartContainer.style.display = "none";
@@ -29,25 +24,13 @@ assets.forEach(asset => {
   const canvas = document.createElement("canvas");
   chartContainer.appendChild(canvas);
 
-  // Adiciona botão e quote no wrapper
-  const headerDiv = document.createElement("div");
-  headerDiv.style.display = "flex";
-  headerDiv.style.alignItems = "center";
-  headerDiv.appendChild(quote);
-  headerDiv.appendChild(toggleBtn);
-
-  wrapper.appendChild(headerDiv);
+  wrapper.appendChild(quote);
   wrapper.appendChild(chartContainer);
   quotesContainer.appendChild(wrapper);
 
-  toggleBtn.addEventListener("click", () => {
-    if (chartContainer.style.display === "none") {
-      chartContainer.style.display = "block";
-      toggleBtn.textContent = "Ocultar gráfico ▲";
-    } else {
-      chartContainer.style.display = "none";
-      toggleBtn.textContent = "Mostrar gráfico ▼";
-    }
+  // Clique no ativo para mostrar/ocultar gráfico
+  quote.addEventListener("click", () => {
+    chartContainer.style.display = chartContainer.style.display === "none" ? "block" : "none";
   });
 
   loadQuote(asset, quote);
@@ -71,7 +54,7 @@ async function loadQuote(asset, quoteEl) {
     } else if (asset.symbol === "US10Y") {
       price = 4.32; // valor fixo, pode ser atualizado para API real
     } else if (asset.symbol === "GOLD" || asset.symbol === "SILVER") {
-      // Usando Metals-API (substitua YOUR_API_KEY)
+      // Usando Metals-API (substitua YOUR_API_KEY pela sua chave válida)
       const metalSymbols = { GOLD: "XAU", SILVER: "XAG" };
       const metal = metalSymbols[asset.symbol];
       const res = await fetch(`https://metals-api.com/api/latest?access_key=YOUR_API_KEY&base=USD&symbols=${metal}`);
@@ -117,16 +100,14 @@ async function loadChart(asset, canvas, assetObj) {
     } else if (asset.symbol === "USDBRL") {
       url = `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=brl&days=180`;
     } else if (asset.symbol === "GOLD" || asset.symbol === "SILVER") {
-      // Infelizmente Metals-API gratuita não tem histórico
-      // Aqui você pode colocar dados fictícios para o gráfico ou exibir mensagem
-      // Vou criar dados fictícios para exemplo:
+      // Dados fictícios para ouro e prata (substitua por API com histórico se disponível)
       const now = Date.now();
       for (let i = 180; i >= 0; i -= 7) {
         labels.push(new Date(now - i * 24 * 60 * 60 * 1000).toLocaleDateString());
         prices.push(1800 + Math.sin(i / 10) * 50); // exemplo para ouro
       }
     } else if (asset.symbol === "US10Y") {
-      // Sem gráfico para yield, pode pular
+      // Sem gráfico para yield, ocultar container
       canvas.parentElement.style.display = "none";
       return;
     }
@@ -148,22 +129,31 @@ async function loadChart(asset, canvas, assetObj) {
           borderColor: asset.symbol === "BTC" ? "#f7931a" : asset.symbol === "GOLD" ? "#d4af37" : asset.symbol === "SILVER" ? "#c0c0c0" : "#4bc0c0",
           backgroundColor: "rgba(75,192,192,0.2)",
           fill: true,
-          tension: 0.1
+          tension: 0.4,
+          borderWidth: 3,
+          pointRadius: 4,
+          pointBackgroundColor: asset.symbol === "BTC" ? "#f7931a" : asset.symbol === "GOLD" ? "#d4af37" : asset.symbol === "SILVER" ? "#c0c0c0" : "#4bc0c0"
         }]
       },
       options: {
         responsive: true,
         plugins: {
-          legend: {
-            display: false
-          }
+          legend: { display: false }
         },
         scales: {
           x: {
-            ticks: { color: "#555" }
+            ticks: {
+              color: "#333",
+              font: { family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", size: 12, weight: "bold" }
+            },
+            grid: { color: "#eee" }
           },
           y: {
-            ticks: { color: "#555" }
+            ticks: {
+              color: "#333",
+              font: { family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", size: 12, weight: "bold" }
+            },
+            grid: { color: "#eee" }
           }
         }
       }
@@ -172,90 +162,3 @@ async function loadChart(asset, canvas, assetObj) {
     console.error("Erro ao carregar gráfico:", e);
   }
 }
-assets.forEach(asset => {
-  const wrapper = document.createElement("div");
-  wrapper.className = "quote-wrapper";
-
-  const quote = document.createElement("div");
-  quote.className = "quote";
-  quote.innerHTML = `<strong>${asset.name}:</strong> <em>Loading...</em>`;
-
-  const chartContainer = document.createElement("div");
-  chartContainer.className = "chart-container";
-  chartContainer.style.display = "none";
-
-  const canvas = document.createElement("canvas");
-  chartContainer.appendChild(canvas);
-
-  wrapper.appendChild(quote);
-  wrapper.appendChild(chartContainer);
-  quotesContainer.appendChild(wrapper);
-
-  // Clique no ativo para mostrar/ocultar gráfico
-  quote.addEventListener("click", () => {
-    chartContainer.style.display = chartContainer.style.display === "none" ? "block" : "none";
-  });
-
-  loadQuote(asset, quote);
-  loadChart(asset, canvas, asset);
-});
-const chartOptionsImproved = {
-  responsive: true,
-  plugins: {
-    legend: { display: false }
-  },
-  scales: {
-    x: {
-      ticks: {
-        color: "#333",
-        font: { family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", size: 12, weight: "bold" }
-      },
-      grid: { color: "#eee" }
-    },
-    y: {
-      ticks: {
-        color: "#333",
-        font: { family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", size: 12, weight: "bold" }
-      },
-      grid: { color: "#eee" }
-    }
-  },
-  elements: {
-    line: { tension: 0.4, borderWidth: 3, borderColor: "#007bff" },
-    point: { radius: 4, backgroundColor: "#007bff" }
-  }
-};
-async function loadNews() {
-  const newsContainer = document.getElementById("news-content");
-  try {
-    // Exemplo: fetch de uma API que retorna notícias Bitcoin dos últimos 2 dias
-    const res = await fetch("https://newsapi.org/v2/everything?q=bitcoin&from=2025-05-16&sortBy=publishedAt&apiKey=YOUR_NEWSAPI_KEY");
-    const data = await res.json();
-
-    if (data.articles && data.articles.length > 0) {
-      newsContainer.innerHTML = data.articles.slice(0, 5).map(article =>
-        `<article>
-          <h3><a href="${article.url}" target="_blank" rel="noopener">${article.title}</a></h3>
-          <p>${article.description || ""}</p>
-          <small>${new Date(article.publishedAt).toLocaleDateString()}</small>
-        </article>`
-      ).join("");
-    } else {
-      newsContainer.innerHTML = "<p>Nenhuma notícia recente encontrada.</p>";
-    }
-  } catch (e) {
-    newsContainer.innerHTML = "<p>Erro ao carregar notícias.</p>";
-    console.error(e);
-  }
-}
-
-loadNews();
-const quotesContainer = document.getElementById("quotes");
-
-// Limpa o container antes de adicionar indicadores
-quotesContainer.innerHTML = "";
-
-assets.forEach(asset => {
-  // restante do código que cria os elementos e carrega dados
-});
-
