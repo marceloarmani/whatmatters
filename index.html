@@ -1,15 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>What Matters</title>
-  <link rel="stylesheet" href="/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cotações Financeiras</title>
+  <link rel="stylesheet" href="style_novo.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 </head>
 <body>
-  <h1>What Matters</h1>
-  <div id="quotes"></div>
-  <script src="/script.js"></script>
+  <div class="container">
+    <header>
+      <h1>Cotações Financeiras</h1>
+      <p class="subtitle">Acompanhe em tempo real os principais indicadores do mercado</p>
+    </header>
+    
+    <div id="quotes" class="grid">
+      <!-- Os cards de cotação serão inseridos aqui pelo JavaScript -->
+    </div>
+    
+    <footer>
+      <p>Dados atualizados em tempo real | Desenvolvido com ❤️</p>
+    </footer>
+  </div>
+  
+  <script src="script_novo.js"></script>
 </body>
 </html>
