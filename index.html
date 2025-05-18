@@ -2,14 +2,145 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>What Matters</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f6f7f9;
+      color: #222;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    #quotes {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .quote {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+      font-size: 1.2rem;
+    }
+
+    .quote em {
+      color: #888;
+    }
+
+    .error {
+      color: red;
+    }
+  </style>
 </head>
 <body>
-  <h1>Market Dashboard</h1>
-  <div id="quotes" class="grid"></div>
+  <h1>Market Snapshot</h1>
+  <div id="quotes"></div>
 
-  <script src="script_corrigido.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const assets = [
+        {
+          name: "Bitcoin",
+          symbol: "BTC",
+          fetch: async () => {
+            const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
+            const data = await res.json();
+            return data.bitcoin.usd;
+          }
+        },
+        {
+          name: "Gold (Ounce)",
+          symbol: "GOLD",
+          fetch: async () => {
+            const res = await fetch("https://www.goldapi.io/api/XAU/USD", {
+              headers: {
+                "x-access-token": "goldapi-4czjlk1mmar2m084-io",
+                "Content-Type": "application/json"
+              }
+            });
+            if (!res.ok) throw new Error("Erro Gold");
+            const data = await res.json();
+            return data.price;
+          }
+        },
+        {
+          name: "Silver (Ounce)",
+          symbol: "SILVER",
+          fetch: async () => {
+            const res = await fetch("https://www.goldapi.io/api/XAG/USD", {
+              headers: {
+                "x-access-token": "goldapi-4czjlk1mmar2m084-io",
+                "Content-Type": "application/json"
+              }
+            });
+            if (!res.ok) throw new Error("Erro Silver");
+            const data = await res.json();
+            return data.price;
+          }
+        },
+        {
+          name: "10Y US Treasury Yield",
+          symbol: "US10Y",
+          fetch: async () => {
+            // Fallback temporário por CORS
+            return 4.32;
+          }
+        },
+        {
+          name: "USD/BRL",
+          symbol: "USDBRL",
+          fetch: async () => {
+            const res = await fetch("https://open.er-api.com/v6/latest/USD");
+            if (!res.ok) throw new Error("Erro USD/BRL");
+            const data = await res.json();
+            return data.rates.BRL;
+          }
+        }
+      ];
+
+      const container = document.getElementById("quotes");
+
+      assets.forEach(async (asset) => {
+        const el = document.createElement("div");
+        el.className = "quote";
+        el.innerHTML = `<strong>${asset.name}:</strong> <em>Loading...</em>`;
+        container.appendChild(el);
+
+        try {
+          const price = await asset.fetch();
+          let formatted;
+
+          if (asset.symbol === "US10Y") {
+            formatted = `${price.toFixed(2)}%`;
+          } else if (asset.symbol === "USDBRL") {
+            formatted = `R$ ${price.toLocaleString("pt-BR", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })}`;
+          } else {
+            formatted = `$${price.toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })}`;
+          }
+
+          el.innerHTML = `<strong>${asset.name}:</strong> ${formatted}`;
+        } catch (e) {
+          el.innerHTML = `<strong>${asset.name}:</strong> <span class="error">Error loading</span>`;
+          console.error(`Erro ao carregar ${asset.name}:`, e);
+        }
+      });
+    });
+  </script>
 </body>
 </html>
