@@ -39,3 +39,17 @@ canvas {
   width: 100% !important;
   height: 250px !important;
 }
+
+button {
+  background: #4bc0c0;
+  border: none;
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #36a0a0;
+}
