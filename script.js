@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
             "Content-Type": "application/json"
           }
         });
+        if (!res.ok) throw new Error("Erro Gold");
         const data = await res.json();
         return data.price;
       }
@@ -33,6 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
             "Content-Type": "application/json"
           }
         });
+        if (!res.ok) throw new Error("Erro Silver");
         const data = await res.json();
         return data.price;
       }
@@ -44,6 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const res = await fetch("https://api.stlouisfed.org/fred/series/observations?series_id=DGS10&api_key=5cea6c897e85a36d7573bcf686ef03fe&file_type=json");
         const data = await res.json();
         const latest = data.observations.reverse().find(obs => obs.value !== ".");
+        if (!latest) throw new Error("Sem dados");
         return parseFloat(latest.value);
       }
     },
@@ -57,6 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
             "Content-Type": "application/json"
           }
         });
+        if (!res.ok) throw new Error("Erro USD/BRL");
         const data = await res.json();
         return data.price;
       }
@@ -68,15 +72,21 @@ document.addEventListener("DOMContentLoaded", function () {
   assets.forEach(async (asset) => {
     const el = document.createElement("div");
     el.className = "quote";
-    el.innerHTML = `<strong>${asset.name}:</strong> Loading...`;
+    el.innerHTML = `<strong>${asset.name}:</strong> <em>Loading...</em>`;
     container.appendChild(el);
 
     try {
       const price = await asset.fetch();
-      const formatted = asset.symbol === "US10Y" ? `${price.toFixed(2)}%` : `$${price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      const formatted = asset.symbol === "US10Y"
+        ? `${price.toFixed(2)}%`
+        : `$${price.toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })}`;
       el.innerHTML = `<strong>${asset.name}:</strong> ${formatted}`;
     } catch (e) {
-      el.innerHTML = `<strong>${asset.name}:</strong> Error loading`;
+      el.innerHTML = `<strong>${asset.name}:</strong> <span style="color:red">Error loading</span>`;
+      console.error(`Erro ao carregar ${asset.name}:`, e);
     }
   });
 });
