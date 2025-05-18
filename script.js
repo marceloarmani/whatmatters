@@ -225,4 +225,29 @@ const chartOptionsImproved = {
     point: { radius: 4, backgroundColor: "#007bff" }
   }
 };
+async function loadNews() {
+  const newsContainer = document.getElementById("news-content");
+  try {
+    // Exemplo: fetch de uma API que retorna notícias Bitcoin dos últimos 2 dias
+    const res = await fetch("https://newsapi.org/v2/everything?q=bitcoin&from=2025-05-16&sortBy=publishedAt&apiKey=YOUR_NEWSAPI_KEY");
+    const data = await res.json();
+
+    if (data.articles && data.articles.length > 0) {
+      newsContainer.innerHTML = data.articles.slice(0, 5).map(article =>
+        `<article>
+          <h3><a href="${article.url}" target="_blank" rel="noopener">${article.title}</a></h3>
+          <p>${article.description || ""}</p>
+          <small>${new Date(article.publishedAt).toLocaleDateString()}</small>
+        </article>`
+      ).join("");
+    } else {
+      newsContainer.innerHTML = "<p>Nenhuma notícia recente encontrada.</p>";
+    }
+  } catch (e) {
+    newsContainer.innerHTML = "<p>Erro ao carregar notícias.</p>";
+    console.error(e);
+  }
+}
+
+loadNews();
 
