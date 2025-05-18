@@ -3,132 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>What Matters - Financial Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <title>What Matters</title>
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      background-color: #f9fafb;
-      color: #111827;
-    }
-    .quote {
-      padding: 1rem;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .positive {
-      color: green;
-    }
-    .negative {
-      color: red;
-    }
-  </style>
 </head>
-<body class="font-sans">
-  <div class="container mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-4">What Matters</h1>
-    <div id="quotes" class="bg-white shadow rounded-lg overflow-hidden"></div>
-
-    <div id="charts" class="mt-10 space-y-6">
-      <canvas id="btcChart" height="100"></canvas>
-      <canvas id="goldChart" height="100"></canvas>
-    </div>
-  </div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const assets = [
-        {
-          name: "Bitcoin",
-          symbol: "BTC",
-          chartId: "btcChart",
-          fetch: async () => {
-            const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true");
-            const data = await res.json();
-            return {
-              price: data.bitcoin.usd,
-              change: data.bitcoin.usd_24h_change
-            };
-          },
-          history: async () => {
-            const res = await fetch("https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=365&interval=daily");
-            const data = await res.json();
-            return data.prices;
-          }
-        },
-        {
-          name: "Gold (Ounce)",
-          symbol: "GOLD",
-          chartId: "goldChart",
-          fetch: async () => {
-            const res = await fetch("https://www.goldapi.io/api/XAU/USD", {
-              headers: {
-                "x-access-token": "goldapi-4czjlk1mmar2m084-io",
-                "Content-Type": "application/json"
-              }
-            });
-            const data = await res.json();
-            return {
-              price: data.price,
-              change: data.chg_percent
-            };
-          },
-          history: async () => {
-            // Usando valores simulados como exemplo
-            return Array.from({ length: 365 }, (_, i) => [Date.now() - i * 86400000, 1800 + Math.random() * 100]);
-          }
-        }
-      ];
-
-      const container = document.getElementById("quotes");
-      const renderChart = (id, prices) => {
-        const ctx = document.getElementById(id).getContext("2d");
-        new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: prices.map(p => new Date(p[0]).toLocaleDateString()),
-            datasets: [{
-              label: id,
-              data: prices.map(p => p[1]),
-              borderColor: "#3b82f6",
-              backgroundColor: "rgba(59, 130, 246, 0.1)",
-              fill: true
-            }]
-          },
-          options: {
-            responsive: true,
-            scales: {
-              x: { display: false },
-              y: { beginAtZero: false }
-            }
-          }
-        });
-      };
-
-      assets.forEach(async (asset) => {
-        const el = document.createElement("div");
-        el.className = "quote";
-        el.innerHTML = `<strong>${asset.name}:</strong> <em>Loading...</em>`;
-        container.appendChild(el);
-
-        try {
-          const { price, change } = await asset.fetch();
-
-          const changeClass = change >= 0 ? "positive" : "negative";
-          const changeFormatted = `${change.toFixed(2)}%`;
-          const priceFormatted = `$${price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-          el.innerHTML = `<strong>${asset.name}:</strong> ${priceFormatted} <span class="${changeClass}">(${changeFormatted})</span>`;
-
-          if (asset.history) {
-            const history = await asset.history();
-            renderChart(asset.chartId, history);
-          }
-        } catch (e) {
-          el.innerHTML = `<strong>${asset.name}:</strong> <span style="color:red">Error loading</span>`;
-          console.error(`Erro ao carregar ${asset.name}:`, e);
-        }
-      });
-    });
-  </script>
+<body>
+  <header>
+    <h1>What Matters</h1>
+    <p>Principais Indicadores Econômicos e Ativos</p>
+  </header>
+  <main>
+    <div id="quotes"></div>
+  </main>
+  <footer>
+    <p>&copy; 2025 What Matters</p>
+  </footer>
+  <script src="script.js"></script>
 </body>
 </html>
