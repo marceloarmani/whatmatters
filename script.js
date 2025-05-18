@@ -1,102 +1,120 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
   const assets = [
     {
       name: "Bitcoin",
       symbol: "BTC",
-      fetch: async () => {
-        const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
-        const data = await res.json();
-        return data.bitcoin.usd;
-      }
+      id: "bitcoin"
     },
     {
       name: "Gold (Ounce)",
       symbol: "GOLD",
-      fetch: async () => {
-        const res = await fetch("https://www.goldapi.io/api/XAU/USD", {
-          headers: {
-            "x-access-token": "goldapi-4czjlk1mmar2m084-io",
-            "Content-Type": "application/json"
-          }
-        });
-        if (!res.ok) throw new Error("Erro Gold");
-        const data = await res.json();
-        return data.price;
-      }
+      id: "gold"
     },
     {
       name: "Silver (Ounce)",
       symbol: "SILVER",
-      fetch: async () => {
-        const res = await fetch("https://www.goldapi.io/api/XAG/USD", {
-          headers: {
-            "x-access-token": "goldapi-4czjlk1mmar2m084-io",
-            "Content-Type": "application/json"
-          }
-        });
-        if (!res.ok) throw new Error("Erro Silver");
-        const data = await res.json();
-        return data.price;
-      }
+      id: "silver"
     },
     {
       name: "10Y US Treasury Yield",
       symbol: "US10Y",
-      fetch: async () => {
-        try {
-          const res = await fetch("https://api.stlouisfed.org/fred/series/observations?series_id=DGS10&api_key=5cea6c897e85a36d7573bcf686ef03fe&file_type=json");
-          const data = await res.json();
-          const latest = data.observations.reverse().find(obs => obs.value !== ".");
-          if (!latest) throw new Error("Sem dados");
-          return parseFloat(latest.value);
-        } catch (e) {
-          console.error("Erro ao buscar US Treasury:", e);
-          throw e;
-        }
-      }
+      fixedValue: 4.32
     },
     {
       name: "USD/BRL",
       symbol: "USDBRL",
-      fetch: async () => {
-        const res = await fetch("https://open.er-api.com/v6/latest/USD");
-        if (!res.ok) throw new Error("Erro USD/BRL");
-        const data = await res.json();
-        return data.rates.BRL;
-      }
+      id: "usdbrl"
     }
   ];
 
   const container = document.getElementById("quotes");
 
-  assets.forEach(async (asset) => {
-    const el = document.createElement("div");
-    el.className = "quote";
-    el.innerHTML = `<strong>${asset.name}:</strong> <em>Loading...</em>`;
-    container.appendChild(el);
+  for (const asset of assets) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "quote";
+    const title = document.createElement("strong");
+    title.textContent = asset.name;
+    const valueEl = document.createElement("span");
+    valueEl.textContent = "Loading...";
+    wrapper.appendChild(title);
+    wrapper.appendChild(valueEl);
+    container.appendChild(wrapper);
 
     try {
-      const price = await asset.fetch();
-      let formatted;
+      let price, change, historical;
 
+      if (asset.fixedValue !== undefined) {
+        price = asset.fixedValue;
+        change = 0;
+        historical = [];
+      } else if (asset.symbol === "USDBRL") {
+        const res = await fetch("https://open.er-api.com/v6/latest/USD");
+        const data = await res.json();
+        price = data.rates.BRL;
+        change = 0; // Substitua por cálculo real, se disponível
+        historical = [];
+      } else {
+        const res = await fetch(`https://api.coingecko.com/api/v3/coins/${asset.id}/market_chart?vs_currency=usd&days=1`);
+        const hist = await res.json();
+        historical = hist.prices;
+        const latest = hist.prices[hist.prices.length - 1][1];
+        const first = hist.prices[0][1];
+        price = latest;
+        change = ((latest - first) / first) * 100;
+      }
+
+      let formatted;
       if (asset.symbol === "US10Y") {
         formatted = `${price.toFixed(2)}%`;
       } else if (asset.symbol === "USDBRL") {
-        formatted = `R$ ${price.toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        })}`;
+        formatted = `R$ ${price.toFixed(2)}`;
       } else {
-        formatted = `$${price.toLocaleString("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        })}`;
+        formatted = `$${price.toFixed(2)}`;
       }
 
-      el.innerHTML = `<strong>${asset.name}:</strong> ${formatted}`;
+      const changeEl = document.createElement("span");
+      changeEl.textContent = ` (${change.toFixed(2)}%)`;
+      changeEl.className = change >= 0 ? "up" : "down";
+
+      valueEl.textContent = formatted;
+      valueEl.appendChild(changeEl);
+
+      if (historical.length > 0) {
+        const canvas = document.createElement("canvas");
+        wrapper.appendChild(canvas);
+        new Chart(canvas, {
+          type: "line",
+          data: {
+            labels: historical.map(p => new Date(p[0]).toLocaleTimeString()),
+            datasets: [{
+              label: asset.name,
+              data: historical.map(p => p[1]),
+              borderColor: change >= 0 ? "green" : "red",
+              fill: false
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                display: false
+              }
+            },
+            scales: {
+              x: {
+                display: false
+              },
+              y: {
+                display: true
+              }
+            }
+          }
+        });
+      }
+
     } catch (e) {
-      el.innerHTML = `<strong>${asset.name}:</strong> <span style="color:red">Error loading</span>`;
+      valueEl.textContent = "Erro ao carregar";
       console.error(`Erro ao carregar ${asset.name}:`, e);
     }
-  });
+  }
 });
