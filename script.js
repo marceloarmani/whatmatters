@@ -199,3 +199,30 @@ assets.forEach(asset => {
   loadQuote(asset, quote);
   loadChart(asset, canvas, asset);
 });
+const chartOptionsImproved = {
+  responsive: true,
+  plugins: {
+    legend: { display: false }
+  },
+  scales: {
+    x: {
+      ticks: {
+        color: "#333",
+        font: { family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", size: 12, weight: "bold" }
+      },
+      grid: { color: "#eee" }
+    },
+    y: {
+      ticks: {
+        color: "#333",
+        font: { family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", size: 12, weight: "bold" }
+      },
+      grid: { color: "#eee" }
+    }
+  },
+  elements: {
+    line: { tension: 0.4, borderWidth: 3, borderColor: "#007bff" },
+    point: { radius: 4, backgroundColor: "#007bff" }
+  }
+};
+
