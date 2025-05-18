@@ -162,3 +162,43 @@ async function loadChart(asset, canvas, assetObj) {
     console.error("Erro ao carregar gráfico:", e);
   }
 }
+async function loadNews() {
+  const newsContainer = document.getElementById("news-content");
+  const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
+
+  try {
+    // RSS da Bitcoin Magazine via rss2json.com
+    const res = await fetch("https://api.rss2json.com/v1/api.json?rss_url=https://bitcoinmagazine.com/.rss");
+    const data = await res.json();
+
+    if (data.status !== "ok") throw new Error("Erro ao carregar RSS");
+
+    // Filtra notícias dos últimos 2 dias e que contenham "bitcoin" ou "economy" no título ou descrição
+    const recentArticles = data.items.filter(item => {
+      const pubDate = new Date(item.pubDate);
+      if (pubDate < twoDaysAgo) return false;
+      const text = (item.title + " " + item.description).toLowerCase();
+      return text.includes("bitcoin") || text.includes("economy") || text.includes("economia");
+    }).slice(0, 5); // pega até 5 notícias
+
+    if (recentArticles.length === 0) {
+      newsContainer.innerHTML = "<p>Nenhuma notícia recente encontrada.</p>";
+      return;
+    }
+
+    newsContainer.innerHTML = recentArticles.map(article => `
+      <article style="margin-bottom:1rem;">
+        <h3><a href="${article.link}" target="_blank" rel="noopener">${article.title}</a></h3>
+        <p>${article.description.replace(/(<([^>]+)>)/gi, "").substring(0, 150)}...</p>
+        <small>Publicado em: ${new Date(article.pubDate).toLocaleString()}</small>
+      </article>
+    `).join("");
+
+  } catch (e) {
+    console.error("Erro ao carregar notícias:", e);
+    newsContainer.innerHTML = "<p>Erro ao carregar notícias.</p>";
+  }
+}
+
+// Chama a função para carregar as notícias ao carregar o script
+loadNews();
