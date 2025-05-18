@@ -202,3 +202,56 @@ async function loadNews() {
 
 // Chama a função para carregar as notícias ao carregar o script
 loadNews();
+async function loadNews() {
+  const newsContainer = document.getElementById("news-content");
+  const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
+
+  try {
+    const rssUrl = encodeURIComponent("https://bitcoinmagazine.com/.rss");
+    const proxyUrl = `https://api.allorigins.win/get?url=${rssUrl}`;
+
+    const res = await fetch(proxyUrl);
+    const data = await res.json();
+
+    // data.contents contém o XML do RSS
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+
+    const items = [...xmlDoc.querySelectorAll("item")];
+    const recentArticles = items
+      .map(item => {
+        return {
+          title: item.querySelector("title")?.textContent || "",
+          link: item.querySelector("link")?.textContent || "",
+          pubDate: item.querySelector("pubDate")?.textContent || "",
+          description: item.querySelector("description")?.textContent || ""
+        };
+      })
+      .filter(article => {
+        const pubDate = new Date(article.pubDate);
+        if (pubDate < twoDaysAgo) return false;
+        const text = (article.title + " " + article.description).toLowerCase();
+        return text.includes("bitcoin") || text.includes("economy") || text.includes("economia");
+      })
+      .slice(0, 5);
+
+    if (recentArticles.length === 0) {
+      newsContainer.innerHTML = "<p>Nenhuma notícia recente encontrada.</p>";
+      return;
+    }
+
+    newsContainer.innerHTML = recentArticles.map(article => `
+      <article style="margin-bottom:1rem;">
+        <h3><a href="${article.link}" target="_blank" rel="noopener">${article.title}</a></h3>
+        <p>${article.description.replace(/(<([^>]+)>)/gi, "").substring(0, 150)}...</p>
+        <small>Publicado em: ${new Date(article.pubDate).toLocaleString()}</small>
+      </article>
+    `).join("");
+
+  } catch (e) {
+    console.error("Erro ao carregar notícias:", e);
+    newsContainer.innerHTML = "<p>Erro ao carregar notícias.</p>";
+  }
+}
+
+loadNews();
