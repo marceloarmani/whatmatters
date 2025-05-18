@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
       name: "Bitcoin",
       symbol: "BTC",
       fetch: async () => {
-        // Substituindo CoinDesk por CoinGecko
         const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
         const data = await res.json();
         return data.bitcoin.usd;
@@ -44,17 +43,12 @@ document.addEventListener("DOMContentLoaded", function () {
       name: "10Y US Treasury Yield",
       symbol: "US10Y",
       fetch: async () => {
-        // Usando uma API alternativa que não tem problemas de CORS
         try {
-          // Valor fixo como fallback para demonstração
-          return 4.32;
-          
-          // Nota: Em produção, seria necessário um backend ou proxy para acessar a API FRED
-          // const res = await fetch("https://api.stlouisfed.org/fred/series/observations?series_id=DGS10&api_key=5cea6c897e85a36d7573bcf686ef03fe&file_type=json");
-          // const data = await res.json();
-          // const latest = data.observations.reverse().find(obs => obs.value !== ".");
-          // if (!latest) throw new Error("Sem dados");
-          // return parseFloat(latest.value);
+          const res = await fetch("https://api.stlouisfed.org/fred/series/observations?series_id=DGS10&api_key=5cea6c897e85a36d7573bcf686ef03fe&file_type=json");
+          const data = await res.json();
+          const latest = data.observations.reverse().find(obs => obs.value !== ".");
+          if (!latest) throw new Error("Sem dados");
+          return parseFloat(latest.value);
         } catch (e) {
           console.error("Erro ao buscar US Treasury:", e);
           throw e;
@@ -65,7 +59,6 @@ document.addEventListener("DOMContentLoaded", function () {
       name: "USD/BRL",
       symbol: "USDBRL",
       fetch: async () => {
-        // Substituindo GoldAPI por ExchangeRate-API
         const res = await fetch("https://open.er-api.com/v6/latest/USD");
         if (!res.ok) throw new Error("Erro USD/BRL");
         const data = await res.json();
@@ -85,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
       const price = await asset.fetch();
       let formatted;
-      
+
       if (asset.symbol === "US10Y") {
         formatted = `${price.toFixed(2)}%`;
       } else if (asset.symbol === "USDBRL") {
@@ -99,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
           maximumFractionDigits: 2
         })}`;
       }
-      
+
       el.innerHTML = `<strong>${asset.name}:</strong> ${formatted}`;
     } catch (e) {
       el.innerHTML = `<strong>${asset.name}:</strong> <span style="color:red">Error loading</span>`;
