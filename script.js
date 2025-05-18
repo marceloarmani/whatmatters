@@ -4,10 +4,9 @@ document.addEventListener("DOMContentLoaded", function () {
       name: "Bitcoin",
       symbol: "BTC",
       fetch: async () => {
-        // Substituindo CoinDesk por CoinGecko
-        const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
+        const res = await fetch("https://api.coindesk.com/v1/bpi/currentprice/USD.json");
         const data = await res.json();
-        return data.bitcoin.usd;
+        return data.bpi.USD.rate_float;
       }
     },
     {
@@ -44,32 +43,26 @@ document.addEventListener("DOMContentLoaded", function () {
       name: "10Y US Treasury Yield",
       symbol: "US10Y",
       fetch: async () => {
-        // Usando uma API alternativa que não tem problemas de CORS
-        try {
-          // Valor fixo como fallback para demonstração
-          return 4.32;
-          
-          // Nota: Em produção, seria necessário um backend ou proxy para acessar a API FRED
-          // const res = await fetch("https://api.stlouisfed.org/fred/series/observations?series_id=DGS10&api_key=5cea6c897e85a36d7573bcf686ef03fe&file_type=json");
-          // const data = await res.json();
-          // const latest = data.observations.reverse().find(obs => obs.value !== ".");
-          // if (!latest) throw new Error("Sem dados");
-          // return parseFloat(latest.value);
-        } catch (e) {
-          console.error("Erro ao buscar US Treasury:", e);
-          throw e;
-        }
+        const res = await fetch("https://api.stlouisfed.org/fred/series/observations?series_id=DGS10&api_key=5cea6c897e85a36d7573bcf686ef03fe&file_type=json");
+        const data = await res.json();
+        const latest = data.observations.reverse().find(obs => obs.value !== ".");
+        if (!latest) throw new Error("Sem dados");
+        return parseFloat(latest.value);
       }
     },
     {
       name: "USD/BRL",
       symbol: "USDBRL",
       fetch: async () => {
-        // Substituindo GoldAPI por ExchangeRate-API
-        const res = await fetch("https://open.er-api.com/v6/latest/USD");
+        const res = await fetch("https://www.goldapi.io/api/USD/BRL", {
+          headers: {
+            "x-access-token": "goldapi-4czjlk1mmar2m084-io",
+            "Content-Type": "application/json"
+          }
+        });
         if (!res.ok) throw new Error("Erro USD/BRL");
         const data = await res.json();
-        return data.rates.BRL;
+        return data.price;
       }
     }
   ];
@@ -84,22 +77,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     try {
       const price = await asset.fetch();
-      let formatted;
-      
-      if (asset.symbol === "US10Y") {
-        formatted = `${price.toFixed(2)}%`;
-      } else if (asset.symbol === "USDBRL") {
-        formatted = `R$ ${price.toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        })}`;
-      } else {
-        formatted = `$${price.toLocaleString("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        })}`;
-      }
-      
+      const formatted = asset.symbol === "US10Y"
+        ? `${price.toFixed(2)}%`
+        : `$${price.toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })}`;
       el.innerHTML = `<strong>${asset.name}:</strong> ${formatted}`;
     } catch (e) {
       el.innerHTML = `<strong>${asset.name}:</strong> <span style="color:red">Error loading</span>`;
