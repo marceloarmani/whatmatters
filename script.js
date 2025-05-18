@@ -172,3 +172,30 @@ async function loadChart(asset, canvas, assetObj) {
     console.error("Erro ao carregar gráfico:", e);
   }
 }
+assets.forEach(asset => {
+  const wrapper = document.createElement("div");
+  wrapper.className = "quote-wrapper";
+
+  const quote = document.createElement("div");
+  quote.className = "quote";
+  quote.innerHTML = `<strong>${asset.name}:</strong> <em>Loading...</em>`;
+
+  const chartContainer = document.createElement("div");
+  chartContainer.className = "chart-container";
+  chartContainer.style.display = "none";
+
+  const canvas = document.createElement("canvas");
+  chartContainer.appendChild(canvas);
+
+  wrapper.appendChild(quote);
+  wrapper.appendChild(chartContainer);
+  quotesContainer.appendChild(wrapper);
+
+  // Clique no ativo para mostrar/ocultar gráfico
+  quote.addEventListener("click", () => {
+    chartContainer.style.display = chartContainer.style.display === "none" ? "block" : "none";
+  });
+
+  loadQuote(asset, quote);
+  loadChart(asset, canvas, asset);
+});
