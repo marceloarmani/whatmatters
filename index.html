@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>
+  <header class="compact-header">
     <h1>Scarcity Panel</h1>
     <p>Navegando o horizonte da escassez digital em um oceano de abundância monetária</p>
   </header>
@@ -16,7 +16,7 @@
     <div class="main-layout">
       <!-- Indicadores principais (expandidos horizontalmente ) -->
       <section id="main-indicators" class="primary-section">
-        <div id="quotes"></div>
+        <div id="quotes" class="expanded-quotes"></div>
         <div id="chart-area" class="chart-area">
           <!-- Área dedicada para gráficos -->
           <div class="chart-container" id="main-chart-container">
@@ -89,6 +89,26 @@
                   </div>
                   <div class="gauge-value">Moderada-Alta</div>
                   <div class="indicator-change">+2.3% (24h)</div>
+                </div>
+              </div>
+              <div class="indicator">
+                <div class="indicator-title">Correlação com S&P 500</div>
+                <div class="indicator-value" id="sp500-correlation">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 32%;"></div>
+                  </div>
+                  <div class="gauge-value">0.32 - Baixa</div>
+                  <div class="indicator-change">-0.05 (24h)</div>
+                </div>
+              </div>
+              <div class="indicator">
+                <div class="indicator-title">Sentimento Social</div>
+                <div class="indicator-value" id="social-sentiment">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 74%;"></div>
+                  </div>
+                  <div class="gauge-value">74 - Positivo</div>
+                  <div class="indicator-change">+8% (24h)</div>
                 </div>
               </div>
             </div>
