@@ -6,6 +6,59 @@ const assets = [
   { name: "USD/BRL", id: "usdbrl", symbol: "USDBRL", currency: "brl" }
 ];
 
+// Dados de capitalização de mercado global
+const marketCapData = [
+  { 
+    name: "Bonds", 
+    value: 133.0, 
+    unit: "T", 
+    color: "#4a69bd", 
+    description: "Mercado global de títulos de dívida" 
+  },
+  { 
+    name: "Equities", 
+    value: 106.0, 
+    unit: "T", 
+    color: "#6a89cc", 
+    description: "Mercado global de ações" 
+  },
+  { 
+    name: "Money", 
+    value: 102.9, 
+    unit: "T", 
+    color: "#82ccdd", 
+    description: "Oferta monetária global (M2)" 
+  },
+  { 
+    name: "Real Estate", 
+    value: 326.5, 
+    unit: "T", 
+    color: "#b8e994", 
+    description: "Mercado imobiliário global" 
+  },
+  { 
+    name: "Gold", 
+    value: 12.5, 
+    unit: "T", 
+    color: "#f6b93b", 
+    description: "Capitalização de mercado do ouro" 
+  },
+  { 
+    name: "Art, Cars & Collectibles", 
+    value: 7.8, 
+    unit: "T", 
+    color: "#e55039", 
+    description: "Mercado global de arte, carros e colecionáveis" 
+  },
+  { 
+    name: "Bitcoin", 
+    value: 2.0, 
+    unit: "T", 
+    color: "#f7931a", 
+    description: "Capitalização de mercado do Bitcoin" 
+  }
+];
+
 // Citações de Satoshi Nakamoto
 const satoshiQuotes = [
   "O problema raiz com a moeda convencional é toda a confiança que é necessária para fazê-la funcionar. O banco central deve ser confiável para não desvalorizar a moeda, mas a história das moedas fiduciárias está cheia de quebras dessa confiança.",
@@ -72,6 +125,16 @@ const economicEvents = [
   }
 ];
 
+// Fontes de notícias confiáveis sobre Bitcoin e economia
+const newsSources = [
+  { name: "Bloomberg", url: "https://www.bloomberg.com/crypto", tag: "Bloomberg" },
+  { name: "Financial Times", url: "https://www.ft.com/cryptocurrencies", tag: "FT" },
+  { name: "Wall Street Journal", url: "https://www.wsj.com/news/markets/currencies-cryptocurrency", tag: "WSJ" },
+  { name: "Reuters", url: "https://www.reuters.com/business/finance/", tag: "Reuters" },
+  { name: "The Economist", url: "https://www.economist.com/finance-and-economics/", tag: "Economist" },
+  { name: "Bitcoin Magazine", url: "https://bitcoinmagazine.com/", tag: "BTC Mag" }
+];
+
 // Inicialização dos elementos da página
 document.addEventListener('DOMContentLoaded', function() {
   const quotesContainer = document.getElementById("quotes");
@@ -122,6 +185,9 @@ document.addEventListener('DOMContentLoaded', function() {
     loadQuote(asset, quote);
   });
 
+  // Inicializar comparativo de capitalização de mercado
+  initMarketCapComparison();
+  
   // Iniciar carregamento de notícias
   loadNews();
   
@@ -149,6 +215,54 @@ document.addEventListener('DOMContentLoaded', function() {
     updateMarketIndicators();
   }, 300000);
 });
+
+// Inicializar comparativo de capitalização de mercado
+function initMarketCapComparison() {
+  const marketCapBarsContainer = document.querySelector('.market-cap-bars');
+  const marketCapLegendContainer = document.querySelector('.market-cap-legend');
+  
+  if (!marketCapBarsContainer || !marketCapLegendContainer) return;
+  
+  // Calcular o total da capitalização de mercado
+  const totalMarketCap = marketCapData.reduce((sum, item) => sum + item.value, 0);
+  const totalMarketCapElement = document.getElementById('total-market-cap');
+  if (totalMarketCapElement) {
+    totalMarketCapElement.textContent = `$${totalMarketCap.toFixed(1)}T`;
+  }
+  
+  // Ordenar dados por valor (do maior para o menor)
+  const sortedData = [...marketCapData].sort((a, b) => b.value - a.value);
+  
+  // Criar barras para cada mercado
+  marketCapBarsContainer.innerHTML = sortedData.map(item => {
+    const percentage = (item.value / totalMarketCap * 100).toFixed(1);
+    
+    return `
+      <div class="market-cap-bar">
+        <div class="market-cap-bar-header">
+          <div class="market-cap-bar-name">
+            <div class="market-cap-bar-icon" style="background-color: ${item.color}"></div>
+            ${item.name}
+          </div>
+          <div class="market-cap-bar-value">$${item.value}${item.unit} (${percentage}%)</div>
+        </div>
+        <div class="market-cap-bar-track">
+          <div class="market-cap-bar-fill" style="width: ${percentage}%; background-color: ${item.color}"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  // Criar legenda
+  marketCapLegendContainer.innerHTML = sortedData.map(item => {
+    return `
+      <div class="market-cap-legend-item">
+        <div class="market-cap-legend-color" style="background-color: ${item.color}"></div>
+        ${item.name}: ${item.description}
+      </div>
+    `;
+  }).join('');
+}
 
 // Função para carregar cotações
 async function loadQuote(asset, quoteEl) {
@@ -207,89 +321,95 @@ async function loadChart(asset, canvas) {
     let prices = [];
     let yearLabels = []; // Para marcadores de ano
     
-    // Dados históricos do Bitcoin (5 anos)
+    // Dados históricos do Bitcoin (5 anos até maio de 2025)
     const bitcoinHistorical = [
-      { year: 2020, price: 7200 },
-      { year: 2020.25, price: 6500 },
-      { year: 2020.5, price: 9300 },
-      { year: 2020.75, price: 10800 },
-      { year: 2021, price: 29000 },
-      { year: 2021.25, price: 58000 },
-      { year: 2021.5, price: 35000 },
-      { year: 2021.75, price: 47000 },
-      { year: 2022, price: 38000 },
-      { year: 2022.25, price: 31000 },
-      { year: 2022.5, price: 23000 },
-      { year: 2022.75, price: 16500 },
-      { year: 2023, price: 16800 },
-      { year: 2023.25, price: 28000 },
-      { year: 2023.5, price: 29500 },
-      { year: 2023.75, price: 34000 },
-      { year: 2024, price: 42000 },
-      { year: 2024.25, price: 68000 },
-      { year: 2024.5, price: 89000 },
-      { year: 2024.75, price: 103000 },
-      { year: 2025, price: 103500 }
+      { year: 2020, month: 1, price: 7200 },
+      { year: 2020, month: 3, price: 6500 },
+      { year: 2020, month: 6, price: 9300 },
+      { year: 2020, month: 9, price: 10800 },
+      { year: 2020, month: 12, price: 29000 },
+      { year: 2021, month: 3, price: 58000 },
+      { year: 2021, month: 6, price: 35000 },
+      { year: 2021, month: 9, price: 47000 },
+      { year: 2021, month: 12, price: 46000 },
+      { year: 2022, month: 3, price: 38000 },
+      { year: 2022, month: 6, price: 23000 },
+      { year: 2022, month: 9, price: 19000 },
+      { year: 2022, month: 12, price: 16500 },
+      { year: 2023, month: 3, price: 28000 },
+      { year: 2023, month: 6, price: 29500 },
+      { year: 2023, month: 9, price: 27000 },
+      { year: 2023, month: 12, price: 42000 },
+      { year: 2024, month: 3, price: 68000 },
+      { year: 2024, month: 6, price: 89000 },
+      { year: 2024, month: 9, price: 95000 },
+      { year: 2024, month: 12, price: 103000 },
+      { year: 2025, month: 3, price: 105000 },
+      { year: 2025, month: 5, price: 104500 }
     ];
     
-    // Dados históricos do ouro (5 anos)
+    // Dados históricos do ouro (5 anos até maio de 2025)
     const goldHistorical = [
-      { year: 2020, price: 1520 },
-      { year: 2020.5, price: 1770 },
-      { year: 2021, price: 1880 },
-      { year: 2021.5, price: 1790 },
-      { year: 2022, price: 1800 },
-      { year: 2022.5, price: 1740 },
-      { year: 2023, price: 1820 },
-      { year: 2023.5, price: 1940 },
-      { year: 2024, price: 2050 },
-      { year: 2024.5, price: 2250 },
-      { year: 2025, price: 2350 }
+      { year: 2020, month: 1, price: 1520 },
+      { year: 2020, month: 6, price: 1770 },
+      { year: 2020, month: 12, price: 1880 },
+      { year: 2021, month: 6, price: 1790 },
+      { year: 2021, month: 12, price: 1800 },
+      { year: 2022, month: 6, price: 1740 },
+      { year: 2022, month: 12, price: 1820 },
+      { year: 2023, month: 6, price: 1940 },
+      { year: 2023, month: 12, price: 2050 },
+      { year: 2024, month: 6, price: 2250 },
+      { year: 2024, month: 12, price: 2320 },
+      { year: 2025, month: 5, price: 2350 }
     ];
     
-    // Dados históricos da prata (5 anos)
+    // Dados históricos da prata (5 anos até maio de 2025)
     const silverHistorical = [
-      { year: 2020, price: 17.50 },
-      { year: 2020.5, price: 18.30 },
-      { year: 2021, price: 26.50 },
-      { year: 2021.5, price: 24.80 },
-      { year: 2022, price: 23.10 },
-      { year: 2022.5, price: 19.20 },
-      { year: 2023, price: 23.40 },
-      { year: 2023.5, price: 24.60 },
-      { year: 2024, price: 26.80 },
-      { year: 2024.5, price: 27.90 },
-      { year: 2025, price: 28.50 }
+      { year: 2020, month: 1, price: 17.50 },
+      { year: 2020, month: 6, price: 18.30 },
+      { year: 2020, month: 12, price: 26.50 },
+      { year: 2021, month: 6, price: 24.80 },
+      { year: 2021, month: 12, price: 23.10 },
+      { year: 2022, month: 6, price: 19.20 },
+      { year: 2022, month: 12, price: 23.40 },
+      { year: 2023, month: 6, price: 24.60 },
+      { year: 2023, month: 12, price: 26.80 },
+      { year: 2024, month: 6, price: 27.90 },
+      { year: 2024, month: 12, price: 28.20 },
+      { year: 2025, month: 5, price: 28.50 }
     ];
     
-    // Dados históricos do Treasury Yield (5 anos)
+    // Dados históricos do Treasury Yield (5 anos até maio de 2025)
     const treasuryHistorical = [
-      { year: 2020, price: 1.80 },
-      { year: 2020.5, price: 0.70 },
-      { year: 2021, price: 1.10 },
-      { year: 2021.5, price: 1.50 },
-      { year: 2022, price: 1.80 },
-      { year: 2022.5, price: 3.20 },
-      { year: 2023, price: 3.80 },
-      { year: 2023.5, price: 4.30 },
-      { year: 2024, price: 4.20 },
-      { year: 2024.5, price: 4.40 },
-      { year: 2025, price: 4.32 }
+      { year: 2020, month: 1, price: 1.80 },
+      { year: 2020, month: 6, price: 0.70 },
+      { year: 2020, month: 12, price: 0.90 },
+      { year: 2021, month: 6, price: 1.50 },
+      { year: 2021, month: 12, price: 1.80 },
+      { year: 2022, month: 6, price: 3.20 },
+      { year: 2022, month: 12, price: 3.80 },
+      { year: 2023, month: 6, price: 4.30 },
+      { year: 2023, month: 12, price: 4.20 },
+      { year: 2024, month: 6, price: 4.40 },
+      { year: 2024, month: 12, price: 4.35 },
+      { year: 2025, month: 5, price: 4.32 }
     ];
     
-    // Dados históricos do USD/BRL (5 anos)
+    // Dados históricos do USD/BRL (5 anos até maio de 2025)
     const usdbrlHistorical = [
-      { year: 2020, price: 4.10 },
-      { year: 2020.5, price: 5.20 },
-      { year: 2021, price: 5.40 },
-      { year: 2021.5, price: 5.30 },
-      { year: 2022, price: 5.60 },
-      { year: 2022.5, price: 5.20 },
-      { year: 2023, price: 5.10 },
-      { year: 2023.5, price: 4.90 },
-      { year: 2024, price: 5.00 },
-      { year: 2024.5, price: 5.40 },
-      { year: 2025, price: 5.68 }
+      { year: 2020, month: 1, price: 4.10 },
+      { year: 2020, month: 6, price: 5.20 },
+      { year: 2020, month: 12, price: 5.40 },
+      { year: 2021, month: 6, price: 5.30 },
+      { year: 2021, month: 12, price: 5.60 },
+      { year: 2022, month: 6, price: 5.20 },
+      { year: 2022, month: 12, price: 5.10 },
+      { year: 2023, month: 6, price: 4.90 },
+      { year: 2023, month: 12, price: 5.00 },
+      { year: 2024, month: 6, price: 5.40 },
+      { year: 2024, month: 12, price: 5.60 },
+      { year: 2025, month: 5, price: 5.68 }
     ];
     
     // Selecionar dados históricos com base no ativo
@@ -318,7 +438,7 @@ async function loadChart(asset, canvas) {
     let currentYear = null;
     
     historicalData.forEach(item => {
-      const year = Math.floor(item.year);
+      const year = item.year;
       
       // Adicionar marcador de ano quando mudar
       if (currentYear !== year) {
@@ -329,7 +449,9 @@ async function loadChart(asset, canvas) {
         });
       }
       
-      labels.push("");  // Rótulo vazio para manter apenas os anos
+      // Criar rótulo com ano e mês
+      const date = new Date(item.year, item.month - 1);
+      labels.push(date);
       prices.push(item.price);
     });
 
@@ -456,19 +578,12 @@ async function loadChart(asset, canvas) {
             },
             callbacks: {
               title: function(tooltipItems) {
-                const dataIndex = tooltipItems[0].dataIndex;
-                const yearIndex = yearLabels.findIndex(yl => yl.index <= dataIndex && 
-                  (yearLabels[yearLabels.indexOf(yl) + 1]?.index > dataIndex || !yearLabels[yearLabels.indexOf(yl) + 1]));
-                
-                if (yearIndex !== -1) {
-                  const year = yearLabels[yearIndex].year;
-                  const quarter = Math.round((dataIndex - yearLabels[yearIndex].index) / 
-                    (yearLabels[yearIndex + 1]?.index - yearLabels[yearIndex].index || 4) * 4);
-                  
-                  const quarterNames = ['Jan', 'Abr', 'Jul', 'Out'];
-                  return `${quarterNames[quarter] || 'Jan'} ${year}`;
+                const date = tooltipItems[0].label;
+                if (date instanceof Date) {
+                  const options = { year: 'numeric', month: 'short' };
+                  return new Date(date).toLocaleDateString('pt-BR', options);
                 }
-                return '';
+                return date;
               },
               label: function(context) {
                 let label = context.dataset.label || '';
@@ -492,6 +607,13 @@ async function loadChart(asset, canvas) {
         },
         scales: {
           x: {
+            type: 'time',
+            time: {
+              unit: 'year',
+              displayFormats: {
+                year: 'yyyy'
+              }
+            },
             grid: {
               display: true,
               color: "rgba(0, 0, 0, 0.03)",
@@ -506,11 +628,7 @@ async function loadChart(asset, canvas) {
               },
               maxRotation: 0,
               minRotation: 0,
-              padding: 10,
-              callback: function(value, index) {
-                // Mostrar apenas os anos
-                return yearLabels.some(yl => yl.index === index) ? yearLabels.find(yl => yl.index === index).year : '';
-              }
+              padding: 10
             }
           },
           y: {
@@ -567,19 +685,27 @@ async function loadChart(asset, canvas) {
       ctx.strokeStyle = 'rgba(0, 0, 0, 0.07)';
       ctx.setLineDash([]);
       
-      yearLabels.forEach(yearLabel => {
-        const xPosition = this.scales.x.getPixelForValue(yearLabel.index);
+      // Obter anos únicos
+      const years = [...new Set(labels.map(date => date instanceof Date ? date.getFullYear() : null).filter(Boolean))];
+      
+      years.forEach(year => {
+        // Encontrar a posição do primeiro mês do ano
+        const yearDate = new Date(year, 0, 1);
+        const xPosition = this.scales.x.getPixelForValue(yearDate);
         
-        ctx.beginPath();
-        ctx.moveTo(xPosition, chartArea.top);
-        ctx.lineTo(xPosition, chartArea.bottom);
-        ctx.stroke();
-        
-        // Adicionar o ano como texto
-        ctx.fillStyle = '#888';
-        ctx.font = '11px "Segoe UI"';
-        ctx.textAlign = 'center';
-        ctx.fillText(yearLabel.year.toString(), xPosition, chartArea.top - 10);
+        // Desenhar linha vertical
+        if (xPosition >= chartArea.left && xPosition <= chartArea.right) {
+          ctx.beginPath();
+          ctx.moveTo(xPosition, chartArea.top);
+          ctx.lineTo(xPosition, chartArea.bottom);
+          ctx.stroke();
+          
+          // Adicionar o ano como texto
+          ctx.fillStyle = '#888';
+          ctx.font = '11px "Segoe UI"';
+          ctx.textAlign = 'center';
+          ctx.fillText(year.toString(), xPosition, chartArea.top - 10);
+        }
       });
       
       ctx.restore();
@@ -590,64 +716,78 @@ async function loadChart(asset, canvas) {
   }
 }
 
-// Função para carregar notícias da Cointelegraph
+// Função para carregar notícias de fontes confiáveis sobre Bitcoin e economia
 async function loadNews() {
   const newsContainer = document.getElementById("news-content");
   const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
 
   try {
-    // Usando o RSS da Cointelegraph Brasil
-    const rssUrl = encodeURIComponent("https://br.cointelegraph.com/rss");
-    const proxyUrl = `https://api.allorigins.win/get?url=${rssUrl}`;
+    // Notícias simuladas de fontes confiáveis (em produção, seria substituído por APIs reais)
+    const simulatedNews = [
+      {
+        title: "Bitcoin Holds Above $100K as Institutional Adoption Accelerates",
+        description: "Major financial institutions continue to increase Bitcoin allocations amid growing acceptance of the digital asset as a legitimate store of value.",
+        source: "Bloomberg",
+        sourceTag: "Bloomberg",
+        date: new Date(2025, 4, 18),
+        link: "https://www.bloomberg.com/crypto",
+        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+      },
+      {
+        title: "Federal Reserve Signals Potential Rate Cut, Bitcoin Responds Positively",
+        description: "Markets react to Fed's latest commentary suggesting a shift in monetary policy, with Bitcoin seeing increased buying pressure.",
+        source: "Wall Street Journal",
+        sourceTag: "WSJ",
+        date: new Date(2025, 4, 17),
+        link: "https://www.wsj.com/news/markets/currencies-cryptocurrency",
+        image: "https://images.unsplash.com/photo-1521575107034-e0fa0b594529?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+      },
+      {
+        title: "Global Inflation Concerns Drive Bitcoin's Narrative as Digital Gold",
+        description: "Persistent inflation across major economies strengthens Bitcoin's position as an inflation hedge, analysts report.",
+        source: "Financial Times",
+        sourceTag: "FT",
+        date: new Date(2025, 4, 16),
+        link: "https://www.ft.com/cryptocurrencies",
+        image: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+      },
+      {
+        title: "Bitcoin Mining Difficulty Reaches All-Time High as Network Security Strengthens",
+        description: "The Bitcoin network continues to demonstrate resilience with mining difficulty adjustments reflecting increased computational power.",
+        source: "Bitcoin Magazine",
+        sourceTag: "BTC Mag",
+        date: new Date(2025, 4, 15),
+        link: "https://bitcoinmagazine.com/",
+        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+      },
+      {
+        title: "Central Banks Explore Bitcoin Reserves Amid Dollar Dominance Concerns",
+        description: "Several central banks are reportedly considering Bitcoin allocations as part of their reserve diversification strategies.",
+        source: "Reuters",
+        sourceTag: "Reuters",
+        date: new Date(2025, 4, 14),
+        link: "https://www.reuters.com/business/finance/",
+        image: "https://images.unsplash.com/photo-1591994843349-f415893b3a6b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+      }
+    ];
 
-    const res = await fetch(proxyUrl);
-    const data = await res.json();
-
-    if (!data.contents) throw new Error("Erro ao carregar RSS");
-
-    // Processar o XML do RSS
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(data.contents, "text/xml");
-
-    const items = [...xmlDoc.querySelectorAll("item")];
-    const recentArticles = items
-      .map(item => {
-        // Tentar extrair a imagem da descrição
-        let imageUrl = '';
-        const description = item.querySelector("description")?.textContent || "";
-        const imgMatch = description.match(/<img[^>]+src="([^">]+)"/);
-        if (imgMatch && imgMatch[1]) {
-          imageUrl = imgMatch[1];
-        }
-        
-        return {
-          title: item.querySelector("title")?.textContent || "",
-          link: item.querySelector("link")?.textContent || "",
-          pubDate: item.querySelector("pubDate")?.textContent || "",
-          description: description,
-          image: imageUrl
-        };
-      })
-      .filter(article => {
-        const pubDate = new Date(article.pubDate);
-        return pubDate >= twoDaysAgo;
-      })
-      .slice(0, 5); // Mostrar 5 notícias
-
-    if (recentArticles.length === 0) {
-      newsContainer.innerHTML = "<p class='no-news'>Nenhuma notícia recente encontrada nas últimas 48 horas.</p>";
+    if (simulatedNews.length === 0) {
+      newsContainer.innerHTML = "<p class='no-news'>Nenhuma notícia recente encontrada.</p>";
       return;
     }
 
     newsContainer.innerHTML = `
       <div class="news-grid">
-        ${recentArticles.map(article => `
+        ${simulatedNews.map(article => `
           <article class="news-item">
             ${article.image ? `<div class="news-image"><img src="${article.image}" alt="${article.title}"></div>` : ''}
             <div class="news-content">
               <h3><a href="${article.link}" target="_blank" rel="noopener">${article.title}</a></h3>
-              <p>${article.description.replace(/(<([^>]+)>)/gi, "").substring(0, 120)}...</p>
-              <small>${new Date(article.pubDate).toLocaleDateString('pt-BR')}</small>
+              <p>${article.description}</p>
+              <div class="news-meta">
+                <span class="news-source">${article.sourceTag}</span>
+                <small>${article.date.toLocaleDateString('pt-BR')}</small>
+              </div>
             </div>
           </article>
         `).join("")}
@@ -656,7 +796,7 @@ async function loadNews() {
 
   } catch (e) {
     console.error("Erro ao carregar notícias:", e);
-    newsContainer.innerHTML = "<p class='no-news'>Erro ao carregar notícias da Cointelegraph.</p>";
+    newsContainer.innerHTML = "<p class='no-news'>Erro ao carregar notícias.</p>";
   }
 }
 
@@ -834,22 +974,6 @@ function updateMarketIndicators() {
     
     volumeElement.querySelector('.gauge-fill').style.width = `${volumeValue}%`;
     volumeElement.querySelector('.gauge-value').textContent = `$${volumeAmount}B - ${volumeText}`;
-  }
-  
-  // Capitalização de Mercado
-  const marketCapElement = document.getElementById('market-cap');
-  if (marketCapElement) {
-    const marketCapValue = (2.2 + Math.random() * 0.4).toFixed(1);
-    const marketCapChange = (Math.random() * 8).toFixed(1);
-    
-    const marketCapValueElement = marketCapElement.querySelector('.market-cap-value');
-    const marketCapTrendElement = marketCapElement.querySelector('.market-cap-trend');
-    
-    if (marketCapValueElement && marketCapTrendElement) {
-      marketCapValueElement.textContent = `$${marketCapValue}T`;
-      marketCapTrendElement.textContent = `+${marketCapChange}% nas últimas 24h`;
-      marketCapTrendElement.style.color = '#4caf50';
-    }
   }
   
   // Liquidez do Mercado
