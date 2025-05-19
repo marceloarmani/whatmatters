@@ -137,7 +137,45 @@ const newsSources = [
 
 // Inicialização dos elementos da página
 document.addEventListener('DOMContentLoaded', function() {
+  // Inicializar os gráficos e cotações
+  initializeQuotesAndCharts();
+  
+  // Inicializar comparativo de capitalização de mercado
+  initMarketCapComparison();
+  
+  // Iniciar carregamento de notícias
+  loadNews();
+  
+  // Inicializar calendário econômico
+  initEconomicCalendar();
+
+  // Configurar modo escuro
+  setupDarkModeToggle();
+
+  // Configurar relógio
+  setupClock();
+  
+  // Configurar citação de Satoshi
+  setupSatoshiQuote();
+  
+  // Configurar indicadores de mercado
+  updateMarketIndicators();
+  
+  // Configurar botão de fontes
+  setupSourcesToggle();
+
+  // Atualizar cotações e indicadores a cada 5 minutos
+  setInterval(() => {
+    updateAllQuotes();
+    updateMarketIndicators();
+  }, 300000);
+});
+
+// Inicializar cotações e gráficos
+function initializeQuotesAndCharts() {
   const quotesContainer = document.getElementById("quotes");
+  if (!quotesContainer) return;
+  
   quotesContainer.innerHTML = ""; // Limpa o container antes de adicionar
 
   // Criar elementos para cada ativo
@@ -154,6 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
     chartContainer.style.display = "none";
 
     const canvas = document.createElement("canvas");
+    canvas.id = `chart-${asset.id}`;
     chartContainer.appendChild(canvas);
 
     wrapper.appendChild(quote);
@@ -184,44 +223,36 @@ document.addEventListener('DOMContentLoaded', function() {
     // Carregar cotação imediatamente
     loadQuote(asset, quote);
   });
+}
 
-  // Inicializar comparativo de capitalização de mercado
-  initMarketCapComparison();
-  
-  // Iniciar carregamento de notícias
-  loadNews();
-  
-  // Inicializar calendário econômico
-  initEconomicCalendar();
-
-  // Configurar modo escuro
-  setupDarkModeToggle();
-
-  // Configurar relógio
-  setupClock();
-  
-  // Configurar citação de Satoshi
-  setupSatoshiQuote();
-  
-  // Configurar indicadores de mercado
-  updateMarketIndicators();
-
-  // Atualizar cotações e indicadores a cada 5 minutos
-  setInterval(() => {
-    const quoteElements = document.querySelectorAll('.quote');
-    assets.forEach((asset, index) => {
+// Atualizar todas as cotações
+function updateAllQuotes() {
+  const quoteElements = document.querySelectorAll('.quote');
+  assets.forEach((asset, index) => {
+    if (index < quoteElements.length) {
       loadQuote(asset, quoteElements[index]);
+    }
+  });
+}
+
+// Configurar botão de fontes
+function setupSourcesToggle() {
+  const sourcesToggle = document.getElementById('sources-toggle');
+  const sourcesSection = document.getElementById('market-cap-sources');
+  
+  if (sourcesToggle && sourcesSection) {
+    sourcesToggle.addEventListener('click', () => {
+      sourcesSection.classList.toggle('visible');
+      sourcesToggle.textContent = sourcesSection.classList.contains('visible') ? 'Ocultar fontes' : 'Mostrar fontes';
     });
-    updateMarketIndicators();
-  }, 300000);
-});
+  }
+}
 
 // Inicializar comparativo de capitalização de mercado
 function initMarketCapComparison() {
   const marketCapBarsContainer = document.querySelector('.market-cap-bars');
-  const marketCapLegendContainer = document.querySelector('.market-cap-legend');
   
-  if (!marketCapBarsContainer || !marketCapLegendContainer) return;
+  if (!marketCapBarsContainer) return;
   
   // Calcular o total da capitalização de mercado
   const totalMarketCap = marketCapData.reduce((sum, item) => sum + item.value, 0);
@@ -249,16 +280,6 @@ function initMarketCapComparison() {
         <div class="market-cap-bar-track">
           <div class="market-cap-bar-fill" style="width: ${percentage}%; background-color: ${item.color}"></div>
         </div>
-      </div>
-    `;
-  }).join('');
-  
-  // Criar legenda
-  marketCapLegendContainer.innerHTML = sortedData.map(item => {
-    return `
-      <div class="market-cap-legend-item">
-        <div class="market-cap-legend-color" style="background-color: ${item.color}"></div>
-        ${item.name}: ${item.description}
       </div>
     `;
   }).join('');
@@ -320,9 +341,6 @@ async function loadQuote(asset, quoteEl) {
 // Função para carregar e renderizar gráficos
 function loadChart(asset, canvas) {
   try {
-    let labels = [];
-    let prices = [];
-    
     // Dados históricos do Bitcoin (5 anos até maio de 2025)
     const bitcoinHistorical = [
       { year: 2020, month: 1, price: 7200 },
@@ -436,7 +454,10 @@ function loadChart(asset, canvas) {
         historicalData = [];
     }
     
-    // Processar dados históricos
+    // Processar dados para o gráfico
+    const labels = [];
+    const prices = [];
+    
     historicalData.forEach(item => {
       // Criar data para cada ponto
       const date = new Date(item.year, item.month - 1);
@@ -512,7 +533,7 @@ function loadChart(asset, canvas) {
     }
 
     // Criar gráfico com Chart.js
-    const chart = new Chart(ctx, {
+    const chartConfig = {
       type: "line",
       data: {
         labels: labels,
@@ -657,7 +678,10 @@ function loadChart(asset, canvas) {
           easing: 'easeOutQuart'
         }
       }
-    });
+    };
+    
+    // Criar o gráfico
+    const chart = new Chart(ctx, chartConfig);
     
     // Adicionar linhas verticais para os anos
     const chartInstance = chart;
@@ -718,7 +742,7 @@ async function loadNews() {
         description: "Major financial institutions continue to increase Bitcoin allocations amid growing acceptance of the digital asset as a legitimate store of value.",
         source: "Bloomberg",
         sourceTag: "Bloomberg",
-        date: new Date(2025, 4, 18),
+        date: new Date(2025, 4, 18, 14, 30),
         link: "https://www.bloomberg.com/crypto",
         image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
@@ -727,7 +751,7 @@ async function loadNews() {
         description: "Markets react to Fed's latest commentary suggesting a shift in monetary policy, with Bitcoin seeing increased buying pressure.",
         source: "Wall Street Journal",
         sourceTag: "WSJ",
-        date: new Date(2025, 4, 17),
+        date: new Date(2025, 4, 17, 10, 15),
         link: "https://www.wsj.com/news/markets/currencies-cryptocurrency",
         image: "https://images.unsplash.com/photo-1521575107034-e0fa0b594529?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
@@ -736,7 +760,7 @@ async function loadNews() {
         description: "Persistent inflation across major economies strengthens Bitcoin's position as an inflation hedge, analysts report.",
         source: "Financial Times",
         sourceTag: "FT",
-        date: new Date(2025, 4, 16),
+        date: new Date(2025, 4, 16, 16, 45),
         link: "https://www.ft.com/cryptocurrencies",
         image: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
@@ -745,7 +769,7 @@ async function loadNews() {
         description: "The Bitcoin network continues to demonstrate resilience with mining difficulty adjustments reflecting increased computational power.",
         source: "Bitcoin Magazine",
         sourceTag: "BTC Mag",
-        date: new Date(2025, 4, 15),
+        date: new Date(2025, 4, 15, 9, 20),
         link: "https://bitcoinmagazine.com/",
         image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
@@ -754,7 +778,7 @@ async function loadNews() {
         description: "Several central banks are reportedly considering Bitcoin allocations as part of their reserve diversification strategies.",
         source: "Reuters",
         sourceTag: "Reuters",
-        date: new Date(2025, 4, 14),
+        date: new Date(2025, 4, 14, 11, 10),
         link: "https://www.reuters.com/business/finance/",
         image: "https://images.unsplash.com/photo-1591994843349-f415893b3a6b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
@@ -763,7 +787,7 @@ async function loadNews() {
         description: "New data shows Bitcoin mining is increasingly powered by renewable energy, addressing one of the main criticisms of the cryptocurrency.",
         source: "The Economist",
         sourceTag: "Economist",
-        date: new Date(2025, 4, 13),
+        date: new Date(2025, 4, 13, 15, 25),
         link: "https://www.economist.com/finance-and-economics/",
         image: "https://images.unsplash.com/photo-1550565118-3a14e8d0386f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       }
@@ -776,19 +800,25 @@ async function loadNews() {
 
     newsContainer.innerHTML = `
       <div class="news-grid">
-        ${simulatedNews.map(article => `
-          <article class="news-item">
-            ${article.image ? `<div class="news-image"><img src="${article.image}" alt="${article.title}"></div>` : ''}
-            <div class="news-content">
-              <h3><a href="${article.link}" target="_blank" rel="noopener">${article.title}</a></h3>
-              <p>${article.description}</p>
-              <div class="news-meta">
-                <span class="news-source">${article.sourceTag}</span>
-                <small>${article.date.toLocaleDateString('pt-BR')}</small>
+        ${simulatedNews.map(article => {
+          // Formatar data e hora
+          const formattedDate = article.date.toLocaleDateString('pt-BR');
+          const formattedTime = article.date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+          
+          return `
+            <article class="news-item">
+              ${article.image ? `<div class="news-image"><img src="${article.image}" alt="${article.title}"></div>` : ''}
+              <div class="news-content">
+                <h3><a href="${article.link}" target="_blank" rel="noopener">${article.title}</a></h3>
+                <p>${article.description}</p>
+                <div class="news-meta">
+                  <span class="news-source">${article.sourceTag}</span>
+                  <span class="news-datetime">${formattedDate} às ${formattedTime}</span>
+                </div>
               </div>
-            </div>
-          </article>
-        `).join("")}
+            </article>
+          `;
+        }).join("")}
       </div>
     `;
 
