@@ -59,6 +59,58 @@ const marketCapData = [
   }
 ];
 
+// Métricas de escassez
+const scarcityMetrics = [
+  {
+    title: "Stock-to-Flow (BTC)",
+    value: "56.2",
+    description: "Razão entre o estoque existente e a produção anual de Bitcoin"
+  },
+  {
+    title: "Halving Countdown",
+    value: "348 dias",
+    description: "Tempo restante até o próximo halving do Bitcoin"
+  },
+  {
+    title: "Oferta Circulante (BTC)",
+    value: "19.4M / 21M",
+    description: "Bitcoins em circulação vs. oferta máxima"
+  },
+  {
+    title: "Inflação Anual (BTC)",
+    value: "1.78%",
+    description: "Taxa de inflação anual do Bitcoin"
+  }
+];
+
+// Métricas on-chain
+const onchainMetrics = [
+  {
+    title: "Hash Rate",
+    value: "512 EH/s",
+    change: "+8.3%",
+    description: "Poder computacional total da rede Bitcoin"
+  },
+  {
+    title: "Dificuldade",
+    value: "78.3T",
+    change: "+5.2%",
+    description: "Dificuldade atual de mineração"
+  },
+  {
+    title: "Taxas Médias",
+    value: "12.5 sat/vB",
+    change: "-3.1%",
+    description: "Taxa média de transação na rede Bitcoin"
+  },
+  {
+    title: "Mempool",
+    value: "18.3 MB",
+    change: "+12.4%",
+    description: "Tamanho atual do mempool"
+  }
+];
+
 // Citações de Satoshi Nakamoto
 const satoshiQuotes = [
   "O problema raiz com a moeda convencional é toda a confiança que é necessária para fazê-la funcionar. O banco central deve ser confiável para não desvalorizar a moeda, mas a história das moedas fiduciárias está cheia de quebras dessa confiança.",
@@ -132,7 +184,8 @@ const newsSources = [
   { name: "Wall Street Journal", url: "https://www.wsj.com/news/markets/currencies-cryptocurrency", tag: "WSJ" },
   { name: "Reuters", url: "https://www.reuters.com/business/finance/", tag: "Reuters" },
   { name: "The Economist", url: "https://www.economist.com/finance-and-economics/", tag: "Economist" },
-  { name: "Bitcoin Magazine", url: "https://bitcoinmagazine.com/", tag: "BTC Mag" }
+  { name: "Bitcoin Magazine", url: "https://bitcoinmagazine.com/", tag: "BTC Mag" },
+  { name: "Once in a Species", url: "https://www.onceinaspecies.com/", tag: "OnceinaSpecies" }
 ];
 
 // Dados históricos para os gráficos
@@ -227,6 +280,12 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Inicializar comparativo de capitalização de mercado
   initMarketCapComparison();
+  
+  // Inicializar métricas de escassez
+  initScarcityMetrics();
+  
+  // Inicializar métricas on-chain
+  initOnchainMetrics();
   
   // Iniciar carregamento de notícias
   loadNews();
@@ -335,11 +394,11 @@ function setupSourcesToggle() {
   }
 }
 
-// Inicializar comparativo de capitalização de mercado
+// Inicializar comparativo de capitalização de mercado com visualização em quadrados
 function initMarketCapComparison() {
-  const marketCapBarsContainer = document.querySelector('.market-cap-bars');
+  const marketCapContainer = document.getElementById('market-cap-treemap');
   
-  if (!marketCapBarsContainer) return;
+  if (!marketCapContainer) return;
   
   // Calcular o total da capitalização de mercado
   const totalMarketCap = marketCapData.reduce((sum, item) => sum + item.value, 0);
@@ -351,22 +410,143 @@ function initMarketCapComparison() {
   // Ordenar dados por valor (do maior para o menor)
   const sortedData = [...marketCapData].sort((a, b) => b.value - a.value);
   
-  // Criar barras para cada mercado
-  marketCapBarsContainer.innerHTML = sortedData.map(item => {
-    const percentage = (item.value / totalMarketCap * 100).toFixed(1);
+  // Calcular o tamanho total disponível
+  const containerWidth = marketCapContainer.clientWidth || 800;
+  const containerHeight = 400; // Altura fixa para o treemap
+  const containerArea = containerWidth * containerHeight;
+  
+  // Criar quadrados para cada mercado
+  let html = '';
+  
+  // Calcular o tamanho de cada quadrado baseado na proporção do valor
+  sortedData.forEach(item => {
+    const percentage = item.value / totalMarketCap;
+    const boxArea = containerArea * percentage;
     
+    // Calcular dimensões aproximadas para o quadrado
+    // Tentamos manter uma proporção razoável entre largura e altura
+    const boxWidth = Math.sqrt(boxArea * (containerWidth / containerHeight));
+    const boxHeight = boxArea / boxWidth;
+    
+    html += `
+      <div class="market-cap-box" style="width: ${boxWidth}px; height: ${boxHeight}px; background-color: ${item.color};">
+        <div class="market-cap-box-content">
+          <div class="market-cap-box-name">${item.name}</div>
+          <div class="market-cap-box-value">$${item.value}${item.unit} (${(percentage * 100).toFixed(1)}%)</div>
+        </div>
+      </div>
+    `;
+  });
+  
+  marketCapContainer.innerHTML = html;
+  
+  // Ajustar layout usando algoritmo de treemap
+  adjustTreemapLayout();
+}
+
+// Função para ajustar o layout do treemap
+function adjustTreemapLayout() {
+  const container = document.getElementById('market-cap-treemap');
+  if (!container) return;
+  
+  // Implementação simplificada do algoritmo de treemap
+  // Em uma implementação real, usaríamos uma biblioteca como d3.js
+  
+  // Obter todos os boxes
+  const boxes = container.querySelectorAll('.market-cap-box');
+  
+  // Calcular área total
+  const containerWidth = container.clientWidth;
+  const containerHeight = 400; // Altura fixa
+  
+  // Posicionar os boxes usando um layout de grade simples
+  let currentRow = 0;
+  let currentCol = 0;
+  let rowHeight = 0;
+  
+  boxes.forEach((box, index) => {
+    const boxWidth = parseInt(box.style.width);
+    const boxHeight = parseInt(box.style.height);
+    
+    // Se não couber na linha atual, começar nova linha
+    if (currentCol + boxWidth > containerWidth) {
+      currentCol = 0;
+      currentRow += rowHeight;
+      rowHeight = 0;
+    }
+    
+    // Posicionar o box
+    box.style.position = 'absolute';
+    box.style.left = `${currentCol}px`;
+    box.style.top = `${currentRow}px`;
+    
+    // Atualizar posição para o próximo box
+    currentCol += boxWidth;
+    rowHeight = Math.max(rowHeight, boxHeight);
+    
+    // Adicionar texto dentro do box
+    const content = box.querySelector('.market-cap-box-content');
+    
+    // Ajustar visibilidade do conteúdo baseado no tamanho do box
+    if (boxWidth < 60 || boxHeight < 60) {
+      content.style.opacity = '0';
+      
+      // Adicionar tooltip para boxes pequenos
+      box.title = content.textContent.trim();
+      
+      // Mostrar conteúdo ao passar o mouse
+      box.addEventListener('mouseenter', () => {
+        content.style.opacity = '1';
+      });
+      
+      box.addEventListener('mouseleave', () => {
+        content.style.opacity = '0';
+      });
+    } else {
+      content.style.opacity = '0';
+      
+      // Mostrar conteúdo ao passar o mouse
+      box.addEventListener('mouseenter', () => {
+        content.style.opacity = '1';
+      });
+      
+      box.addEventListener('mouseleave', () => {
+        content.style.opacity = '0';
+      });
+    }
+  });
+  
+  // Ajustar altura do container
+  container.style.height = `${currentRow + rowHeight}px`;
+}
+
+// Inicializar métricas de escassez
+function initScarcityMetrics() {
+  const scarcityContainer = document.querySelector('.scarcity-metrics-grid');
+  if (!scarcityContainer) return;
+  
+  scarcityContainer.innerHTML = scarcityMetrics.map(metric => `
+    <div class="scarcity-metric">
+      <div class="scarcity-metric-title">${metric.title}</div>
+      <div class="scarcity-metric-value">${metric.value}</div>
+      <div class="scarcity-metric-description">${metric.description}</div>
+    </div>
+  `).join('');
+}
+
+// Inicializar métricas on-chain
+function initOnchainMetrics() {
+  const onchainContainer = document.querySelector('.onchain-metrics-grid');
+  if (!onchainContainer) return;
+  
+  onchainContainer.innerHTML = onchainMetrics.map(metric => {
+    const isNegative = metric.change.startsWith('-');
     return `
-      <div class="market-cap-bar">
-        <div class="market-cap-bar-header">
-          <div class="market-cap-bar-name">
-            <div class="market-cap-bar-icon" style="background-color: ${item.color}"></div>
-            ${item.name}
-          </div>
-          <div class="market-cap-bar-value">$${item.value}${item.unit} (${percentage}%)</div>
-        </div>
-        <div class="market-cap-bar-track">
-          <div class="market-cap-bar-fill" style="width: ${percentage}%; background-color: ${item.color}"></div>
-        </div>
+      <div class="onchain-metric">
+        <div class="onchain-metric-title">${metric.title}</div>
+        <div class="onchain-metric-value">${metric.value}</div>
+        <div class="onchain-metric-change ${isNegative ? 'negative' : ''}">${metric.change}</div>
+        <div class="onchain-metric-description">${metric.description}</div>
       </div>
     `;
   }).join('');
@@ -478,6 +658,11 @@ function createChart(asset, canvas) {
     
     // Criar gradiente para o preenchimento
     const ctx = canvas.getContext('2d');
+    
+    // Destruir gráfico existente se houver
+    if (window.chartInstances && window.chartInstances[canvas.id]) {
+      window.chartInstances[canvas.id].destroy();
+    }
     
     // Criar gráfico com Chart.js
     const chartConfig = {
@@ -627,8 +812,9 @@ function createChart(asset, canvas) {
       }
     };
     
-    // Criar o gráfico
-    new Chart(ctx, chartConfig);
+    // Criar o gráfico e armazenar a instância
+    if (!window.chartInstances) window.chartInstances = {};
+    window.chartInstances[canvas.id] = new Chart(ctx, chartConfig);
     
   } catch (e) {
     console.error("Erro ao carregar gráfico:", e);
@@ -766,8 +952,7 @@ function initEconomicCalendar() {
     const eventDate = new Date(event.date);
     const formattedDate = eventDate.toLocaleDateString('pt-BR', { 
       day: 'numeric', 
-      month: 'short', 
-      year: 'numeric' 
+      month: 'short'
     });
     
     // Determinar quantos pontos ativos baseado no impacto
@@ -780,10 +965,9 @@ function initEconomicCalendar() {
     const dots = impactDots[event.impact] || [0, 0, 0];
     
     return `
-      <div class="event-card">
+      <div class="event-compact">
         <div class="event-date">${formattedDate}</div>
         <div class="event-title">${event.title}</div>
-        <div class="event-description">${event.description}</div>
         <div class="event-impact impact-${event.impact}">
           <span class="impact-label">Impacto:</span>
           <div class="impact-dots">
@@ -828,8 +1012,7 @@ function initEconomicCalendar() {
         const eventDate = new Date(event.date);
         const formattedDate = eventDate.toLocaleDateString('pt-BR', { 
           day: 'numeric', 
-          month: 'short', 
-          year: 'numeric' 
+          month: 'short'
         });
         
         const impactDots = {
@@ -841,10 +1024,9 @@ function initEconomicCalendar() {
         const dots = impactDots[event.impact] || [0, 0, 0];
         
         return `
-          <div class="event-card">
+          <div class="event-compact">
             <div class="event-date">${formattedDate}</div>
             <div class="event-title">${event.title}</div>
-            <div class="event-description">${event.description}</div>
             <div class="event-impact impact-${event.impact}">
               <span class="impact-label">Impacto:</span>
               <div class="impact-dots">
@@ -1026,3 +1208,10 @@ function setupSatoshiQuote() {
     }
   }, 60000); // Verificar a cada minuto
 }
+
+// Ajustar o layout quando a janela for redimensionada
+window.addEventListener('resize', () => {
+  if (document.getElementById('market-cap-treemap')) {
+    adjustTreemapLayout();
+  }
+});
