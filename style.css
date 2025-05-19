@@ -87,6 +87,131 @@ canvas {
   height: 100% !important;
 }
 
+/* Capitalização de Mercado Global */
+#market-cap-comparison {
+  background: #fff;
+  padding: 1.2rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+#market-cap-comparison h2 {
+  margin-bottom: 1.2rem;
+  font-family: 'Segoe UI', sans-serif;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 500;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+}
+
+.market-cap-container {
+  position: relative;
+}
+
+.market-cap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.market-cap-title {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.market-cap-total {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+#total-market-cap {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.market-cap-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.market-cap-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.market-cap-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.market-cap-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.market-cap-bar-name {
+  font-weight: 500;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.market-cap-bar-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.market-cap-bar-value {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.market-cap-bar-track {
+  height: 12px;
+  background: #eee;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.market-cap-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.market-cap-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.market-cap-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.market-cap-legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
 /* Painel de Sentimento de Mercado */
 #market-panel {
   background: #fff;
@@ -436,10 +561,27 @@ blockquote::after {
   flex: 1;
 }
 
+.news-source {
+  display: inline-block;
+  font-size: 0.75rem;
+  color: #fff;
+  background: #3498db;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  margin-right: 0.5rem;
+}
+
 .news-item small {
   color: #7f8c8d;
   font-size: 0.8rem;
   margin-top: auto;
+}
+
+.news-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
 }
 
 .no-news {
@@ -474,6 +616,7 @@ footer {
 
 .dark-mode .quote,
 .dark-mode .chart-container,
+.dark-mode #market-cap-comparison,
 .dark-mode #market-panel,
 .dark-mode #economic-calendar,
 .dark-mode #satoshi-quotes,
@@ -483,16 +626,20 @@ footer {
 }
 
 .dark-mode .quote strong,
+.dark-mode #market-cap-comparison h2,
 .dark-mode #market-panel h2,
 .dark-mode #economic-calendar h2,
 .dark-mode #satoshi-quotes h2,
 .dark-mode #news-summary h2,
 .dark-mode .market-cap-value,
 .dark-mode .calendar-title,
-.dark-mode .event-title {
+.dark-mode .event-title,
+.dark-mode .market-cap-bar-name,
+.dark-mode #total-market-cap {
   color: #e0e0e0;
 }
 
+.dark-mode #market-cap-comparison h2,
 .dark-mode #market-panel h2,
 .dark-mode #economic-calendar h2,
 .dark-mode #news-summary h2,
@@ -504,11 +651,15 @@ footer {
   color: #ccc;
 }
 
-.dark-mode .gauge {
+.dark-mode .gauge,
+.dark-mode .market-cap-bar-track {
   background: #444;
 }
 
-.dark-mode .gauge-value {
+.dark-mode .gauge-value,
+.dark-mode .market-cap-bar-value,
+.dark-mode .market-cap-total,
+.dark-mode .market-cap-legend-item {
   color: #aaa;
 }
 
@@ -520,7 +671,8 @@ footer {
   background: #444;
 }
 
-.dark-mode .event-card {
+.dark-mode .event-card,
+.dark-mode .news-item {
   background: #333;
 }
 
@@ -548,10 +700,6 @@ footer {
 
 .dark-mode .quote-author {
   color: #999;
-}
-
-.dark-mode .news-item {
-  background: #333;
 }
 
 .dark-mode .news-item h3 a {
@@ -627,6 +775,7 @@ footer {
     padding: 0.8rem;
   }
   
+  #market-cap-comparison,
   #market-panel,
   #economic-calendar,
   #satoshi-quotes,
@@ -634,11 +783,18 @@ footer {
     padding: 1rem;
   }
   
+  #market-cap-comparison h2,
   #market-panel h2,
   #economic-calendar h2,
   #satoshi-quotes h2,
   #news-summary h2 {
     font-size: 1.3rem;
+  }
+  
+  .market-cap-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
   
   .market-indicators,
