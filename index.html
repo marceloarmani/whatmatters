@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>What Matters</title>
+  <title>Bitcoin Black Hole</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
-    <h1>What Matters</h1>
-    <p>Principais Indicadores Econômicos e Ativos</p>
+    <h1>Bitcoin Black Hole</h1>
+    <p>Atraindo valor de diversas classes de ativos para uma reserva monetária superior</p>
   </header>
   <main>
     <div id="quotes"></div>
@@ -92,21 +92,18 @@
           <div class="market-cap-bars">
             <!-- Barras serão inseridas via JavaScript -->
           </div>
-          <div class="market-cap-legend">
-            <!-- Legenda será inserida via JavaScript -->
-          </div>
         </div>
-        <div class="market-cap-sources">
-          <p>Fontes: Visual Capitalist, Bank for International Settlements (BIS), McKinsey Global Institute, World Gold Council, Jesse Myers (oncelnaspecies.com)</p>
+        <button id="sources-toggle" class="sources-button">Mostrar fontes</button>
+        <div class="market-cap-sources" id="market-cap-sources">
+          <p>Fontes: Visual Capitalist, Bank for International Settlements (BIS), McKinsey Global Institute, World Gold Council, <a href="https://www.onceinaspecies.com/" target="_blank">Jesse Myers (onceinaspecies.com )</a></p>
         </div>
       </div>
     </section>
     
     <section id="economic-calendar">
-      <h2>Calendário Econômico</h2>
+      <h2>Próximos Eventos Importantes</h2>
       <div class="calendar-container">
         <div class="calendar-header">
-          <div class="calendar-title">Próximos Eventos Importantes</div>
           <div class="calendar-controls">
             <button id="prev-events" class="calendar-btn">&lt;</button>
             <button id="next-events" class="calendar-btn">&gt;</button>
@@ -136,7 +133,7 @@
     </section>
   </main>
   <footer>
-    <p>© 2025 What Matters</p>
+    <p>© 2025 Bitcoin Black Hole</p>
   </footer>
   <script src="script.js"></script>
 </body>
