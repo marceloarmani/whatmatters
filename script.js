@@ -297,55 +297,46 @@ document.addEventListener('DOMContentLoaded', function() {
 // Inicializar cotações e gráficos
 function initializeQuotesAndCharts() {
   const quotesContainer = document.getElementById("quotes");
-  if (!quotesContainer) return;
+  const chartArea = document.getElementById("chart-area");
+  const mainChartContainer = document.getElementById("main-chart-container");
+  const mainChart = document.getElementById("main-chart");
+  
+  if (!quotesContainer || !chartArea || !mainChartContainer || !mainChart) return;
   
   quotesContainer.innerHTML = ""; // Limpa o container antes de adicionar
 
   // Criar elementos para cada ativo
   assets.forEach(asset => {
-    const wrapper = document.createElement("div");
-    wrapper.className = "quote-wrapper";
-
     const quote = document.createElement("div");
     quote.className = "quote";
+    quote.dataset.asset = asset.id;
     quote.innerHTML = `<strong>${asset.name}:</strong> <em>Carregando...</em>`;
 
-    const chartContainer = document.createElement("div");
-    chartContainer.className = "chart-container";
-    chartContainer.style.display = "none";
-
-    const canvas = document.createElement("canvas");
-    canvas.id = `chart-${asset.id}`;
-    chartContainer.appendChild(canvas);
-
-    wrapper.appendChild(quote);
-    wrapper.appendChild(chartContainer);
-    quotesContainer.appendChild(wrapper);
+    quotesContainer.appendChild(quote);
 
     // Carregar cotação imediatamente
     loadQuote(asset, quote);
 
     // Clique no ativo para mostrar/ocultar gráfico
     quote.addEventListener("click", () => {
-      const isVisible = chartContainer.style.display !== "none";
-      
-      // Fechar todos os gráficos abertos
-      document.querySelectorAll('.chart-container').forEach(container => {
-        container.style.display = "none";
+      // Remover classe ativa de todos os quotes
+      document.querySelectorAll('.quote').forEach(q => {
+        q.classList.remove('active');
       });
       
-      // Se o gráfico não estava visível, abri-lo
-      if (!isVisible) {
-        chartContainer.style.display = "block";
-        
-        // Carregar dados do gráfico quando exibido
-        setTimeout(() => {
-          if (!chartContainer.dataset.loaded) {
-            createChart(asset, canvas);
-            chartContainer.dataset.loaded = "true";
-          }
-        }, 100);
-      }
+      // Adicionar classe ativa ao quote clicado
+      quote.classList.add('active');
+      
+      // Mostrar área do gráfico
+      chartArea.classList.add('visible');
+      
+      // Carregar dados do gráfico
+      createChart(asset, mainChart);
+      
+      // Rolar para o gráfico se necessário
+      setTimeout(() => {
+        chartArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
     });
   });
 }
@@ -353,9 +344,10 @@ function initializeQuotesAndCharts() {
 // Atualizar todas as cotações
 function updateAllQuotes() {
   const quoteElements = document.querySelectorAll('.quote');
-  assets.forEach((asset, index) => {
-    if (index < quoteElements.length) {
-      loadQuote(asset, quoteElements[index]);
+  assets.forEach(asset => {
+    const quoteEl = document.querySelector(`.quote[data-asset="${asset.id}"]`);
+    if (quoteEl) {
+      loadQuote(asset, quoteEl);
     }
   });
 }
@@ -392,48 +384,101 @@ function initMarketCapComparison() {
   // Limpar o container
   marketCapContainer.innerHTML = '';
   
-  // Criar visualização de treemap com quadrados proporcionais
-  // Usamos um algoritmo mais preciso para garantir que a área seja proporcional ao valor
+  // Implementação de treemap com quadrados estritamente proporcionais
+  // Usamos o algoritmo "squarified treemap" para criar quadrados mais proporcionais
   
-  // Calcular a área total disponível (aproximada)
+  // Função para calcular a área total disponível
   const containerWidth = marketCapContainer.clientWidth || 800;
-  const containerHeight = 400; // Altura aproximada
+  const containerHeight = 300; // Altura fixa para a seção compacta
+  
+  // Calcular áreas proporcionais ao valor
   const totalArea = containerWidth * containerHeight;
+  const areas = sortedData.map(item => ({
+    ...item,
+    area: (item.value / totalMarketCap) * totalArea
+  }));
   
-  // Calcular o fator de escala para que a soma das áreas seja proporcional ao total
-  const scaleFactor = totalArea / totalMarketCap;
+  // Função para criar os quadrados
+  function createSquares(items, x, y, width, height) {
+    if (items.length === 0) return;
+    
+    // Se só tiver um item, use todo o espaço disponível
+    if (items.length === 1) {
+      const item = items[0];
+      const box = document.createElement('div');
+      box.className = 'market-cap-box';
+      box.style.position = 'absolute';
+      box.style.left = `${x}px`;
+      box.style.top = `${y}px`;
+      box.style.width = `${width}px`;
+      box.style.height = `${height}px`;
+      box.style.backgroundColor = item.color;
+      
+      // Calcular a porcentagem do total
+      const percentage = (item.value / totalMarketCap * 100);
+      
+      box.innerHTML = `
+        <div class="market-cap-box-name">${item.name}</div>
+        <div class="market-cap-box-value">$${item.value}${item.unit}</div>
+        <div class="market-cap-box-percentage">${percentage.toFixed(1)}%</div>
+      `;
+      
+      marketCapContainer.appendChild(box);
+      return;
+    }
+    
+    // Decidir se dividir horizontalmente ou verticalmente
+    const isWide = width > height;
+    
+    // Calcular o total da área dos itens
+    const totalItemArea = items.reduce((sum, item) => sum + item.area, 0);
+    
+    // Calcular o ponto de divisão
+    let currentArea = 0;
+    let splitIndex = 0;
+    
+    for (let i = 0; i < items.length; i++) {
+      currentArea += items[i].area;
+      if (currentArea >= totalItemArea / 2) {
+        splitIndex = i;
+        break;
+      }
+    }
+    
+    // Dividir os itens em dois grupos
+    const group1 = items.slice(0, splitIndex + 1);
+    const group2 = items.slice(splitIndex + 1);
+    
+    // Calcular a área total de cada grupo
+    const group1Area = group1.reduce((sum, item) => sum + item.area, 0);
+    const group2Area = group2.reduce((sum, item) => sum + item.area, 0);
+    
+    // Calcular as dimensões de cada grupo
+    if (isWide) {
+      // Dividir horizontalmente
+      const group1Width = (group1Area / totalItemArea) * width;
+      const group2Width = width - group1Width;
+      
+      // Criar recursivamente os quadrados para cada grupo
+      createSquares(group1, x, y, group1Width, height);
+      createSquares(group2, x + group1Width, y, group2Width, height);
+    } else {
+      // Dividir verticalmente
+      const group1Height = (group1Area / totalItemArea) * height;
+      const group2Height = height - group1Height;
+      
+      // Criar recursivamente os quadrados para cada grupo
+      createSquares(group1, x, y, width, group1Height);
+      createSquares(group2, x, y + group1Height, width, group2Height);
+    }
+  }
   
-  // Criar quadrados para cada mercado
-  sortedData.forEach(item => {
-    // Calcular a área do quadrado baseada no valor
-    const area = item.value * scaleFactor;
-    
-    // Calcular o lado do quadrado (raiz quadrada da área)
-    const side = Math.sqrt(area);
-    
-    // Calcular quantas colunas e linhas o quadrado deve ocupar
-    // Baseado em uma grade de 12 colunas
-    const gridWidth = containerWidth / 12;
-    const colSpan = Math.max(1, Math.round(side / gridWidth));
-    const rowSpan = Math.max(1, Math.round(side / 50)); // 50px é uma altura aproximada de linha
-    
-    const box = document.createElement('div');
-    box.className = 'market-cap-box';
-    box.style.backgroundColor = item.color;
-    box.style.gridColumn = `span ${colSpan}`;
-    box.style.gridRow = `span ${rowSpan}`;
-    
-    // Calcular a porcentagem do total
-    const percentage = (item.value / totalMarketCap * 100);
-    
-    box.innerHTML = `
-      <div class="market-cap-box-name">${item.name}</div>
-      <div class="market-cap-box-value">$${item.value}${item.unit}</div>
-      <div class="market-cap-box-percentage">${percentage.toFixed(1)}%</div>
-    `;
-    
-    marketCapContainer.appendChild(box);
-  });
+  // Configurar o container para posicionamento absoluto
+  marketCapContainer.style.position = 'relative';
+  marketCapContainer.style.height = `${containerHeight}px`;
+  
+  // Criar os quadrados
+  createSquares(areas, 0, 0, containerWidth, containerHeight);
 }
 
 // Inicializar métricas de escassez
@@ -498,11 +543,20 @@ function initEconomicCalendar() {
       month: 'short'
     });
     
+    // Criar os indicadores de impacto (3 bolinhas)
+    const impactDots = `
+      <div class="event-impact">
+        <span class="impact-dot"></span>
+        <span class="impact-dot"></span>
+        <span class="impact-dot"></span>
+      </div>
+    `;
+    
     return `
       <div class="event-item ${event.impact}">
         <div class="event-date">
-          <span class="event-impact-indicator ${event.impact}"></span>
           ${formattedDate}
+          ${impactDots}
         </div>
         <div class="event-title">${event.title}</div>
         <div class="event-description">${event.description}</div>
@@ -545,11 +599,20 @@ function showEventsPage(page, events) {
       month: 'short'
     });
     
+    // Criar os indicadores de impacto (3 bolinhas)
+    const impactDots = `
+      <div class="event-impact">
+        <span class="impact-dot"></span>
+        <span class="impact-dot"></span>
+        <span class="impact-dot"></span>
+      </div>
+    `;
+    
     return `
       <div class="event-item ${event.impact}">
         <div class="event-date">
-          <span class="event-impact-indicator ${event.impact}"></span>
           ${formattedDate}
+          ${impactDots}
         </div>
         <div class="event-title">${event.title}</div>
         <div class="event-description">${event.description}</div>
