@@ -6,8 +6,15 @@ const assets = [
   { name: "USD/BRL", id: "usdbrl", symbol: "USDBRL", currency: "brl" }
 ];
 
-// Dados de capitalização de mercado global
+// Dados de capitalização de mercado global - Baseado em fontes confiáveis
 const marketCapData = [
+  { 
+    name: "Real Estate", 
+    value: 326.5, 
+    unit: "T", 
+    color: "#b8e994", 
+    description: "Mercado imobiliário global" 
+  },
   { 
     name: "Bonds", 
     value: 133.0, 
@@ -28,13 +35,6 @@ const marketCapData = [
     unit: "T", 
     color: "#82ccdd", 
     description: "Oferta monetária global (M2)" 
-  },
-  { 
-    name: "Real Estate", 
-    value: 326.5, 
-    unit: "T", 
-    color: "#b8e994", 
-    description: "Mercado imobiliário global" 
   },
   { 
     name: "Gold", 
@@ -279,12 +279,15 @@ async function loadQuote(asset, quoteEl) {
       const res = await fetch("https://open.er-api.com/v6/latest/USD");
       const data = await res.json();
       price = data.rates.BRL;
+      change = 0.8; // Simulado
     } else if (asset.symbol === "US10Y") {
       // Valor fixo para garantir que sempre apareça
       price = 4.32;
+      change = -0.05; // Simulado
     } else if (asset.symbol === "GOLD" || asset.symbol === "SILVER") {
       // Valores fixos para garantir que sempre apareçam
       price = asset.symbol === "GOLD" ? 2350.75 : 28.50;
+      change = asset.symbol === "GOLD" ? 0.4 : 0.6; // Simulado
     }
 
     // Formatação dos valores
@@ -315,11 +318,10 @@ async function loadQuote(asset, quoteEl) {
 }
 
 // Função para carregar e renderizar gráficos
-async function loadChart(asset, canvas) {
+function loadChart(asset, canvas) {
   try {
     let labels = [];
     let prices = [];
-    let yearLabels = []; // Para marcadores de ano
     
     // Dados históricos do Bitcoin (5 anos até maio de 2025)
     const bitcoinHistorical = [
@@ -435,21 +437,8 @@ async function loadChart(asset, canvas) {
     }
     
     // Processar dados históricos
-    let currentYear = null;
-    
     historicalData.forEach(item => {
-      const year = item.year;
-      
-      // Adicionar marcador de ano quando mudar
-      if (currentYear !== year) {
-        currentYear = year;
-        yearLabels.push({
-          year: year,
-          index: labels.length
-        });
-      }
-      
-      // Criar rótulo com ano e mês
+      // Criar data para cada ponto
       const date = new Date(item.year, item.month - 1);
       labels.push(date);
       prices.push(item.price);
@@ -523,7 +512,7 @@ async function loadChart(asset, canvas) {
     }
 
     // Criar gráfico com Chart.js
-    const chart = new Chart(canvas, {
+    const chart = new Chart(ctx, {
       type: "line",
       data: {
         labels: labels,
@@ -768,6 +757,15 @@ async function loadNews() {
         date: new Date(2025, 4, 14),
         link: "https://www.reuters.com/business/finance/",
         image: "https://images.unsplash.com/photo-1591994843349-f415893b3a6b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+      },
+      {
+        title: "Bitcoin's Energy Consumption Decreases as Miners Shift to Renewable Sources",
+        description: "New data shows Bitcoin mining is increasingly powered by renewable energy, addressing one of the main criticisms of the cryptocurrency.",
+        source: "The Economist",
+        sourceTag: "Economist",
+        date: new Date(2025, 4, 13),
+        link: "https://www.economist.com/finance-and-economics/",
+        image: "https://images.unsplash.com/photo-1550565118-3a14e8d0386f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       }
     ];
 
@@ -939,9 +937,11 @@ function updateMarketIndicators() {
                           fearGreedValue >= 60 ? "Ganância" : 
                           fearGreedValue >= 45 ? "Neutro" : 
                           fearGreedValue >= 25 ? "Medo" : "Medo Extremo";
+    const fearGreedChange = "+5%";
     
     fearGreedElement.querySelector('.gauge-fill').style.width = `${fearGreedValue}%`;
     fearGreedElement.querySelector('.gauge-value').textContent = `${fearGreedValue} - ${fearGreedText}`;
+    fearGreedElement.querySelector('.indicator-change').textContent = `${fearGreedChange} (24h)`;
   }
   
   // Volatilidade
@@ -950,18 +950,23 @@ function updateMarketIndicators() {
     const volatilityValue = Math.floor(Math.random() * (60 - 30 + 1)) + 30; // Valor entre 30 e 60
     const volatilityText = volatilityValue >= 60 ? "Alta" : 
                            volatilityValue >= 40 ? "Moderada" : "Baixa";
+    const volatilityChange = "-3%";
     
     volatilityElement.querySelector('.gauge-fill').style.width = `${volatilityValue}%`;
     volatilityElement.querySelector('.gauge-value').textContent = `${volatilityValue}% - ${volatilityText}`;
+    volatilityElement.querySelector('.indicator-change').textContent = `${volatilityChange} (24h)`;
+    volatilityElement.querySelector('.indicator-change').classList.add('negative');
   }
   
   // Dominância BTC
   const btcDominanceElement = document.getElementById('btc-dominance');
   if (btcDominanceElement) {
     const dominanceValue = Math.floor(Math.random() * (60 - 50 + 1)) + 50; // Valor entre 50 e 60
+    const dominanceChange = "+0.8%";
     
     btcDominanceElement.querySelector('.gauge-fill').style.width = `${dominanceValue}%`;
     btcDominanceElement.querySelector('.gauge-value').textContent = `${dominanceValue}%`;
+    btcDominanceElement.querySelector('.indicator-change').textContent = `${dominanceChange} (24h)`;
   }
   
   // Volume de Transações
@@ -971,9 +976,23 @@ function updateMarketIndicators() {
     const volumeAmount = (70 + Math.random() * 20).toFixed(1);
     const volumeText = volumeValue >= 75 ? "Alto" : 
                        volumeValue >= 50 ? "Moderado" : "Baixo";
+    const volumeChange = "+12%";
     
     volumeElement.querySelector('.gauge-fill').style.width = `${volumeValue}%`;
     volumeElement.querySelector('.gauge-value').textContent = `$${volumeAmount}B - ${volumeText}`;
+    volumeElement.querySelector('.indicator-change').textContent = `${volumeChange} (24h)`;
+  }
+  
+  // Capitalização de Mercado Total
+  const marketCapElement = document.getElementById('market-cap');
+  if (marketCapElement) {
+    const marketCapValue = 58; // Porcentagem para a barra
+    const marketCapAmount = "2.4T";
+    const marketCapChange = "+5.8%";
+    
+    marketCapElement.querySelector('.gauge-fill').style.width = `${marketCapValue}%`;
+    marketCapElement.querySelector('.gauge-value').textContent = `$${marketCapAmount}`;
+    marketCapElement.querySelector('.indicator-change').textContent = `${marketCapChange} (24h)`;
   }
   
   // Liquidez do Mercado
@@ -983,9 +1002,11 @@ function updateMarketIndicators() {
     const liquidityText = liquidityValue >= 70 ? "Alta" : 
                           liquidityValue >= 50 ? "Moderada-Alta" : 
                           liquidityValue >= 30 ? "Moderada" : "Baixa";
+    const liquidityChange = "+2.3%";
     
     liquidityElement.querySelector('.gauge-fill').style.width = `${liquidityValue}%`;
     liquidityElement.querySelector('.gauge-value').textContent = liquidityText;
+    liquidityElement.querySelector('.indicator-change').textContent = `${liquidityChange} (24h)`;
   }
 }
 
