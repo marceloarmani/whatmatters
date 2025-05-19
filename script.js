@@ -392,40 +392,39 @@ function initMarketCapComparison() {
   // Limpar o container
   marketCapContainer.innerHTML = '';
   
-  // Criar quadrados para cada mercado com tamanho proporcional
+  // Criar visualização de treemap com quadrados proporcionais
+  // Usamos um algoritmo mais preciso para garantir que a área seja proporcional ao valor
+  
+  // Calcular a área total disponível (aproximada)
+  const containerWidth = marketCapContainer.clientWidth || 800;
+  const containerHeight = 400; // Altura aproximada
+  const totalArea = containerWidth * containerHeight;
+  
+  // Calcular o fator de escala para que a soma das áreas seja proporcional ao total
+  const scaleFactor = totalArea / totalMarketCap;
+  
+  // Criar quadrados para cada mercado
   sortedData.forEach(item => {
-    const percentage = (item.value / totalMarketCap * 100);
+    // Calcular a área do quadrado baseada no valor
+    const area = item.value * scaleFactor;
+    
+    // Calcular o lado do quadrado (raiz quadrada da área)
+    const side = Math.sqrt(area);
+    
+    // Calcular quantas colunas e linhas o quadrado deve ocupar
+    // Baseado em uma grade de 12 colunas
+    const gridWidth = containerWidth / 12;
+    const colSpan = Math.max(1, Math.round(side / gridWidth));
+    const rowSpan = Math.max(1, Math.round(side / 50)); // 50px é uma altura aproximada de linha
+    
     const box = document.createElement('div');
     box.className = 'market-cap-box';
     box.style.backgroundColor = item.color;
-    
-    // Calcular o tamanho do quadrado baseado na porcentagem
-    // Definir grid-column e grid-row span baseado no valor relativo
-    let colSpan = 1;
-    let rowSpan = 1;
-    
-    if (percentage > 40) { // Real Estate
-      colSpan = 8;
-      rowSpan = 4;
-    } else if (percentage > 20) { // Bonds
-      colSpan = 6;
-      rowSpan = 3;
-    } else if (percentage > 15) { // Equities, Money
-      colSpan = 6;
-      rowSpan = 2;
-    } else if (percentage > 2) { // Gold
-      colSpan = 4;
-      rowSpan = 2;
-    } else if (percentage > 1) { // Art, Cars & Collectibles
-      colSpan = 3;
-      rowSpan = 2;
-    } else { // Bitcoin
-      colSpan = 2;
-      rowSpan = 2;
-    }
-    
     box.style.gridColumn = `span ${colSpan}`;
     box.style.gridRow = `span ${rowSpan}`;
+    
+    // Calcular a porcentagem do total
+    const percentage = (item.value / totalMarketCap * 100);
     
     box.innerHTML = `
       <div class="market-cap-box-name">${item.name}</div>
@@ -465,7 +464,7 @@ function initScarcityMetrics() {
   }).join('');
 }
 
-// Inicializar calendário econômico com apenas 4 eventos visíveis
+// Inicializar calendário econômico com 5 eventos visíveis
 function initEconomicCalendar() {
   const eventsContainer = document.getElementById('events-container');
   if (!eventsContainer) return;
@@ -483,14 +482,14 @@ function initEconomicCalendar() {
     return eventDate >= twoDaysAgo;
   });
   
-  // Renderizar apenas os primeiros 4 eventos
+  // Renderizar os primeiros 5 eventos
   if (relevantEvents.length === 0) {
     eventsContainer.innerHTML = "<p class='no-events'>Nenhum evento econômico próximo encontrado.</p>";
     return;
   }
   
-  // Limitar a 4 eventos visíveis
-  const visibleEvents = relevantEvents.slice(0, 4);
+  // Limitar a 5 eventos visíveis
+  const visibleEvents = relevantEvents.slice(0, 5);
   
   eventsContainer.innerHTML = visibleEvents.map(event => {
     const eventDate = new Date(event.date);
@@ -513,9 +512,9 @@ function initEconomicCalendar() {
   
   // Atualizar indicadores de scroll
   const scrollDotsContainer = document.querySelector('.scroll-dots');
-  if (scrollDotsContainer && relevantEvents.length > 4) {
+  if (scrollDotsContainer && relevantEvents.length > 5) {
     scrollDotsContainer.innerHTML = '';
-    const totalPages = Math.ceil(relevantEvents.length / 4);
+    const totalPages = Math.ceil(relevantEvents.length / 5);
     
     for (let i = 0; i < totalPages; i++) {
       const dot = document.createElement('span');
@@ -534,7 +533,7 @@ function showEventsPage(page, events) {
   const eventsContainer = document.getElementById('events-container');
   if (!eventsContainer) return;
   
-  const eventsPerPage = 4;
+  const eventsPerPage = 5;
   const startIdx = page * eventsPerPage;
   const endIdx = startIdx + eventsPerPage;
   const pageEvents = events.slice(startIdx, endIdx);
@@ -1110,12 +1109,7 @@ function setupSatoshiQuote() {
 // Ajustar o layout quando a janela for redimensionada
 window.addEventListener('resize', () => {
   if (document.getElementById('market-cap-treemap')) {
-    // Ajustar layout responsivo se necessário
-    const container = document.getElementById('market-cap-treemap');
-    if (window.innerWidth < 768) {
-      container.classList.add('compact-view');
-    } else {
-      container.classList.remove('compact-view');
-    }
+    // Recalcular o layout dos quadrados de capitalização
+    initMarketCapComparison();
   }
 });
