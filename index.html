@@ -57,21 +57,42 @@
         <div class="indicator">
           <div class="indicator-title">Capitalização de Mercado Total</div>
           <div class="indicator-value" id="market-cap">
-            <div class="gauge">
-              <div class="gauge-fill" style="width: 72%;"></div>
-            </div>
-            <div class="gauge-value">$2.4T - Expansão</div>
+            <div class="market-cap-value">$2.4T</div>
+            <div class="market-cap-trend">+5.8% nas últimas 24h</div>
           </div>
         </div>
         <div class="indicator">
-          <div class="indicator-title">Tendência de Longo Prazo (200d)</div>
-          <div class="indicator-value" id="long-trend">
+          <div class="indicator-title">Liquidez do Mercado</div>
+          <div class="indicator-value" id="market-liquidity">
             <div class="gauge">
-              <div class="gauge-fill" style="width: 85%;"></div>
+              <div class="gauge-fill" style="width: 62%;"></div>
             </div>
-            <div class="gauge-value">Fortemente Positiva</div>
+            <div class="gauge-value">Moderada-Alta</div>
           </div>
         </div>
+      </div>
+    </section>
+    
+    <section id="economic-calendar">
+      <h2>Calendário Econômico</h2>
+      <div class="calendar-container">
+        <div class="calendar-header">
+          <div class="calendar-title">Próximos Eventos Importantes</div>
+          <div class="calendar-controls">
+            <button id="prev-events" class="calendar-btn">&lt;</button>
+            <button id="next-events" class="calendar-btn">&gt;</button>
+          </div>
+        </div>
+        <div class="events-list" id="events-container">
+          <!-- Eventos serão inseridos via JavaScript -->
+        </div>
+      </div>
+    </section>
+    
+    <section id="news-summary">
+      <h2>Resumo de Notícias Recentes</h2>
+      <div id="news-content">
+        <p>Carregando notícias...</p>
       </div>
     </section>
     
@@ -82,13 +103,6 @@
           "O problema raiz com a moeda convencional é toda a confiança que é necessária para fazê-la funcionar. O banco central deve ser confiável para não desvalorizar a moeda, mas a história das moedas fiduciárias está cheia de quebras dessa confiança."
         </blockquote>
         <div class="quote-author">- Satoshi Nakamoto</div>
-      </div>
-    </section>
-    
-    <section id="news-summary">
-      <h2>Resumo de Notícias Recentes</h2>
-      <div id="news-content">
-        <p>Carregando notícias...</p>
       </div>
     </section>
   </main>
