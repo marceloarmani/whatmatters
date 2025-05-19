@@ -15,6 +15,72 @@
   <main>
     <div id="quotes"></div>
     
+    <section id="market-panel">
+      <h2>Sentimento de Mercado</h2>
+      <div class="market-indicators">
+        <div class="indicator">
+          <div class="indicator-title">Índice de Medo e Ganância</div>
+          <div class="indicator-value" id="fear-greed">
+            <div class="gauge">
+              <div class="gauge-fill" style="width: 65%;"></div>
+            </div>
+            <div class="gauge-value">65 - Ganância</div>
+            <div class="indicator-change">+5% (24h )</div>
+          </div>
+        </div>
+        <div class="indicator">
+          <div class="indicator-title">Volatilidade (30d)</div>
+          <div class="indicator-value" id="volatility">
+            <div class="gauge">
+              <div class="gauge-fill" style="width: 42%;"></div>
+            </div>
+            <div class="gauge-value">42% - Moderada</div>
+            <div class="indicator-change">-3% (24h)</div>
+          </div>
+        </div>
+        <div class="indicator">
+          <div class="indicator-title">Dominância BTC</div>
+          <div class="indicator-value" id="btc-dominance">
+            <div class="gauge">
+              <div class="gauge-fill" style="width: 53%;"></div>
+            </div>
+            <div class="gauge-value">53%</div>
+            <div class="indicator-change">+0.8% (24h)</div>
+          </div>
+        </div>
+        <div class="indicator">
+          <div class="indicator-title">Volume de Transações (24h)</div>
+          <div class="indicator-value" id="transaction-volume">
+            <div class="gauge">
+              <div class="gauge-fill" style="width: 68%;"></div>
+            </div>
+            <div class="gauge-value">$78.5B - Alto</div>
+            <div class="indicator-change">+12% (24h)</div>
+          </div>
+        </div>
+        <div class="indicator">
+          <div class="indicator-title">Capitalização de Mercado Total</div>
+          <div class="indicator-value" id="market-cap">
+            <div class="gauge">
+              <div class="gauge-fill" style="width: 58%;"></div>
+            </div>
+            <div class="gauge-value">$2.4T</div>
+            <div class="indicator-change">+5.8% (24h)</div>
+          </div>
+        </div>
+        <div class="indicator">
+          <div class="indicator-title">Liquidez do Mercado</div>
+          <div class="indicator-value" id="market-liquidity">
+            <div class="gauge">
+              <div class="gauge-fill" style="width: 62%;"></div>
+            </div>
+            <div class="gauge-value">Moderada-Alta</div>
+            <div class="indicator-change">+2.3% (24h)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
     <section id="market-cap-comparison">
       <h2>Capitalização de Mercado Global</h2>
       <div class="market-cap-container">
@@ -30,63 +96,8 @@
             <!-- Legenda será inserida via JavaScript -->
           </div>
         </div>
-      </div>
-    </section>
-    
-    <section id="market-panel">
-      <h2>Sentimento de Mercado</h2>
-      <div class="market-indicators">
-        <div class="indicator">
-          <div class="indicator-title">Índice de Medo e Ganância</div>
-          <div class="indicator-value" id="fear-greed">
-            <div class="gauge">
-              <div class="gauge-fill" style="width: 65%;"></div>
-            </div>
-            <div class="gauge-value">65 - Ganância</div>
-          </div>
-        </div>
-        <div class="indicator">
-          <div class="indicator-title">Volatilidade (30d )</div>
-          <div class="indicator-value" id="volatility">
-            <div class="gauge">
-              <div class="gauge-fill" style="width: 42%;"></div>
-            </div>
-            <div class="gauge-value">42% - Moderada</div>
-          </div>
-        </div>
-        <div class="indicator">
-          <div class="indicator-title">Dominância BTC</div>
-          <div class="indicator-value" id="btc-dominance">
-            <div class="gauge">
-              <div class="gauge-fill" style="width: 53%;"></div>
-            </div>
-            <div class="gauge-value">53%</div>
-          </div>
-        </div>
-        <div class="indicator">
-          <div class="indicator-title">Volume de Transações (24h)</div>
-          <div class="indicator-value" id="transaction-volume">
-            <div class="gauge">
-              <div class="gauge-fill" style="width: 68%;"></div>
-            </div>
-            <div class="gauge-value">$78.5B - Alto</div>
-          </div>
-        </div>
-        <div class="indicator">
-          <div class="indicator-title">Capitalização de Mercado Total</div>
-          <div class="indicator-value" id="market-cap">
-            <div class="market-cap-value">$2.4T</div>
-            <div class="market-cap-trend">+5.8% nas últimas 24h</div>
-          </div>
-        </div>
-        <div class="indicator">
-          <div class="indicator-title">Liquidez do Mercado</div>
-          <div class="indicator-value" id="market-liquidity">
-            <div class="gauge">
-              <div class="gauge-fill" style="width: 62%;"></div>
-            </div>
-            <div class="gauge-value">Moderada-Alta</div>
-          </div>
+        <div class="market-cap-sources">
+          <p>Fontes: Visual Capitalist, Bank for International Settlements (BIS), McKinsey Global Institute, World Gold Council, Jesse Myers (oncelnaspecies.com)</p>
         </div>
       </div>
     </section>
