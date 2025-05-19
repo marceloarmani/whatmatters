@@ -7,52 +7,74 @@ const assets = [
 ];
 
 // Inicialização dos elementos da página
-const quotesContainer = document.getElementById("quotes");
-quotesContainer.innerHTML = ""; // Limpa o container antes de adicionar
+document.addEventListener('DOMContentLoaded', function() {
+  const quotesContainer = document.getElementById("quotes");
+  quotesContainer.innerHTML = ""; // Limpa o container antes de adicionar
 
-// Criar elementos para cada ativo
-assets.forEach(asset => {
-  const wrapper = document.createElement("div");
-  wrapper.className = "quote-wrapper";
+  // Criar elementos para cada ativo
+  assets.forEach(asset => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "quote-wrapper";
 
-  const quote = document.createElement("div");
-  quote.className = "quote";
-  quote.innerHTML = `<strong>${asset.name}:</strong> <em>Carregando...</em>`;
+    const quote = document.createElement("div");
+    quote.className = "quote";
+    quote.innerHTML = `<strong>${asset.name}:</strong> <em>Carregando...</em>`;
 
-  const chartContainer = document.createElement("div");
-  chartContainer.className = "chart-container";
-  chartContainer.style.display = "none";
+    const chartContainer = document.createElement("div");
+    chartContainer.className = "chart-container";
+    chartContainer.style.display = "none";
 
-  const canvas = document.createElement("canvas");
-  chartContainer.appendChild(canvas);
+    const canvas = document.createElement("canvas");
+    chartContainer.appendChild(canvas);
 
-  wrapper.appendChild(quote);
-  wrapper.appendChild(chartContainer);
-  quotesContainer.appendChild(wrapper);
+    wrapper.appendChild(quote);
+    wrapper.appendChild(chartContainer);
+    quotesContainer.appendChild(wrapper);
 
-  // Clique no ativo para mostrar/ocultar gráfico
-  quote.addEventListener("click", () => {
-    const isVisible = chartContainer.style.display !== "none";
-    
-    // Fechar todos os gráficos abertos
-    document.querySelectorAll('.chart-container').forEach(container => {
-      container.style.display = "none";
-    });
-    
-    // Se o gráfico não estava visível, abri-lo
-    if (!isVisible) {
-      chartContainer.style.display = "block";
+    // Clique no ativo para mostrar/ocultar gráfico
+    quote.addEventListener("click", () => {
+      const isVisible = chartContainer.style.display !== "none";
       
-      // Carregar dados do gráfico apenas quando exibido pela primeira vez
-      if (!chartContainer.dataset.loaded) {
-        loadChart(asset, canvas);
-        chartContainer.dataset.loaded = "true";
+      // Fechar todos os gráficos abertos
+      document.querySelectorAll('.chart-container').forEach(container => {
+        container.style.display = "none";
+      });
+      
+      // Se o gráfico não estava visível, abri-lo
+      if (!isVisible) {
+        chartContainer.style.display = "block";
+        
+        // Carregar dados do gráfico apenas quando exibido pela primeira vez
+        if (!chartContainer.dataset.loaded) {
+          loadChart(asset, canvas);
+          chartContainer.dataset.loaded = "true";
+        }
       }
-    }
+    });
+
+    // Carregar cotação imediatamente
+    loadQuote(asset, quote);
   });
 
-  // Carregar cotação imediatamente
-  loadQuote(asset, quote);
+  // Iniciar carregamento de notícias
+  loadNews();
+
+  // Configurar modo escuro
+  setupDarkModeToggle();
+
+  // Configurar relógio
+  setupClock();
+
+  // Configurar painel de mercado
+  setupMarketPanel();
+
+  // Atualizar cotações a cada 5 minutos
+  setInterval(() => {
+    const quoteElements = document.querySelectorAll('.quote');
+    assets.forEach((asset, index) => {
+      loadQuote(asset, quoteElements[index]);
+    });
+  }, 300000);
 });
 
 // Função para carregar cotações
@@ -112,44 +134,131 @@ async function loadChart(asset, canvas) {
     let prices = [];
     let yearLabels = []; // Para marcadores de ano
     
-    // Obter dados históricos (5 anos = 1825 dias)
-    if (asset.symbol === "BTC") {
-      // Dados reais do Bitcoin
-      try {
-        const res = await fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=1825`);
-        const data = await res.json();
-        
-        // Filtrar para reduzir quantidade de pontos (mensal)
-        const monthlyData = data.prices.filter((_, index) => index % 30 === 0);
-        
-        let currentYear = null;
-        
-        monthlyData.forEach(item => {
-          const date = new Date(item[0]);
-          const year = date.getFullYear();
-          
-          // Adicionar marcador de ano quando mudar
-          if (currentYear !== year) {
-            currentYear = year;
-            yearLabels.push({
-              year: year,
-              index: labels.length
-            });
-          }
-          
-          // Formato simplificado para o eixo X
-          labels.push(date.toLocaleDateString('pt-BR', { month: 'short' }));
-          prices.push(item[1]);
-        });
-      } catch (error) {
-        console.error("Erro ao buscar dados do Bitcoin:", error);
-        // Dados simulados como fallback
-        simulateHistoricalData(asset, labels, prices, yearLabels);
-      }
-    } else {
-      // Dados simulados para os outros ativos
-      simulateHistoricalData(asset, labels, prices, yearLabels);
+    // Dados históricos do Bitcoin (5 anos)
+    const bitcoinHistorical = [
+      { year: 2020, price: 7200 },
+      { year: 2020.25, price: 6500 },
+      { year: 2020.5, price: 9300 },
+      { year: 2020.75, price: 10800 },
+      { year: 2021, price: 29000 },
+      { year: 2021.25, price: 58000 },
+      { year: 2021.5, price: 35000 },
+      { year: 2021.75, price: 47000 },
+      { year: 2022, price: 38000 },
+      { year: 2022.25, price: 31000 },
+      { year: 2022.5, price: 23000 },
+      { year: 2022.75, price: 16500 },
+      { year: 2023, price: 16800 },
+      { year: 2023.25, price: 28000 },
+      { year: 2023.5, price: 29500 },
+      { year: 2023.75, price: 34000 },
+      { year: 2024, price: 42000 },
+      { year: 2024.25, price: 68000 },
+      { year: 2024.5, price: 89000 },
+      { year: 2024.75, price: 103000 },
+      { year: 2025, price: 103500 }
+    ];
+    
+    // Dados históricos do ouro (5 anos)
+    const goldHistorical = [
+      { year: 2020, price: 1520 },
+      { year: 2020.5, price: 1770 },
+      { year: 2021, price: 1880 },
+      { year: 2021.5, price: 1790 },
+      { year: 2022, price: 1800 },
+      { year: 2022.5, price: 1740 },
+      { year: 2023, price: 1820 },
+      { year: 2023.5, price: 1940 },
+      { year: 2024, price: 2050 },
+      { year: 2024.5, price: 2250 },
+      { year: 2025, price: 2350 }
+    ];
+    
+    // Dados históricos da prata (5 anos)
+    const silverHistorical = [
+      { year: 2020, price: 17.50 },
+      { year: 2020.5, price: 18.30 },
+      { year: 2021, price: 26.50 },
+      { year: 2021.5, price: 24.80 },
+      { year: 2022, price: 23.10 },
+      { year: 2022.5, price: 19.20 },
+      { year: 2023, price: 23.40 },
+      { year: 2023.5, price: 24.60 },
+      { year: 2024, price: 26.80 },
+      { year: 2024.5, price: 27.90 },
+      { year: 2025, price: 28.50 }
+    ];
+    
+    // Dados históricos do Treasury Yield (5 anos)
+    const treasuryHistorical = [
+      { year: 2020, price: 1.80 },
+      { year: 2020.5, price: 0.70 },
+      { year: 2021, price: 1.10 },
+      { year: 2021.5, price: 1.50 },
+      { year: 2022, price: 1.80 },
+      { year: 2022.5, price: 3.20 },
+      { year: 2023, price: 3.80 },
+      { year: 2023.5, price: 4.30 },
+      { year: 2024, price: 4.20 },
+      { year: 2024.5, price: 4.40 },
+      { year: 2025, price: 4.32 }
+    ];
+    
+    // Dados históricos do USD/BRL (5 anos)
+    const usdbrlHistorical = [
+      { year: 2020, price: 4.10 },
+      { year: 2020.5, price: 5.20 },
+      { year: 2021, price: 5.40 },
+      { year: 2021.5, price: 5.30 },
+      { year: 2022, price: 5.60 },
+      { year: 2022.5, price: 5.20 },
+      { year: 2023, price: 5.10 },
+      { year: 2023.5, price: 4.90 },
+      { year: 2024, price: 5.00 },
+      { year: 2024.5, price: 5.40 },
+      { year: 2025, price: 5.68 }
+    ];
+    
+    // Selecionar dados históricos com base no ativo
+    let historicalData;
+    switch(asset.symbol) {
+      case "BTC":
+        historicalData = bitcoinHistorical;
+        break;
+      case "GOLD":
+        historicalData = goldHistorical;
+        break;
+      case "SILVER":
+        historicalData = silverHistorical;
+        break;
+      case "US10Y":
+        historicalData = treasuryHistorical;
+        break;
+      case "USDBRL":
+        historicalData = usdbrlHistorical;
+        break;
+      default:
+        historicalData = [];
     }
+    
+    // Processar dados históricos
+    let currentYear = null;
+    
+    historicalData.forEach(item => {
+      const year = Math.floor(item.year);
+      
+      // Adicionar marcador de ano quando mudar
+      if (currentYear !== year) {
+        currentYear = year;
+        yearLabels.push({
+          year: year,
+          index: labels.length
+        });
+      }
+      
+      labels.push("");  // Rótulo vazio para manter apenas os anos
+      prices.push(item.price);
+    });
 
     // Configurar cores baseadas no tipo de ativo
     const getAssetColor = (symbol) => {
@@ -208,6 +317,23 @@ async function loadChart(asset, canvas) {
             bodyFont: {
               family: "'Segoe UI', sans-serif",
               size: 13
+            },
+            callbacks: {
+              title: function(tooltipItems) {
+                const dataIndex = tooltipItems[0].dataIndex;
+                const yearIndex = yearLabels.findIndex(yl => yl.index <= dataIndex && 
+                  (yearLabels[yearLabels.indexOf(yl) + 1]?.index > dataIndex || !yearLabels[yearLabels.indexOf(yl) + 1]));
+                
+                if (yearIndex !== -1) {
+                  const year = yearLabels[yearIndex].year;
+                  const quarter = Math.round((dataIndex - yearLabels[yearIndex].index) / 
+                    (yearLabels[yearIndex + 1]?.index - yearLabels[yearIndex].index || 4) * 4);
+                  
+                  const quarterNames = ['Jan', 'Abr', 'Jul', 'Out'];
+                  return `${quarterNames[quarter] || 'Jan'} ${year}`;
+                }
+                return '';
+              }
             }
           }
         },
@@ -222,10 +348,8 @@ async function loadChart(asset, canvas) {
               maxRotation: 0,
               minRotation: 0,
               callback: function(value, index) {
-                // Mostrar apenas os marcadores de ano e alguns pontos intermediários
-                const isYearLabel = yearLabels.some(yl => yl.index === index);
-                const isMilestone = index % 12 === 0; // Mostrar a cada 12 pontos
-                return isYearLabel ? labels[index] + ' ' + yearLabels.find(yl => yl.index === index).year : (isMilestone ? labels[index] : '');
+                // Mostrar apenas os anos
+                return yearLabels.some(yl => yl.index === index) ? yearLabels.find(yl => yl.index === index).year : '';
               }
             },
             grid: { 
@@ -291,80 +415,6 @@ async function loadChart(asset, canvas) {
   }
 }
 
-// Função para simular dados históricos
-function simulateHistoricalData(asset, labels, prices, yearLabels) {
-  const startDate = new Date();
-  startDate.setFullYear(startDate.getFullYear() - 5);
-  
-  let baseValue, volatility, trend;
-  
-  switch(asset.symbol) {
-    case "BTC":
-      baseValue = 10000;
-      volatility = 0.08;
-      trend = 2.0; // Forte tendência de alta
-      break;
-    case "GOLD":
-      baseValue = 1800;
-      volatility = 0.02;
-      trend = 0.3; // Tendência moderada de alta
-      break;
-    case "SILVER":
-      baseValue = 22;
-      volatility = 0.03;
-      trend = 0.25; // Tendência moderada de alta
-      break;
-    case "US10Y":
-      baseValue = 1.8;
-      volatility = 0.03;
-      trend = 1.4; // Forte tendência de alta para yields
-      break;
-    case "USDBRL":
-      baseValue = 4.2;
-      volatility = 0.02;
-      trend = 0.35; // Tendência moderada de alta
-      break;
-    default:
-      baseValue = 100;
-      volatility = 0.02;
-      trend = 0.2;
-  }
-  
-  let currentYear = null;
-  let currentValue = baseValue;
-  
-  // Gerar pontos mensais para 5 anos (60 meses)
-  for (let i = 0; i < 60; i++) {
-    const date = new Date(startDate);
-    date.setMonth(date.getMonth() + i);
-    
-    const year = date.getFullYear();
-    
-    // Adicionar marcador de ano quando mudar
-    if (currentYear !== year) {
-      currentYear = year;
-      yearLabels.push({
-        year: year,
-        index: labels.length
-      });
-    }
-    
-    // Formato simplificado para o eixo X
-    labels.push(date.toLocaleDateString('pt-BR', { month: 'short' }));
-    
-    // Simular tendência com flutuações
-    const progressFactor = i / 60;
-    const trendFactor = 1 + (progressFactor * trend);
-    const randomFactor = 1 + (Math.random() - 0.5) * volatility;
-    
-    // Adicionar alguma sazonalidade
-    const seasonality = 1 + Math.sin(i / 12 * Math.PI) * 0.03;
-    
-    currentValue = currentValue * randomFactor * seasonality;
-    prices.push(baseValue * trendFactor * randomFactor * seasonality);
-  }
-}
-
 // Função para carregar notícias da Cointelegraph
 async function loadNews() {
   const newsContainer = document.getElementById("news-content");
@@ -387,31 +437,47 @@ async function loadNews() {
     const items = [...xmlDoc.querySelectorAll("item")];
     const recentArticles = items
       .map(item => {
+        // Tentar extrair a imagem da descrição
+        let imageUrl = '';
+        const description = item.querySelector("description")?.textContent || "";
+        const imgMatch = description.match(/<img[^>]+src="([^">]+)"/);
+        if (imgMatch && imgMatch[1]) {
+          imageUrl = imgMatch[1];
+        }
+        
         return {
           title: item.querySelector("title")?.textContent || "",
           link: item.querySelector("link")?.textContent || "",
           pubDate: item.querySelector("pubDate")?.textContent || "",
-          description: item.querySelector("description")?.textContent || ""
+          description: description,
+          image: imageUrl
         };
       })
       .filter(article => {
         const pubDate = new Date(article.pubDate);
         return pubDate >= twoDaysAgo;
       })
-      .slice(0, 3); // Limitar a 3 notícias para design mais minimalista
+      .slice(0, 5); // Mostrar 5 notícias
 
     if (recentArticles.length === 0) {
       newsContainer.innerHTML = "<p class='no-news'>Nenhuma notícia recente encontrada nas últimas 48 horas.</p>";
       return;
     }
 
-    newsContainer.innerHTML = recentArticles.map(article => `
-      <article class="news-item">
-        <h3><a href="${article.link}" target="_blank" rel="noopener">${article.title}</a></h3>
-        <p>${article.description.replace(/(<([^>]+)>)/gi, "").substring(0, 120)}...</p>
-        <small>${new Date(article.pubDate).toLocaleDateString('pt-BR')}</small>
-      </article>
-    `).join("");
+    newsContainer.innerHTML = `
+      <div class="news-grid">
+        ${recentArticles.map(article => `
+          <article class="news-item">
+            ${article.image ? `<div class="news-image"><img src="${article.image}" alt="${article.title}"></div>` : ''}
+            <div class="news-content">
+              <h3><a href="${article.link}" target="_blank" rel="noopener">${article.title}</a></h3>
+              <p>${article.description.replace(/(<([^>]+)>)/gi, "").substring(0, 120)}...</p>
+              <small>${new Date(article.pubDate).toLocaleDateString('pt-BR')}</small>
+            </div>
+          </article>
+        `).join("")}
+      </div>
+    `;
 
   } catch (e) {
     console.error("Erro ao carregar notícias:", e);
@@ -444,21 +510,7 @@ function setupDarkModeToggle() {
   });
 }
 
-// Iniciar carregamento de notícias
-loadNews();
-
-// Configurar modo escuro
-setupDarkModeToggle();
-
-// Atualizar cotações a cada 5 minutos
-setInterval(() => {
-  const quoteElements = document.querySelectorAll('.quote');
-  assets.forEach((asset, index) => {
-    loadQuote(asset, quoteElements[index]);
-  });
-}, 300000);
-
-// Adicionar relógio digital como sugestão própria
+// Adicionar relógio digital
 function setupClock() {
   const footer = document.querySelector('footer');
   const clockDiv = document.createElement('div');
@@ -479,4 +531,47 @@ function setupClock() {
   
   updateClock();
   setInterval(updateClock, 1000);
+}
+
+// Nova sugestão: Painel de Mercado com Indicadores de Sentimento
+function setupMarketPanel() {
+  // Criar o painel de mercado
+  const main = document.querySelector('main');
+  const marketPanel = document.createElement('section');
+  marketPanel.id = 'market-panel';
+  marketPanel.innerHTML = `
+    <h2>Sentimento de Mercado</h2>
+    <div class="market-indicators">
+      <div class="indicator">
+        <div class="indicator-title">Índice de Medo e Ganância</div>
+        <div class="indicator-value" id="fear-greed">
+          <div class="gauge">
+            <div class="gauge-fill" style="width: 65%;"></div>
+          </div>
+          <div class="gauge-value">65 - Ganância</div>
+        </div>
+      </div>
+      <div class="indicator">
+        <div class="indicator-title">Volatilidade (30d)</div>
+        <div class="indicator-value" id="volatility">
+          <div class="gauge">
+            <div class="gauge-fill" style="width: 42%;"></div>
+          </div>
+          <div class="gauge-value">42% - Moderada</div>
+        </div>
+      </div>
+      <div class="indicator">
+        <div class="indicator-title">Dominância BTC</div>
+        <div class="indicator-value" id="btc-dominance">
+          <div class="gauge">
+            <div class="gauge-fill" style="width: 53%;"></div>
+          </div>
+          <div class="gauge-value">53%</div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Inserir o painel antes do resumo de notícias
+  main.insertBefore(marketPanel, document.getElementById('news-summary'));
 }
