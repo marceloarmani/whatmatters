@@ -10,16 +10,14 @@
 <body>
   <header>
     <h1>Scarcity Panel</h1>
-    <p>Visualizando a conversão à escassez em um mundo de abundância monetária global</p>
+    <p>Revelando a migração de valor para ativos verdadeiramente escassos</p>
   </header>
   <main>
-    <div class="main-content">
+    <div class="three-column-layout">
       <div class="left-column">
-        <div id="quotes"></div>
-        
-        <section id="market-panel">
+        <section id="market-sentiment">
           <h2>Sentimento de Mercado</h2>
-          <div class="market-indicators">
+          <div class="sentiment-indicators">
             <div class="indicator">
               <div class="indicator-title">Índice de Medo e Ganância</div>
               <div class="indicator-value" id="fear-greed">
@@ -82,6 +80,10 @@
             </div>
           </div>
         </section>
+      </div>
+      
+      <div class="center-column">
+        <div id="quotes"></div>
         
         <section id="market-cap-comparison">
           <h2>Capitalização de Mercado Global</h2>
@@ -109,7 +111,7 @@
         </section>
         
         <section id="news-summary">
-          <h2>Notícias Relevantes</h2>
+          <h2>Últimas Notícias</h2>
           <div id="news-content">
             <p>Carregando notícias...</p>
           </div>
@@ -132,6 +134,12 @@
           <div class="calendar-sidebar">
             <div class="events-list" id="events-container">
               <!-- Eventos serão inseridos via JavaScript -->
+            </div>
+            <div class="events-scroll-indicator">
+              <div class="scroll-dots">
+                <span class="scroll-dot active"></span>
+                <span class="scroll-dot"></span>
+              </div>
             </div>
           </div>
         </section>
