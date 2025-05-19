@@ -107,54 +107,54 @@ const satoshiQuotes = [
   "A raiz do problema com a moeda convencional é toda a confiança que é necessária para fazê-la funcionar."
 ];
 
-// Eventos do calendário econômico
+// Eventos do calendário econômico com descrições curtas
 const economicEvents = [
   {
     date: "2025-05-22",
     title: "Reunião do FOMC",
-    description: "Decisão de taxa de juros pelo Federal Reserve dos EUA. Impacto potencial no Bitcoin devido à correlação com políticas monetárias e liquidez global.",
+    description: "Decisão de taxa de juros pelo Federal Reserve dos EUA.",
     impact: "high"
   },
   {
     date: "2025-05-25",
     title: "Dados de Inflação (CPI) - Brasil",
-    description: "Divulgação do índice de preços ao consumidor pelo IBGE. Indicador importante para avaliar a deterioração do poder de compra da moeda fiduciária local.",
+    description: "Divulgação do índice de preços ao consumidor pelo IBGE.",
     impact: "medium"
   },
   {
     date: "2025-06-01",
     title: "Relatório de Empregos (EUA)",
-    description: "Divulgação dos dados de emprego não-agrícola dos EUA. Influencia diretamente as expectativas de política monetária e fluxos para ativos de risco.",
+    description: "Divulgação dos dados de emprego não-agrícola dos EUA.",
     impact: "high"
   },
   {
     date: "2025-06-05",
     title: "Reunião do BCE",
-    description: "Decisão de política monetária do Banco Central Europeu. Mudanças nas taxas de juros ou programas de estímulo afetam a atratividade relativa do Bitcoin.",
+    description: "Decisão de política monetária do Banco Central Europeu.",
     impact: "high"
   },
   {
     date: "2025-06-12",
     title: "Reunião do COPOM",
-    description: "Decisão da taxa Selic pelo Banco Central do Brasil. Impacta diretamente o custo de oportunidade de manter Bitcoin versus investimentos em renda fixa.",
+    description: "Decisão da taxa Selic pelo Banco Central do Brasil.",
     impact: "high"
   },
   {
     date: "2025-06-15",
     title: "PIB da China (Q2)",
-    description: "Divulgação do crescimento econômico trimestral da China. A segunda maior economia do mundo tem grande influência nos mercados globais e commodities.",
+    description: "Divulgação do crescimento econômico trimestral da China.",
     impact: "medium"
   },
   {
     date: "2025-06-20",
     title: "Vencimento de Opções BTC",
-    description: "Vencimento de contratos de opções de Bitcoin. Pode causar volatilidade significativa no preço à medida que posições são liquidadas ou roladas.",
+    description: "Vencimento de contratos de opções de Bitcoin.",
     impact: "medium"
   },
   {
     date: "2025-07-01",
     title: "Balanço Trimestral MicroStrategy",
-    description: "Divulgação dos resultados financeiros e holdings de Bitcoin. Importante indicador da estratégia corporativa de adoção de Bitcoin como reserva de valor.",
+    description: "Divulgação dos resultados financeiros e holdings de Bitcoin.",
     impact: "low"
   }
 ];
@@ -373,7 +373,7 @@ function setupSourcesToggle() {
   }
 }
 
-// Inicializar comparativo de capitalização de mercado com visualização em quadrados
+// Inicializar comparativo de capitalização de mercado com visualização em quadrados proporcionais
 function initMarketCapComparison() {
   const marketCapContainer = document.getElementById('market-cap-treemap');
   
@@ -389,21 +389,52 @@ function initMarketCapComparison() {
   // Ordenar dados por valor (do maior para o menor)
   const sortedData = [...marketCapData].sort((a, b) => b.value - a.value);
   
-  // Criar quadrados para cada mercado
-  let html = '';
+  // Limpar o container
+  marketCapContainer.innerHTML = '';
   
+  // Criar quadrados para cada mercado com tamanho proporcional
   sortedData.forEach(item => {
-    const percentage = (item.value / totalMarketCap * 100).toFixed(1);
-    html += `
-      <div class="market-cap-box" style="background-color: ${item.color};">
-        <div class="market-cap-box-name">${item.name}</div>
-        <div class="market-cap-box-value">$${item.value}${item.unit}</div>
-        <div class="market-cap-box-percentage">${percentage}%</div>
-      </div>
+    const percentage = (item.value / totalMarketCap * 100);
+    const box = document.createElement('div');
+    box.className = 'market-cap-box';
+    box.style.backgroundColor = item.color;
+    
+    // Calcular o tamanho do quadrado baseado na porcentagem
+    // Definir grid-column e grid-row span baseado no valor relativo
+    let colSpan = 1;
+    let rowSpan = 1;
+    
+    if (percentage > 40) { // Real Estate
+      colSpan = 8;
+      rowSpan = 4;
+    } else if (percentage > 20) { // Bonds
+      colSpan = 6;
+      rowSpan = 3;
+    } else if (percentage > 15) { // Equities, Money
+      colSpan = 6;
+      rowSpan = 2;
+    } else if (percentage > 2) { // Gold
+      colSpan = 4;
+      rowSpan = 2;
+    } else if (percentage > 1) { // Art, Cars & Collectibles
+      colSpan = 3;
+      rowSpan = 2;
+    } else { // Bitcoin
+      colSpan = 2;
+      rowSpan = 2;
+    }
+    
+    box.style.gridColumn = `span ${colSpan}`;
+    box.style.gridRow = `span ${rowSpan}`;
+    
+    box.innerHTML = `
+      <div class="market-cap-box-name">${item.name}</div>
+      <div class="market-cap-box-value">$${item.value}${item.unit}</div>
+      <div class="market-cap-box-percentage">${percentage.toFixed(1)}%</div>
     `;
+    
+    marketCapContainer.appendChild(box);
   });
-  
-  marketCapContainer.innerHTML = html;
 }
 
 // Inicializar métricas de escassez
@@ -434,7 +465,7 @@ function initScarcityMetrics() {
   }).join('');
 }
 
-// Inicializar calendário econômico
+// Inicializar calendário econômico com apenas 4 eventos visíveis
 function initEconomicCalendar() {
   const eventsContainer = document.getElementById('events-container');
   if (!eventsContainer) return;
@@ -452,18 +483,20 @@ function initEconomicCalendar() {
     return eventDate >= twoDaysAgo;
   });
   
-  // Renderizar eventos
+  // Renderizar apenas os primeiros 4 eventos
   if (relevantEvents.length === 0) {
     eventsContainer.innerHTML = "<p class='no-events'>Nenhum evento econômico próximo encontrado.</p>";
     return;
   }
   
-  eventsContainer.innerHTML = relevantEvents.map(event => {
+  // Limitar a 4 eventos visíveis
+  const visibleEvents = relevantEvents.slice(0, 4);
+  
+  eventsContainer.innerHTML = visibleEvents.map(event => {
     const eventDate = new Date(event.date);
     const formattedDate = eventDate.toLocaleDateString('pt-BR', { 
       day: 'numeric', 
-      month: 'short',
-      year: 'numeric'
+      month: 'short'
     });
     
     return `
@@ -477,6 +510,62 @@ function initEconomicCalendar() {
       </div>
     `;
   }).join('');
+  
+  // Atualizar indicadores de scroll
+  const scrollDotsContainer = document.querySelector('.scroll-dots');
+  if (scrollDotsContainer && relevantEvents.length > 4) {
+    scrollDotsContainer.innerHTML = '';
+    const totalPages = Math.ceil(relevantEvents.length / 4);
+    
+    for (let i = 0; i < totalPages; i++) {
+      const dot = document.createElement('span');
+      dot.className = i === 0 ? 'scroll-dot active' : 'scroll-dot';
+      dot.dataset.page = i;
+      dot.addEventListener('click', () => {
+        showEventsPage(i, relevantEvents);
+      });
+      scrollDotsContainer.appendChild(dot);
+    }
+  }
+}
+
+// Função para mostrar uma página específica de eventos
+function showEventsPage(page, events) {
+  const eventsContainer = document.getElementById('events-container');
+  if (!eventsContainer) return;
+  
+  const eventsPerPage = 4;
+  const startIdx = page * eventsPerPage;
+  const endIdx = startIdx + eventsPerPage;
+  const pageEvents = events.slice(startIdx, endIdx);
+  
+  eventsContainer.innerHTML = pageEvents.map(event => {
+    const eventDate = new Date(event.date);
+    const formattedDate = eventDate.toLocaleDateString('pt-BR', { 
+      day: 'numeric', 
+      month: 'short'
+    });
+    
+    return `
+      <div class="event-item ${event.impact}">
+        <div class="event-date">
+          <span class="event-impact-indicator ${event.impact}"></span>
+          ${formattedDate}
+        </div>
+        <div class="event-title">${event.title}</div>
+        <div class="event-description">${event.description}</div>
+      </div>
+    `;
+  }).join('');
+  
+  // Atualizar indicadores de página ativa
+  document.querySelectorAll('.scroll-dot').forEach((dot, idx) => {
+    if (idx === page) {
+      dot.classList.add('active');
+    } else {
+      dot.classList.remove('active');
+    }
+  });
 }
 
 // Função para carregar cotações
@@ -530,6 +619,11 @@ async function loadQuote(asset, quoteEl) {
 // Função para criar e renderizar gráficos
 function createChart(asset, canvas) {
   try {
+    // Destruir instância anterior do gráfico se existir
+    if (window.chartInstances && window.chartInstances[canvas.id]) {
+      window.chartInstances[canvas.id].destroy();
+    }
+    
     // Selecionar dados históricos com base no ativo
     const data = historicalData[asset.id] || [];
     
@@ -586,9 +680,11 @@ function createChart(asset, canvas) {
     // Criar gradiente para o preenchimento
     const ctx = canvas.getContext('2d');
     
-    // Destruir gráfico existente se houver
-    if (window.chartInstances && window.chartInstances[canvas.id]) {
-      window.chartInstances[canvas.id].destroy();
+    // Inicializar Chart.js se não estiver disponível
+    if (typeof Chart === 'undefined') {
+      console.error('Chart.js não está disponível');
+      canvas.parentNode.innerHTML = `<p style="color:#f44336;text-align:center;padding:20px;">Erro: Chart.js não está disponível</p>`;
+      return;
     }
     
     // Criar gráfico com Chart.js
@@ -745,7 +841,7 @@ function createChart(asset, canvas) {
     
   } catch (e) {
     console.error("Erro ao carregar gráfico:", e);
-    canvas.parentNode.innerHTML = `<p style="color:#f44336;text-align:center;padding:20px;">Erro ao carregar gráfico</p>`;
+    canvas.parentNode.innerHTML = `<p style="color:#f44336;text-align:center;padding:20px;">Erro ao carregar gráfico: ${e.message}</p>`;
   }
 }
 
