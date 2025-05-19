@@ -20,6 +20,58 @@ const satoshiQuotes = [
   "A raiz do problema com a moeda convencional é toda a confiança que é necessária para fazê-la funcionar."
 ];
 
+// Eventos do calendário econômico
+const economicEvents = [
+  {
+    date: "2025-05-22",
+    title: "Reunião do FOMC",
+    description: "Decisão de taxa de juros pelo Federal Reserve dos EUA",
+    impact: "high"
+  },
+  {
+    date: "2025-05-25",
+    title: "Dados de Inflação (CPI) - Brasil",
+    description: "Divulgação do índice de preços ao consumidor pelo IBGE",
+    impact: "medium"
+  },
+  {
+    date: "2025-06-01",
+    title: "Relatório de Empregos (EUA)",
+    description: "Divulgação dos dados de emprego não-agrícola dos EUA",
+    impact: "high"
+  },
+  {
+    date: "2025-06-05",
+    title: "Reunião do BCE",
+    description: "Decisão de política monetária do Banco Central Europeu",
+    impact: "high"
+  },
+  {
+    date: "2025-06-12",
+    title: "Reunião do COPOM",
+    description: "Decisão da taxa Selic pelo Banco Central do Brasil",
+    impact: "high"
+  },
+  {
+    date: "2025-06-15",
+    title: "PIB da China (Q2)",
+    description: "Divulgação do crescimento econômico trimestral da China",
+    impact: "medium"
+  },
+  {
+    date: "2025-06-20",
+    title: "Vencimento de Opções BTC",
+    description: "Vencimento de contratos de opções de Bitcoin",
+    impact: "medium"
+  },
+  {
+    date: "2025-07-01",
+    title: "Balanço Trimestral MicroStrategy",
+    description: "Divulgação dos resultados financeiros e holdings de Bitcoin",
+    impact: "low"
+  }
+];
+
 // Inicialização dos elementos da página
 document.addEventListener('DOMContentLoaded', function() {
   const quotesContainer = document.getElementById("quotes");
@@ -72,6 +124,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Iniciar carregamento de notícias
   loadNews();
+  
+  // Inicializar calendário econômico
+  initEconomicCalendar();
 
   // Configurar modo escuro
   setupDarkModeToggle();
@@ -81,13 +136,17 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Configurar citação de Satoshi
   setupSatoshiQuote();
+  
+  // Configurar indicadores de mercado
+  updateMarketIndicators();
 
-  // Atualizar cotações a cada 5 minutos
+  // Atualizar cotações e indicadores a cada 5 minutos
   setInterval(() => {
     const quoteElements = document.querySelectorAll('.quote');
     assets.forEach((asset, index) => {
       loadQuote(asset, quoteElements[index]);
     });
+    updateMarketIndicators();
   }, 300000);
 });
 
@@ -277,17 +336,69 @@ async function loadChart(asset, canvas) {
     // Configurar cores baseadas no tipo de ativo
     const getAssetColor = (symbol) => {
       const colors = {
-        "BTC": { border: "#f7931a", background: "rgba(247, 147, 26, 0.1)" },
-        "GOLD": { border: "#d4af37", background: "rgba(212, 175, 55, 0.1)" },
-        "SILVER": { border: "#c0c0c0", background: "rgba(192, 192, 192, 0.1)" },
-        "US10Y": { border: "#6a5acd", background: "rgba(106, 90, 205, 0.1)" },
-        "USDBRL": { border: "#20b2aa", background: "rgba(32, 178, 170, 0.1)" }
+        "BTC": { 
+          border: "#f7931a", 
+          background: {
+            gradient: true,
+            colorStart: "rgba(247, 147, 26, 0.2)",
+            colorEnd: "rgba(247, 147, 26, 0.05)"
+          }
+        },
+        "GOLD": { 
+          border: "#d4af37", 
+          background: {
+            gradient: true,
+            colorStart: "rgba(212, 175, 55, 0.2)",
+            colorEnd: "rgba(212, 175, 55, 0.05)"
+          }
+        },
+        "SILVER": { 
+          border: "#c0c0c0", 
+          background: {
+            gradient: true,
+            colorStart: "rgba(192, 192, 192, 0.2)",
+            colorEnd: "rgba(192, 192, 192, 0.05)"
+          }
+        },
+        "US10Y": { 
+          border: "#6a5acd", 
+          background: {
+            gradient: true,
+            colorStart: "rgba(106, 90, 205, 0.2)",
+            colorEnd: "rgba(106, 90, 205, 0.05)"
+          }
+        },
+        "USDBRL": { 
+          border: "#20b2aa", 
+          background: {
+            gradient: true,
+            colorStart: "rgba(32, 178, 170, 0.2)",
+            colorEnd: "rgba(32, 178, 170, 0.05)"
+          }
+        }
       };
       
-      return colors[symbol] || { border: "#4bc0c0", background: "rgba(75, 192, 192, 0.1)" };
+      return colors[symbol] || { 
+        border: "#4bc0c0", 
+        background: {
+          gradient: true,
+          colorStart: "rgba(75, 192, 192, 0.2)",
+          colorEnd: "rgba(75, 192, 192, 0.05)"
+        }
+      };
     };
     
     const colors = getAssetColor(asset.symbol);
+    
+    // Criar gradiente para o preenchimento
+    const ctx = canvas.getContext('2d');
+    let gradient = null;
+    
+    if (colors.background.gradient) {
+      gradient = ctx.createLinearGradient(0, 0, 0, 400);
+      gradient.addColorStop(0, colors.background.colorStart);
+      gradient.addColorStop(1, colors.background.colorEnd);
+    }
 
     // Criar gráfico com Chart.js
     const chart = new Chart(canvas, {
@@ -298,35 +409,46 @@ async function loadChart(asset, canvas) {
           label: asset.name,
           data: prices,
           borderColor: colors.border,
-          backgroundColor: colors.background,
+          backgroundColor: gradient || colors.background,
           fill: true,
           tension: 0.4,
           borderWidth: 2,
           pointRadius: 0,
-          pointHoverRadius: 5,
-          pointBackgroundColor: colors.border
+          pointHoverRadius: 6,
+          pointBackgroundColor: colors.border,
+          pointHoverBackgroundColor: "#fff",
+          pointHoverBorderWidth: 2,
+          pointHoverBorderColor: colors.border
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
         plugins: {
           legend: { 
             display: false
           },
           tooltip: {
+            enabled: true,
             mode: 'index',
             intersect: false,
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
             titleColor: '#333',
             bodyColor: '#666',
             borderColor: '#ddd',
             borderWidth: 1,
-            padding: 10,
+            cornerRadius: 4,
+            padding: 12,
+            boxPadding: 6,
+            usePointStyle: true,
             titleFont: {
               family: "'Segoe UI', sans-serif",
               size: 14,
-              weight: 'bold'
+              weight: '600'
             },
             bodyFont: {
               family: "'Segoe UI', sans-serif",
@@ -347,46 +469,85 @@ async function loadChart(asset, canvas) {
                   return `${quarterNames[quarter] || 'Jan'} ${year}`;
                 }
                 return '';
+              },
+              label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) {
+                  label += ': ';
+                }
+                
+                const value = context.parsed.y;
+                if (asset.symbol === "US10Y") {
+                  label += value.toFixed(2) + '%';
+                } else if (asset.symbol === "USDBRL") {
+                  label += 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+                } else {
+                  label += '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2 });
+                }
+                
+                return label;
               }
             }
           }
         },
         scales: {
           x: {
+            grid: {
+              display: true,
+              color: "rgba(0, 0, 0, 0.03)",
+              drawBorder: false,
+              drawTicks: false
+            },
             ticks: {
-              color: "#555",
+              color: "#888",
               font: { 
                 family: "'Segoe UI', sans-serif", 
-                size: 10
+                size: 11
               },
               maxRotation: 0,
               minRotation: 0,
+              padding: 10,
               callback: function(value, index) {
                 // Mostrar apenas os anos
                 return yearLabels.some(yl => yl.index === index) ? yearLabels.find(yl => yl.index === index).year : '';
               }
-            },
-            grid: { 
-              color: "rgba(0, 0, 0, 0.03)",
-              drawBorder: false,
-              drawOnChartArea: true,
-              drawTicks: false
             }
           },
           y: {
-            ticks: {
-              color: "#555",
-              font: { 
-                family: "'Segoe UI', sans-serif", 
-                size: 10
-              },
-              maxTicksLimit: 5
-            },
-            grid: { 
+            position: 'right',
+            grid: {
+              display: true,
               color: "rgba(0, 0, 0, 0.03)",
               drawBorder: false
+            },
+            ticks: {
+              color: "#888",
+              font: { 
+                family: "'Segoe UI', sans-serif", 
+                size: 11
+              },
+              padding: 10,
+              maxTicksLimit: 6,
+              callback: function(value) {
+                if (asset.symbol === "US10Y") {
+                  return value.toFixed(2) + '%';
+                } else if (asset.symbol === "USDBRL") {
+                  return 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+                } else {
+                  return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                }
+              }
             }
           }
+        },
+        elements: {
+          line: {
+            tension: 0.4
+          }
+        },
+        animation: {
+          duration: 1000,
+          easing: 'easeOutQuart'
         }
       }
     });
@@ -403,8 +564,8 @@ async function loadChart(asset, canvas) {
       
       ctx.save();
       ctx.lineWidth = 1;
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
-      ctx.setLineDash([5, 5]);
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.07)';
+      ctx.setLineDash([]);
       
       yearLabels.forEach(yearLabel => {
         const xPosition = this.scales.x.getPixelForValue(yearLabel.index);
@@ -496,6 +657,211 @@ async function loadNews() {
   } catch (e) {
     console.error("Erro ao carregar notícias:", e);
     newsContainer.innerHTML = "<p class='no-news'>Erro ao carregar notícias da Cointelegraph.</p>";
+  }
+}
+
+// Inicializar calendário econômico
+function initEconomicCalendar() {
+  const eventsContainer = document.getElementById('events-container');
+  if (!eventsContainer) return;
+  
+  // Ordenar eventos por data
+  const sortedEvents = [...economicEvents].sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+  // Filtrar apenas eventos futuros ou recentes (últimos 2 dias)
+  const now = new Date();
+  const twoDaysAgo = new Date(now);
+  twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+  
+  const relevantEvents = sortedEvents.filter(event => {
+    const eventDate = new Date(event.date);
+    return eventDate >= twoDaysAgo;
+  });
+  
+  // Exibir apenas os próximos 4 eventos
+  const displayEvents = relevantEvents.slice(0, 4);
+  
+  // Renderizar eventos
+  if (displayEvents.length === 0) {
+    eventsContainer.innerHTML = "<p class='no-events'>Nenhum evento econômico próximo encontrado.</p>";
+    return;
+  }
+  
+  eventsContainer.innerHTML = displayEvents.map(event => {
+    const eventDate = new Date(event.date);
+    const formattedDate = eventDate.toLocaleDateString('pt-BR', { 
+      day: 'numeric', 
+      month: 'short', 
+      year: 'numeric' 
+    });
+    
+    // Determinar quantos pontos ativos baseado no impacto
+    const impactDots = {
+      high: [1, 1, 1],
+      medium: [1, 1, 0],
+      low: [1, 0, 0]
+    };
+    
+    const dots = impactDots[event.impact] || [0, 0, 0];
+    
+    return `
+      <div class="event-card">
+        <div class="event-date">${formattedDate}</div>
+        <div class="event-title">${event.title}</div>
+        <div class="event-description">${event.description}</div>
+        <div class="event-impact impact-${event.impact}">
+          <span class="impact-label">Impacto:</span>
+          <div class="impact-dots">
+            <div class="impact-dot ${dots[0] ? 'active' : ''}"></div>
+            <div class="impact-dot ${dots[1] ? 'active' : ''}"></div>
+            <div class="impact-dot ${dots[2] ? 'active' : ''}"></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  // Configurar botões de navegação
+  const prevButton = document.getElementById('prev-events');
+  const nextButton = document.getElementById('next-events');
+  
+  if (prevButton && nextButton) {
+    let currentPage = 0;
+    const eventsPerPage = 4;
+    const totalPages = Math.ceil(relevantEvents.length / eventsPerPage);
+    
+    prevButton.addEventListener('click', () => {
+      if (currentPage > 0) {
+        currentPage--;
+        updateCalendarPage();
+      }
+    });
+    
+    nextButton.addEventListener('click', () => {
+      if (currentPage < totalPages - 1) {
+        currentPage++;
+        updateCalendarPage();
+      }
+    });
+    
+    function updateCalendarPage() {
+      const startIdx = currentPage * eventsPerPage;
+      const endIdx = startIdx + eventsPerPage;
+      const pageEvents = relevantEvents.slice(startIdx, endIdx);
+      
+      eventsContainer.innerHTML = pageEvents.map(event => {
+        const eventDate = new Date(event.date);
+        const formattedDate = eventDate.toLocaleDateString('pt-BR', { 
+          day: 'numeric', 
+          month: 'short', 
+          year: 'numeric' 
+        });
+        
+        const impactDots = {
+          high: [1, 1, 1],
+          medium: [1, 1, 0],
+          low: [1, 0, 0]
+        };
+        
+        const dots = impactDots[event.impact] || [0, 0, 0];
+        
+        return `
+          <div class="event-card">
+            <div class="event-date">${formattedDate}</div>
+            <div class="event-title">${event.title}</div>
+            <div class="event-description">${event.description}</div>
+            <div class="event-impact impact-${event.impact}">
+              <span class="impact-label">Impacto:</span>
+              <div class="impact-dots">
+                <div class="impact-dot ${dots[0] ? 'active' : ''}"></div>
+                <div class="impact-dot ${dots[1] ? 'active' : ''}"></div>
+                <div class="impact-dot ${dots[2] ? 'active' : ''}"></div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      // Atualizar estado dos botões
+      prevButton.disabled = currentPage === 0;
+      nextButton.disabled = currentPage === totalPages - 1;
+    }
+  }
+}
+
+// Atualizar indicadores de mercado
+function updateMarketIndicators() {
+  // Índice de Medo e Ganância
+  const fearGreedElement = document.getElementById('fear-greed');
+  if (fearGreedElement) {
+    const fearGreedValue = Math.floor(Math.random() * (80 - 50 + 1)) + 50; // Valor entre 50 e 80
+    const fearGreedText = fearGreedValue >= 75 ? "Ganância Extrema" : 
+                          fearGreedValue >= 60 ? "Ganância" : 
+                          fearGreedValue >= 45 ? "Neutro" : 
+                          fearGreedValue >= 25 ? "Medo" : "Medo Extremo";
+    
+    fearGreedElement.querySelector('.gauge-fill').style.width = `${fearGreedValue}%`;
+    fearGreedElement.querySelector('.gauge-value').textContent = `${fearGreedValue} - ${fearGreedText}`;
+  }
+  
+  // Volatilidade
+  const volatilityElement = document.getElementById('volatility');
+  if (volatilityElement) {
+    const volatilityValue = Math.floor(Math.random() * (60 - 30 + 1)) + 30; // Valor entre 30 e 60
+    const volatilityText = volatilityValue >= 60 ? "Alta" : 
+                           volatilityValue >= 40 ? "Moderada" : "Baixa";
+    
+    volatilityElement.querySelector('.gauge-fill').style.width = `${volatilityValue}%`;
+    volatilityElement.querySelector('.gauge-value').textContent = `${volatilityValue}% - ${volatilityText}`;
+  }
+  
+  // Dominância BTC
+  const btcDominanceElement = document.getElementById('btc-dominance');
+  if (btcDominanceElement) {
+    const dominanceValue = Math.floor(Math.random() * (60 - 50 + 1)) + 50; // Valor entre 50 e 60
+    
+    btcDominanceElement.querySelector('.gauge-fill').style.width = `${dominanceValue}%`;
+    btcDominanceElement.querySelector('.gauge-value').textContent = `${dominanceValue}%`;
+  }
+  
+  // Volume de Transações
+  const volumeElement = document.getElementById('transaction-volume');
+  if (volumeElement) {
+    const volumeValue = Math.floor(Math.random() * (80 - 60 + 1)) + 60; // Valor entre 60 e 80
+    const volumeAmount = (70 + Math.random() * 20).toFixed(1);
+    const volumeText = volumeValue >= 75 ? "Alto" : 
+                       volumeValue >= 50 ? "Moderado" : "Baixo";
+    
+    volumeElement.querySelector('.gauge-fill').style.width = `${volumeValue}%`;
+    volumeElement.querySelector('.gauge-value').textContent = `$${volumeAmount}B - ${volumeText}`;
+  }
+  
+  // Capitalização de Mercado
+  const marketCapElement = document.getElementById('market-cap');
+  if (marketCapElement) {
+    const marketCapValue = (2.2 + Math.random() * 0.4).toFixed(1);
+    const marketCapChange = (Math.random() * 8).toFixed(1);
+    
+    const marketCapValueElement = marketCapElement.querySelector('.market-cap-value');
+    const marketCapTrendElement = marketCapElement.querySelector('.market-cap-trend');
+    
+    if (marketCapValueElement && marketCapTrendElement) {
+      marketCapValueElement.textContent = `$${marketCapValue}T`;
+      marketCapTrendElement.textContent = `+${marketCapChange}% nas últimas 24h`;
+      marketCapTrendElement.style.color = '#4caf50';
+    }
+  }
+  
+  // Liquidez do Mercado
+  const liquidityElement = document.getElementById('market-liquidity');
+  if (liquidityElement) {
+    const liquidityValue = Math.floor(Math.random() * (70 - 50 + 1)) + 50; // Valor entre 50 e 70
+    const liquidityText = liquidityValue >= 70 ? "Alta" : 
+                          liquidityValue >= 50 ? "Moderada-Alta" : 
+                          liquidityValue >= 30 ? "Moderada" : "Baixa";
+    
+    liquidityElement.querySelector('.gauge-fill').style.width = `${liquidityValue}%`;
+    liquidityElement.querySelector('.gauge-value').textContent = liquidityText;
   }
 }
 
