@@ -1,20 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>What Matters</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
     <h1>What Matters</h1>
-    <p>Indicadores Econômicos e Ativos</p>
+    <p>Principais Indicadores Econômicos e Ativos</p>
   </header>
   <main>
     <div id="quotes"></div>
-
+    
+    <section id="market-panel">
+      <h2>Sentimento de Mercado</h2>
+      <div class="market-indicators">
+        <div class="indicator">
+          <div class="indicator-title">Índice de Medo e Ganância</div>
+          <div class="indicator-value" id="fear-greed">
+            <div class="gauge">
+              <div class="gauge-fill" style="width: 65%;"></div>
+            </div>
+            <div class="gauge-value">65 - Ganância</div>
+          </div>
+        </div>
+        <div class="indicator">
+          <div class="indicator-title">Volatilidade (30d )</div>
+          <div class="indicator-value" id="volatility">
+            <div class="gauge">
+              <div class="gauge-fill" style="width: 42%;"></div>
+            </div>
+            <div class="gauge-value">42% - Moderada</div>
+          </div>
+        </div>
+        <div class="indicator">
+          <div class="indicator-title">Dominância BTC</div>
+          <div class="indicator-value" id="btc-dominance">
+            <div class="gauge">
+              <div class="gauge-fill" style="width: 53%;"></div>
+            </div>
+            <div class="gauge-value">53%</div>
+          </div>
+        </div>
+        <div class="indicator">
+          <div class="indicator-title">Volume de Transações (24h)</div>
+          <div class="indicator-value" id="transaction-volume">
+            <div class="gauge">
+              <div class="gauge-fill" style="width: 68%;"></div>
+            </div>
+            <div class="gauge-value">$78.5B - Alto</div>
+          </div>
+        </div>
+        <div class="indicator">
+          <div class="indicator-title">Capitalização de Mercado Total</div>
+          <div class="indicator-value" id="market-cap">
+            <div class="gauge">
+              <div class="gauge-fill" style="width: 72%;"></div>
+            </div>
+            <div class="gauge-value">$2.4T - Expansão</div>
+          </div>
+        </div>
+        <div class="indicator">
+          <div class="indicator-title">Tendência de Longo Prazo (200d)</div>
+          <div class="indicator-value" id="long-trend">
+            <div class="gauge">
+              <div class="gauge-fill" style="width: 85%;"></div>
+            </div>
+            <div class="gauge-value">Fortemente Positiva</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section id="satoshi-quotes">
+      <h2>Palavras de Satoshi</h2>
+      <div class="quote-container">
+        <blockquote id="satoshi-quote">
+          "O problema raiz com a moeda convencional é toda a confiança que é necessária para fazê-la funcionar. O banco central deve ser confiável para não desvalorizar a moeda, mas a história das moedas fiduciárias está cheia de quebras dessa confiança."
+        </blockquote>
+        <div class="quote-author">- Satoshi Nakamoto</div>
+      </div>
+    </section>
+    
     <section id="news-summary">
       <h2>Resumo de Notícias Recentes</h2>
       <div id="news-content">
@@ -23,7 +93,7 @@
     </section>
   </main>
   <footer>
-    <p>&copy; 2025 What Matters</p>
+    <p>© 2025 What Matters</p>
   </footer>
   <script src="script.js"></script>
 </body>
