@@ -142,6 +142,155 @@ canvas {
   color: #666;
 }
 
+/* Estilo específico para capitalização de mercado */
+.market-cap-value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.3rem;
+}
+
+.market-cap-trend {
+  font-size: 0.9rem;
+  color: #4caf50;
+}
+
+/* Calendário Econômico */
+#economic-calendar {
+  background: #fff;
+  padding: 1.2rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+#economic-calendar h2 {
+  margin-bottom: 1.2rem;
+  font-family: 'Segoe UI', sans-serif;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 500;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+}
+
+.calendar-container {
+  position: relative;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.calendar-title {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.calendar-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.calendar-btn {
+  background: #f8f9fa;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendar-btn:hover {
+  background: #e9ecef;
+}
+
+.events-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.event-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.event-date {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  margin-bottom: 0.5rem;
+}
+
+.event-title {
+  font-weight: 500;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.event-description {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 0.5rem;
+  flex: 1;
+}
+
+.event-impact {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.impact-label {
+  font-size: 0.8rem;
+  color: #7f8c8d;
+}
+
+.impact-dots {
+  display: flex;
+  gap: 2px;
+}
+
+.impact-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ddd;
+}
+
+.impact-dot.active {
+  background: #f39c12;
+}
+
+.impact-high .impact-dot.active {
+  background: #e74c3c;
+}
+
+.impact-medium .impact-dot.active {
+  background: #f39c12;
+}
+
+.impact-low .impact-dot.active {
+  background: #3498db;
+}
+
 /* Citações de Satoshi */
 #satoshi-quotes {
   background: #fff;
@@ -326,6 +475,7 @@ footer {
 .dark-mode .quote,
 .dark-mode .chart-container,
 .dark-mode #market-panel,
+.dark-mode #economic-calendar,
 .dark-mode #satoshi-quotes,
 .dark-mode #news-summary {
   background: #2a2a2a;
@@ -334,12 +484,17 @@ footer {
 
 .dark-mode .quote strong,
 .dark-mode #market-panel h2,
+.dark-mode #economic-calendar h2,
 .dark-mode #satoshi-quotes h2,
-.dark-mode #news-summary h2 {
+.dark-mode #news-summary h2,
+.dark-mode .market-cap-value,
+.dark-mode .calendar-title,
+.dark-mode .event-title {
   color: #e0e0e0;
 }
 
 .dark-mode #market-panel h2,
+.dark-mode #economic-calendar h2,
 .dark-mode #news-summary h2,
 .dark-mode footer {
   border-color: #444;
@@ -355,6 +510,31 @@ footer {
 
 .dark-mode .gauge-value {
   color: #aaa;
+}
+
+.dark-mode .calendar-btn {
+  background: #333;
+}
+
+.dark-mode .calendar-btn:hover {
+  background: #444;
+}
+
+.dark-mode .event-card {
+  background: #333;
+}
+
+.dark-mode .event-date,
+.dark-mode .impact-label {
+  color: #999;
+}
+
+.dark-mode .event-description {
+  color: #bbb;
+}
+
+.dark-mode .impact-dot {
+  background: #555;
 }
 
 .dark-mode blockquote {
@@ -448,18 +628,21 @@ footer {
   }
   
   #market-panel,
+  #economic-calendar,
   #satoshi-quotes,
   #news-summary {
     padding: 1rem;
   }
   
   #market-panel h2,
+  #economic-calendar h2,
   #satoshi-quotes h2,
   #news-summary h2 {
     font-size: 1.3rem;
   }
   
-  .market-indicators {
+  .market-indicators,
+  .events-list {
     grid-template-columns: 1fr;
   }
   
