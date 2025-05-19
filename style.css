@@ -212,6 +212,14 @@ canvas {
   border-radius: 2px;
 }
 
+.market-cap-sources {
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: #888;
+  font-style: italic;
+  text-align: right;
+}
+
 /* Painel de Sentimento de Mercado */
 #market-panel {
   background: #fff;
@@ -265,19 +273,16 @@ canvas {
 .gauge-value {
   font-size: 0.9rem;
   color: #666;
+  margin-bottom: 0.2rem;
 }
 
-/* Estilo específico para capitalização de mercado */
-.market-cap-value {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 0.3rem;
-}
-
-.market-cap-trend {
-  font-size: 0.9rem;
+.indicator-change {
+  font-size: 0.8rem;
   color: #4caf50;
+}
+
+.indicator-change.negative {
+  color: #f44336;
 }
 
 /* Calendário Econômico */
@@ -661,6 +666,10 @@ footer {
 .dark-mode .market-cap-total,
 .dark-mode .market-cap-legend-item {
   color: #aaa;
+}
+
+.dark-mode .market-cap-sources {
+  color: #777;
 }
 
 .dark-mode .calendar-btn {
