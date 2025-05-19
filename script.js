@@ -6,6 +6,20 @@ const assets = [
   { name: "USD/BRL", id: "usdbrl", symbol: "USDBRL", currency: "brl" }
 ];
 
+// Citações de Satoshi Nakamoto
+const satoshiQuotes = [
+  "O problema raiz com a moeda convencional é toda a confiança que é necessária para fazê-la funcionar. O banco central deve ser confiável para não desvalorizar a moeda, mas a história das moedas fiduciárias está cheia de quebras dessa confiança.",
+  "Bitcoin é muito atrativo do ponto de vista libertário, se nós conseguirmos explicá-lo corretamente. Mas eu estou melhor com código do que com palavras.",
+  "Eu escolhi implementar a prova de trabalho em vez de provas de participação porque esta última requer um mecanismo de identificação, o que prejudicaria o anonimato.",
+  "Governos são bons em cortar a cabeça de redes centralmente controladas como o Napster, mas redes puramente P2P como Gnutella e Tor parecem estar se mantendo.",
+  "Muitas pessoas descartam automaticamente e-currency como uma causa perdida por causa de todas as empresas que falharam desde os anos 1990. Espero que seja óbvio que foi apenas a natureza centralizada desses sistemas que os condenou.",
+  "Com e-currency baseada em prova criptográfica, sem a necessidade de confiar em um terceiro intermediário, o dinheiro pode ser seguro e as transações effortless.",
+  "O preço de qualquer commodity tende a gravitar em direção ao custo de produção. Se o preço estiver abaixo do custo, então a produção diminui. Se o preço estiver acima do custo, o lucro pode ser obtido aumentando a produção.",
+  "Eu estou seguro de que daqui a 20 anos haverá um volume muito grande de transações ou nenhum.",
+  "Perdidos são os bitcoins cujas chaves privadas foram perdidas. Eles são como moedas de ouro que foram perdidas no oceano.",
+  "A raiz do problema com a moeda convencional é toda a confiança que é necessária para fazê-la funcionar."
+];
+
 // Inicialização dos elementos da página
 document.addEventListener('DOMContentLoaded', function() {
   const quotesContainer = document.getElementById("quotes");
@@ -64,9 +78,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Configurar relógio
   setupClock();
-
-  // Configurar painel de mercado
-  setupMarketPanel();
+  
+  // Configurar citação de Satoshi
+  setupSatoshiQuote();
 
   // Atualizar cotações a cada 5 minutos
   setInterval(() => {
@@ -533,45 +547,34 @@ function setupClock() {
   setInterval(updateClock, 1000);
 }
 
-// Nova sugestão: Painel de Mercado com Indicadores de Sentimento
-function setupMarketPanel() {
-  // Criar o painel de mercado
-  const main = document.querySelector('main');
-  const marketPanel = document.createElement('section');
-  marketPanel.id = 'market-panel';
-  marketPanel.innerHTML = `
-    <h2>Sentimento de Mercado</h2>
-    <div class="market-indicators">
-      <div class="indicator">
-        <div class="indicator-title">Índice de Medo e Ganância</div>
-        <div class="indicator-value" id="fear-greed">
-          <div class="gauge">
-            <div class="gauge-fill" style="width: 65%;"></div>
-          </div>
-          <div class="gauge-value">65 - Ganância</div>
-        </div>
-      </div>
-      <div class="indicator">
-        <div class="indicator-title">Volatilidade (30d)</div>
-        <div class="indicator-value" id="volatility">
-          <div class="gauge">
-            <div class="gauge-fill" style="width: 42%;"></div>
-          </div>
-          <div class="gauge-value">42% - Moderada</div>
-        </div>
-      </div>
-      <div class="indicator">
-        <div class="indicator-title">Dominância BTC</div>
-        <div class="indicator-value" id="btc-dominance">
-          <div class="gauge">
-            <div class="gauge-fill" style="width: 53%;"></div>
-          </div>
-          <div class="gauge-value">53%</div>
-        </div>
-      </div>
-    </div>
-  `;
+// Configurar citação de Satoshi
+function setupSatoshiQuote() {
+  const quoteElement = document.getElementById('satoshi-quote');
   
-  // Inserir o painel antes do resumo de notícias
-  main.insertBefore(marketPanel, document.getElementById('news-summary'));
+  // Usar o timestamp atual para selecionar uma citação
+  // Isso garante que a citação mude a cada dia, sem precisar de tarefas agendadas
+  function updateQuote() {
+    // Obter a data atual e resetar para o início do dia
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Usar o timestamp do dia como seed para selecionar uma citação
+    const dayTimestamp = Math.floor(today.getTime() / (24 * 60 * 60 * 1000));
+    const quoteIndex = dayTimestamp % satoshiQuotes.length;
+    
+    // Atualizar a citação
+    quoteElement.textContent = satoshiQuotes[quoteIndex];
+  }
+  
+  // Atualizar a citação imediatamente
+  updateQuote();
+  
+  // Verificar a cada hora se o dia mudou para atualizar a citação
+  setInterval(() => {
+    const now = new Date();
+    // Se for meia-noite (0h), atualizar a citação
+    if (now.getHours() === 0 && now.getMinutes() === 0) {
+      updateQuote();
+    }
+  }, 60000); // Verificar a cada minuto
 }
