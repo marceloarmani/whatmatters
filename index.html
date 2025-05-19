@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scarcity View</title>
+  <title>Scarcity Panel</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
-    <h1>Scarcity View</h1>
-    <p>Análise de ativos escassos em um mundo de abundância monetária</p>
+    <h1>Scarcity Panel</h1>
+    <p>Visualizando a escassez em um mundo de abundância monetária artificial</p>
   </header>
   <main>
     <div id="quotes"></div>
@@ -85,13 +85,10 @@
       <h2>Capitalização de Mercado Global</h2>
       <div class="market-cap-container">
         <div class="market-cap-header">
-          <div class="market-cap-title">Comparativo dos Principais Mercados Globais</div>
           <div class="market-cap-total">Capitalização Total: <span id="total-market-cap">$532.7T</span></div>
         </div>
-        <div class="market-cap-chart">
-          <div class="market-cap-bars">
-            <!-- Barras serão inseridas via JavaScript -->
-          </div>
+        <div class="market-cap-visual" id="market-cap-treemap">
+          <!-- Visualização em quadrados será inserida via JavaScript -->
         </div>
         <button id="sources-toggle" class="sources-button">Mostrar fontes</button>
         <div class="market-cap-sources" id="market-cap-sources">
@@ -100,17 +97,36 @@
       </div>
     </section>
     
-    <section id="economic-calendar">
-      <h2>Próximos Eventos Importantes</h2>
-      <div class="calendar-container">
-        <div class="calendar-header">
-          <div class="calendar-controls">
-            <button id="prev-events" class="calendar-btn">&lt;</button>
-            <button id="next-events" class="calendar-btn">&gt;</button>
-          </div>
+    <section id="scarcity-metrics">
+      <h2>Métricas de Escassez</h2>
+      <div class="scarcity-container">
+        <div class="scarcity-header">
+          <div class="scarcity-title">Indicadores de Escassez Relativa</div>
         </div>
-        <div class="events-list" id="events-container">
+        <div class="scarcity-metrics-grid">
+          <!-- Métricas de escassez serão inseridas via JavaScript -->
+        </div>
+      </div>
+    </section>
+    
+    <section id="economic-calendar">
+      <h2>Próximos Eventos</h2>
+      <div class="calendar-compact">
+        <div class="calendar-controls">
+          <button id="prev-events" class="calendar-btn">&lt;</button>
+          <button id="next-events" class="calendar-btn">&gt;</button>
+        </div>
+        <div class="events-compact" id="events-container">
           <!-- Eventos serão inseridos via JavaScript -->
+        </div>
+      </div>
+    </section>
+    
+    <section id="onchain-metrics">
+      <h2>Métricas On-Chain</h2>
+      <div class="onchain-container">
+        <div class="onchain-metrics-grid">
+          <!-- Métricas on-chain serão inseridas via JavaScript -->
         </div>
       </div>
     </section>
@@ -133,7 +149,7 @@
     </section>
   </main>
   <footer>
-    <p>© 2025 Scarcity View</p>
+    <p>© 2025 Scarcity Panel</p>
   </footer>
   <script src="script.js"></script>
 </body>
