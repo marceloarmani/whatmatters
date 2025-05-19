@@ -2,16 +2,15 @@ body {
   font-family: 'Segoe UI', sans-serif;
   background: #f9f9f9;
   color: #333;
-  padding: 2rem;
-  max-width: 1200px;
-  margin: auto;
+  padding: 1rem;
+  margin: 0;
   line-height: 1.6;
   transition: all 0.3s ease;
 }
 
 header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 header h1 {
@@ -26,38 +25,116 @@ header p {
   margin-top: 0;
 }
 
-.main-content {
+.three-column-layout {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .left-column {
+  width: 22%;
+  min-width: 220px;
+}
+
+.center-column {
   flex: 1;
-  max-width: 75%;
+  min-width: 0; /* Importante para evitar overflow */
 }
 
 .right-column {
-  width: 25%;
-  min-width: 250px;
-  position: sticky;
-  top: 2rem;
-  align-self: flex-start;
-  max-height: calc(100vh - 4rem);
-  overflow-y: auto;
+  width: 18%;
+  min-width: 180px;
+  max-width: 220px;
+}
+
+/* Sentimento de Mercado (Coluna Esquerda) */
+#market-sentiment {
+  background: #fff;
+  padding: 0.8rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+#market-sentiment h2 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  font-family: 'Segoe UI', sans-serif;
+  color: #2c3e50;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 0.4rem;
+}
+
+.sentiment-indicators {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.indicator {
+  margin-bottom: 0.5rem;
+}
+
+.indicator-title {
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+  color: #555;
+  font-size: 0.85rem;
+}
+
+.gauge {
+  height: 6px;
+  background: #eee;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.3rem;
+}
+
+.gauge-fill {
+  height: 100%;
+  background: linear-gradient(to right, #4caf50, #ffeb3b, #f44336);
+  border-radius: 3px;
+}
+
+.gauge-value {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.2rem;
+}
+
+.indicator-change {
+  font-size: 0.75rem;
+  color: #4caf50;
+}
+
+.indicator-change.negative {
+  color: #f44336;
+}
+
+/* Indicadores Centrais */
+#quotes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .quote-wrapper {
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .quote {
   background: #fff;
-  padding: 1rem;
+  padding: 0.8rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   cursor: pointer;
   transition: all 0.3s ease;
   border-left: 4px solid transparent;
+  margin-bottom: 0;
 }
 
 .quote:hover {
@@ -93,12 +170,11 @@ header p {
 
 .chart-container {
   margin-top: 0.5rem;
-  margin-bottom: 1.5rem;
   background: #fff;
-  padding: 1rem;
+  padding: 0.8rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  height: 300px;
+  height: 200px;
   transition: all 0.3s ease;
 }
 
@@ -110,17 +186,18 @@ canvas {
 /* Capitalização de Mercado Global */
 #market-cap-comparison {
   background: #fff;
-  padding: 1rem 1.2rem;
+  padding: 1rem;
   margin: 1.5rem 0;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 #market-cap-comparison h2 {
+  margin-top: 0;
   margin-bottom: 0.8rem;
   font-family: 'Segoe UI', sans-serif;
   color: #2c3e50;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 500;
   border-bottom: 1px solid #f0f0f0;
   padding-bottom: 0.4rem;
@@ -148,8 +225,9 @@ canvas {
 
 .market-cap-visual {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: minmax(30px, auto);
+  gap: 8px;
   margin-bottom: 1rem;
 }
 
@@ -157,10 +235,9 @@ canvas {
   position: relative;
   border-radius: 6px;
   overflow: hidden;
-  padding: 0.8rem;
+  padding: 0.6rem;
   color: #fff;
   text-align: center;
-  height: 100px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -176,17 +253,17 @@ canvas {
 
 .market-cap-box-name {
   font-weight: 600;
-  font-size: 0.9rem;
-  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
 }
 
 .market-cap-box-value {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   opacity: 0.9;
 }
 
 .market-cap-box-percentage {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   opacity: 0.8;
   margin-top: 0.2rem;
 }
@@ -195,13 +272,13 @@ canvas {
   background: transparent;
   border: none;
   color: #3498db;
-  font-size: 0.8rem;
-  padding: 0.4rem 0;
+  font-size: 0.75rem;
+  padding: 0.3rem 0;
   cursor: pointer;
   text-align: right;
   display: block;
   margin-left: auto;
-  margin-top: 0.4rem;
+  margin-top: 0.3rem;
 }
 
 .sources-button:hover {
@@ -209,8 +286,8 @@ canvas {
 }
 
 .market-cap-sources {
-  margin-top: 0.4rem;
-  font-size: 0.8rem;
+  margin-top: 0.3rem;
+  font-size: 0.75rem;
   color: #888;
   font-style: italic;
   text-align: right;
@@ -230,86 +307,21 @@ canvas {
   text-decoration: underline;
 }
 
-/* Painel de Sentimento de Mercado */
-#market-panel {
-  background: #fff;
-  padding: 1rem 1.2rem;
-  margin: 1.5rem 0;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-#market-panel h2 {
-  margin-bottom: 0.8rem;
-  font-family: 'Segoe UI', sans-serif;
-  color: #2c3e50;
-  font-size: 1.2rem;
-  font-weight: 500;
-  border-bottom: 1px solid #f0f0f0;
-  padding-bottom: 0.4rem;
-}
-
-.market-indicators {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.2rem;
-}
-
-.indicator {
-  flex: 1;
-  min-width: 200px;
-}
-
-.indicator-title {
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  color: #555;
-  font-size: 0.9rem;
-}
-
-.gauge {
-  height: 8px;
-  background: #eee;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 0.3rem;
-}
-
-.gauge-fill {
-  height: 100%;
-  background: linear-gradient(to right, #4caf50, #ffeb3b, #f44336);
-  border-radius: 4px;
-}
-
-.gauge-value {
-  font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 0.2rem;
-}
-
-.indicator-change {
-  font-size: 0.8rem;
-  color: #4caf50;
-}
-
-.indicator-change.negative {
-  color: #f44336;
-}
-
 /* Métricas de Escassez */
 #scarcity-metrics {
   background: #fff;
-  padding: 1rem 1.2rem;
+  padding: 1rem;
   margin: 1.5rem 0;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 #scarcity-metrics h2 {
+  margin-top: 0;
   margin-bottom: 0.8rem;
   font-family: 'Segoe UI', sans-serif;
   color: #2c3e50;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 500;
   border-bottom: 1px solid #f0f0f0;
   padding-bottom: 0.4rem;
@@ -317,17 +329,18 @@ canvas {
 
 .scarcity-metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
 }
 
 .scarcity-metric {
   background: #f8f9fa;
   border-radius: 8px;
-  padding: 0.8rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .scarcity-metric:hover {
@@ -343,23 +356,23 @@ canvas {
 }
 
 .scarcity-metric-value {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: 600;
   color: #2c3e50;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.5rem;
 }
 
 .scarcity-metric-description {
   font-size: 0.8rem;
   color: #7f8c8d;
-  flex: 1;
+  margin-bottom: 0.8rem;
 }
 
 .scarcity-comparison {
   display: flex;
   align-items: center;
-  margin-top: 0.5rem;
-  gap: 0.5rem;
+  margin-top: auto;
+  gap: 0.8rem;
 }
 
 .scarcity-comparison-item {
@@ -390,20 +403,23 @@ canvas {
   background-color: #c0c0c0;
 }
 
-/* Próximos Eventos (Coluna Lateral) */
+/* Próximos Eventos (Coluna Direita) */
 #economic-calendar {
   background: #fff;
-  padding: 1rem;
+  padding: 0.8rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   margin-bottom: 1rem;
+  position: sticky;
+  top: 1rem;
 }
 
 #economic-calendar h2 {
+  margin-top: 0;
   margin-bottom: 0.8rem;
   font-family: 'Segoe UI', sans-serif;
   color: #2c3e50;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
   border-bottom: 1px solid #f0f0f0;
   padding-bottom: 0.4rem;
@@ -412,13 +428,21 @@ canvas {
 .calendar-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.6rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
 .event-item {
   background: #f8f9fa;
   border-radius: 6px;
-  padding: 0.8rem;
+  padding: 0.7rem;
   border-left: 3px solid transparent;
   transition: all 0.3s ease;
 }
@@ -441,7 +465,7 @@ canvas {
 }
 
 .event-date {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: #7f8c8d;
   margin-bottom: 0.3rem;
   display: flex;
@@ -470,21 +494,168 @@ canvas {
 
 .event-title {
   font-weight: 500;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #2c3e50;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.3rem;
 }
 
 .event-description {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: #666;
   line-height: 1.4;
+}
+
+.events-scroll-indicator {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.scroll-dots {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.scroll-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #ddd;
+}
+
+.scroll-dot.active {
+  background-color: #3498db;
+}
+
+/* Últimas Notícias */
+#news-summary {
+  background: #fff;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+#news-summary h2 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  font-family: 'Segoe UI', sans-serif;
+  color: #2c3e50;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 0.4rem;
+}
+
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.news-item {
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+}
+
+.news-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.news-image {
+  height: 140px;
+  overflow: hidden;
+}
+
+.news-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.news-item:hover .news-image img {
+  transform: scale(1.05);
+}
+
+.news-content {
+  padding: 0.8rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.news-item h3 {
+  margin-top: 0;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.news-item h3 a {
+  color: #3498db;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.news-item h3 a:hover {
+  color: #2980b9;
+}
+
+.news-item p {
+  color: #555;
+  margin-bottom: 0.4rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.news-source {
+  display: inline-block;
+  font-size: 0.65rem;
+  color: #fff;
+  background: #3498db;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  margin-right: 0.4rem;
+}
+
+.news-item small {
+  color: #7f8c8d;
+  font-size: 0.7rem;
+  margin-top: auto;
+}
+
+.news-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.4rem;
+}
+
+.news-datetime {
+  color: #7f8c8d;
+  font-size: 0.7rem;
+}
+
+.no-news {
+  color: #7f8c8d;
+  text-align: center;
+  font-style: italic;
+  padding: 0.8rem 0;
 }
 
 /* Citações de Satoshi */
 #satoshi-quotes {
   background: #fff;
-  padding: 1rem 1.2rem;
+  padding: 1rem;
   margin: 1.5rem 0;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -492,11 +663,14 @@ canvas {
 }
 
 #satoshi-quotes h2 {
+  margin-top: 0;
   margin-bottom: 0.6rem;
   font-family: 'Segoe UI', sans-serif;
   color: #2c3e50;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 500;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 0.4rem;
 }
 
 .quote-container {
@@ -506,7 +680,7 @@ canvas {
 
 blockquote {
   font-style: italic;
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.6;
   color: #555;
   margin: 0 0 0.8rem 0;
@@ -535,131 +709,7 @@ blockquote::after {
 .quote-author {
   font-weight: 500;
   color: #7f8c8d;
-  font-size: 0.9rem;
-}
-
-/* Resumo de Notícias */
-#news-summary {
-  background: #fff;
-  padding: 1rem 1.2rem;
-  margin-top: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-#news-summary h2 {
-  margin-bottom: 0.8rem;
-  font-family: 'Segoe UI', sans-serif;
-  color: #2c3e50;
-  font-size: 1.2rem;
-  font-weight: 500;
-  border-bottom: 1px solid #f0f0f0;
-  padding-bottom: 0.4rem;
-}
-
-.news-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.2rem;
-}
-
-.news-item {
-  display: flex;
-  flex-direction: column;
-  background: #f8f9fa;
-  border-radius: 8px;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  height: 100%;
-}
-
-.news-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-.news-image {
-  height: 160px;
-  overflow: hidden;
-}
-
-.news-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.news-item:hover .news-image img {
-  transform: scale(1.05);
-}
-
-.news-content {
-  padding: 0.8rem;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.news-item h3 {
-  margin-top: 0;
-  margin-bottom: 0.4rem;
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1.3;
-}
-
-.news-item h3 a {
-  color: #3498db;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.news-item h3 a:hover {
-  color: #2980b9;
-}
-
-.news-item p {
-  color: #555;
-  margin-bottom: 0.4rem;
   font-size: 0.85rem;
-  line-height: 1.4;
-  flex: 1;
-}
-
-.news-source {
-  display: inline-block;
-  font-size: 0.7rem;
-  color: #fff;
-  background: #3498db;
-  padding: 0.2rem 0.4rem;
-  border-radius: 3px;
-  margin-right: 0.4rem;
-}
-
-.news-item small {
-  color: #7f8c8d;
-  font-size: 0.75rem;
-  margin-top: auto;
-}
-
-.news-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 0.4rem;
-}
-
-.news-datetime {
-  color: #7f8c8d;
-  font-size: 0.75rem;
-}
-
-.no-news {
-  color: #7f8c8d;
-  text-align: center;
-  font-style: italic;
-  padding: 0.8rem 0;
 }
 
 footer {
@@ -688,7 +738,7 @@ footer {
 .dark-mode .quote,
 .dark-mode .chart-container,
 .dark-mode #market-cap-comparison,
-.dark-mode #market-panel,
+.dark-mode #market-sentiment,
 .dark-mode #economic-calendar,
 .dark-mode #satoshi-quotes,
 .dark-mode #news-summary,
@@ -699,7 +749,7 @@ footer {
 
 .dark-mode .quote strong,
 .dark-mode #market-cap-comparison h2,
-.dark-mode #market-panel h2,
+.dark-mode #market-sentiment h2,
 .dark-mode #economic-calendar h2,
 .dark-mode #satoshi-quotes h2,
 .dark-mode #news-summary h2,
@@ -714,7 +764,7 @@ footer {
 }
 
 .dark-mode #market-cap-comparison h2,
-.dark-mode #market-panel h2,
+.dark-mode #market-sentiment h2,
 .dark-mode #economic-calendar h2,
 .dark-mode #news-summary h2,
 .dark-mode #scarcity-metrics h2,
@@ -744,7 +794,9 @@ footer {
   color: #5dade2;
 }
 
-.dark-mode .event-item {
+.dark-mode .event-item,
+.dark-mode .scarcity-metric,
+.dark-mode .news-item {
   background: #333;
 }
 
@@ -770,11 +822,6 @@ footer {
   color: #999;
 }
 
-.dark-mode .news-item,
-.dark-mode .scarcity-metric {
-  background: #333;
-}
-
 .dark-mode .news-item h3 a {
   color: #5dade2;
 }
@@ -796,6 +843,14 @@ footer {
 .dark-mode .scarcity-metric-description,
 .dark-mode .scarcity-comparison-item {
   color: #999;
+}
+
+.dark-mode .scroll-dot {
+  background-color: #555;
+}
+
+.dark-mode .scroll-dot.active {
+  background-color: #3498db;
 }
 
 /* Botão de alternar tema */
@@ -836,32 +891,40 @@ footer {
 }
 
 /* Responsividade */
-@media (max-width: 1024px) {
-  .main-content {
+@media (max-width: 1200px) {
+  .three-column-layout {
     flex-direction: column;
   }
   
-  .left-column {
+  .left-column, .center-column, .right-column {
+    width: 100%;
     max-width: 100%;
   }
   
   .right-column {
-    width: 100%;
+    order: -1;
+  }
+  
+  #economic-calendar {
     position: static;
+    margin-bottom: 1rem;
+  }
+  
+  .calendar-sidebar {
     max-height: none;
     overflow-y: visible;
   }
   
-  .calendar-sidebar {
+  .events-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 0.8rem;
   }
 }
 
 @media (max-width: 768px) {
   body {
-    padding: 1rem;
+    padding: 0.8rem;
   }
   
   header h1 {
@@ -869,30 +932,30 @@ footer {
   }
   
   .quote {
-    padding: 0.8rem;
+    padding: 0.7rem;
   }
   
   .chart-container {
-    height: 250px;
-    padding: 0.8rem;
+    height: 180px;
+    padding: 0.7rem;
   }
   
   #market-cap-comparison,
-  #market-panel,
+  #market-sentiment,
   #economic-calendar,
   #satoshi-quotes,
   #news-summary,
   #scarcity-metrics {
-    padding: 0.8rem 1rem;
+    padding: 0.8rem;
   }
   
   #market-cap-comparison h2,
-  #market-panel h2,
+  #market-sentiment h2,
   #economic-calendar h2,
   #satoshi-quotes h2,
   #news-summary h2,
   #scarcity-metrics h2 {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
   
   .market-cap-header {
@@ -901,13 +964,8 @@ footer {
     gap: 0.4rem;
   }
   
-  .market-indicators,
   .scarcity-metrics-grid {
     grid-template-columns: 1fr;
-  }
-  
-  .market-cap-visual {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   }
   
   .news-grid {
@@ -915,7 +973,7 @@ footer {
   }
   
   blockquote {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
   
   #theme-toggle {
