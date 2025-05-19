@@ -15,14 +15,20 @@
   <main>
     <div class="main-layout">
       <!-- Indicadores principais (expandidos horizontalmente ) -->
-      <section id="main-indicators">
+      <section id="main-indicators" class="primary-section">
         <div id="quotes"></div>
+        <div id="chart-area" class="chart-area">
+          <!-- Área dedicada para gráficos -->
+          <div class="chart-container" id="main-chart-container">
+            <canvas id="main-chart"></canvas>
+          </div>
+        </div>
       </section>
       
       <div class="content-layout">
         <div class="left-content">
           <!-- Sentimento de Mercado -->
-          <section id="market-sentiment">
+          <section id="market-sentiment" class="secondary-section">
             <h2>Sentimento de Mercado</h2>
             <div class="sentiment-indicators">
               <div class="indicator">
@@ -88,8 +94,24 @@
             </div>
           </section>
           
+          <!-- Próximos Eventos (5 eventos) -->
+          <section id="economic-calendar" class="tertiary-section">
+            <h2>Próximos Eventos</h2>
+            <div class="calendar-container">
+              <div class="events-list" id="events-container">
+                <!-- Eventos serão inseridos via JavaScript -->
+              </div>
+              <div class="events-scroll-indicator">
+                <div class="scroll-dots">
+                  <span class="scroll-dot active"></span>
+                  <span class="scroll-dot"></span>
+                </div>
+              </div>
+            </div>
+          </section>
+          
           <!-- Capitalização de Mercado Global -->
-          <section id="market-cap-comparison">
+          <section id="market-cap-comparison" class="compact-section">
             <h2>Capitalização de Mercado Global</h2>
             <div class="market-cap-container">
               <div class="market-cap-header">
@@ -131,24 +153,6 @@
                 "O problema raiz com a moeda convencional é toda a confiança que é necessária para fazê-la funcionar. O banco central deve ser confiável para não desvalorizar a moeda, mas a história das moedas fiduciárias está cheia de quebras dessa confiança."
               </blockquote>
               <div class="quote-author">- Satoshi Nakamoto</div>
-            </div>
-          </section>
-        </div>
-        
-        <div class="right-sidebar">
-          <!-- Próximos Eventos (5 eventos) -->
-          <section id="economic-calendar">
-            <h2>Próximos Eventos</h2>
-            <div class="calendar-sidebar">
-              <div class="events-list" id="events-container">
-                <!-- Eventos serão inseridos via JavaScript -->
-              </div>
-              <div class="events-scroll-indicator">
-                <div class="scroll-dots">
-                  <span class="scroll-dot active"></span>
-                  <span class="scroll-dot"></span>
-                </div>
-              </div>
             </div>
           </section>
         </div>
