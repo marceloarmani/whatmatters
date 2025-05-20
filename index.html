@@ -9,6 +9,13 @@
 </head>
 <body>
   <header class="compact-header">
+    <div class="header-stripes">
+      <div class="header-stripe"></div>
+      <div class="header-stripe"></div>
+      <div class="header-stripe"></div>
+      <div class="header-stripe"></div>
+      <div class="header-stripe"></div>
+    </div>
     <h1>Scarcity Panel</h1>
     <p>Navigating the digital scarcity horizon in an ocean of monetary abundance</p>
   </header>
@@ -26,96 +33,107 @@
       </section>
       
       <div class="content-layout">
-        <div class="left-content">
-          <!-- Two-column layout for Market Sentiment and Upcoming Events -->
-          <div class="two-column-layout">
-            <!-- Market Sentiment -->
-            <section id="market-sentiment" class="secondary-section">
-              <h2>Market Sentiment</h2>
-              <div class="sentiment-indicators">
-                <div class="indicator">
-                  <div class="indicator-title">Fear & Greed Index</div>
-                  <div class="indicator-value" id="fear-greed">
-                    <div class="gauge">
-                      <div class="gauge-fill" style="width: 65%;"></div>
-                    </div>
-                    <div class="gauge-value">65 - Greed</div>
-                    <div class="indicator-change">+5% (24h)</div>
+        <!-- Two-column layout for Market Sentiment and Upcoming Events -->
+        <div class="two-column-layout">
+          <!-- Market Sentiment -->
+          <section id="market-sentiment" class="secondary-section">
+            <h2>Market sentiment</h2>
+            <div class="sentiment-indicators">
+              <div class="indicator">
+                <div class="indicator-title">Fear & Greed Index</div>
+                <div class="indicator-value" id="fear-greed">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 65%;"></div>
                   </div>
-                </div>
-                <div class="indicator">
-                  <div class="indicator-title">Volatility (30d)</div>
-                  <div class="indicator-value" id="volatility">
-                    <div class="gauge">
-                      <div class="gauge-fill" style="width: 42%;"></div>
-                    </div>
-                    <div class="gauge-value">42% - Moderate</div>
-                    <div class="indicator-change">-3% (24h)</div>
-                  </div>
-                </div>
-                <div class="indicator">
-                  <div class="indicator-title">BTC Dominance</div>
-                  <div class="indicator-value" id="btc-dominance">
-                    <div class="gauge">
-                      <div class="gauge-fill" style="width: 53%;"></div>
-                    </div>
-                    <div class="gauge-value">53%</div>
-                    <div class="indicator-change">+0.8% (24h)</div>
-                  </div>
-                </div>
-                <div class="indicator">
-                  <div class="indicator-title">Transaction Volume (24h)</div>
-                  <div class="indicator-value" id="transaction-volume">
-                    <div class="gauge">
-                      <div class="gauge-fill" style="width: 68%;"></div>
-                    </div>
-                    <div class="gauge-value">$78.5B - High</div>
-                    <div class="indicator-change">+12% (24h)</div>
-                  </div>
-                </div>
-                <div class="indicator">
-                  <div class="indicator-title">Total Market Cap</div>
-                  <div class="indicator-value" id="market-cap">
-                    <div class="gauge">
-                      <div class="gauge-fill" style="width: 58%;"></div>
-                    </div>
-                    <div class="gauge-value">$2.4T</div>
-                    <div class="indicator-change">+5.8% (24h)</div>
-                  </div>
-                </div>
-                <div class="indicator">
-                  <div class="indicator-title">Market Liquidity</div>
-                  <div class="indicator-value" id="market-liquidity">
-                    <div class="gauge">
-                      <div class="gauge-fill" style="width: 62%;"></div>
-                    </div>
-                    <div class="gauge-value">Moderate-High</div>
-                    <div class="indicator-change">+2.3% (24h)</div>
-                  </div>
+                  <div class="gauge-value">65 - Greed</div>
+                  <div class="indicator-change">+5% (24h)</div>
                 </div>
               </div>
-            </section>
-            
-            <!-- Upcoming Events (5 events) -->
-            <section id="economic-calendar" class="tertiary-section">
-              <h2>Upcoming Events</h2>
-              <div class="calendar-container">
-                <div class="events-list" id="events-container">
-                  <!-- Events will be inserted via JavaScript -->
-                </div>
-                <div class="events-scroll-indicator">
-                  <div class="scroll-dots">
-                    <span class="scroll-dot active"></span>
-                    <span class="scroll-dot"></span>
+              <div class="indicator">
+                <div class="indicator-title">Volatility (30d)</div>
+                <div class="indicator-value" id="volatility">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 42%;"></div>
                   </div>
+                  <div class="gauge-value">42% - Moderate</div>
+                  <div class="indicator-change">-3% (24h)</div>
                 </div>
               </div>
-            </section>
-          </div>
+              <div class="indicator">
+                <div class="indicator-title">BTC Dominance</div>
+                <div class="indicator-value" id="btc-dominance">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 53%;"></div>
+                  </div>
+                  <div class="gauge-value">53%</div>
+                  <div class="indicator-change">+0.8% (24h)</div>
+                </div>
+              </div>
+              <div class="indicator">
+                <div class="indicator-title">Transaction Volume (24h)</div>
+                <div class="indicator-value" id="transaction-volume">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 68%;"></div>
+                  </div>
+                  <div class="gauge-value">$78.5B - High</div>
+                  <div class="indicator-change">+12% (24h)</div>
+                </div>
+              </div>
+              <div class="indicator">
+                <div class="indicator-title">Total Market Cap</div>
+                <div class="indicator-value" id="market-cap">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 58%;"></div>
+                  </div>
+                  <div class="gauge-value">$2.4T</div>
+                  <div class="indicator-change">+5.8% (24h)</div>
+                </div>
+              </div>
+              <div class="indicator">
+                <div class="indicator-title">Market Liquidity</div>
+                <div class="indicator-value" id="market-liquidity">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 62%;"></div>
+                  </div>
+                  <div class="gauge-value">Moderate-High</div>
+                  <div class="indicator-change">+2.3% (24h)</div>
+                </div>
+              </div>
+            </div>
+          </section>
           
-          <!-- Global Market Capitalization -->
+          <!-- Upcoming Events (5 events) -->
+          <section id="economic-calendar" class="tertiary-section">
+            <h2>Upcoming events</h2>
+            <div class="calendar-container">
+              <div class="events-list" id="events-container">
+                <!-- Events will be inserted via JavaScript -->
+              </div>
+              <div class="events-scroll-indicator">
+                <div class="scroll-dots">
+                  <span class="scroll-dot active"></span>
+                  <span class="scroll-dot"></span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        
+        <!-- Two-column layout for Scarcity Metrics and Market Capitalization -->
+        <div class="metrics-layout">
+          <!-- Scarcity Metrics -->
+          <section id="scarcity-metrics">
+            <h2>Scarcity metrics</h2>
+            <div class="scarcity-container">
+              <div class="scarcity-metrics-grid">
+                <!-- Scarcity metrics will be inserted via JavaScript -->
+              </div>
+            </div>
+          </section>
+          
+          <!-- Market Capitalization -->
           <section id="market-cap-comparison" class="compact-section">
-            <h2>Global Market Capitalization</h2>
+            <h2>Market capitalization</h2>
             <div class="market-cap-container">
               <div class="market-cap-header">
                 <div class="market-cap-total">Total Capitalization: <span id="total-market-cap">$532.7T</span></div>
@@ -129,36 +147,26 @@
               </div>
             </div>
           </section>
-          
-          <!-- Scarcity Metrics -->
-          <section id="scarcity-metrics">
-            <h2>Scarcity Metrics</h2>
-            <div class="scarcity-container">
-              <div class="scarcity-metrics-grid">
-                <!-- Scarcity metrics will be inserted via JavaScript -->
-              </div>
-            </div>
-          </section>
-          
-          <!-- Latest News -->
-          <section id="news-summary">
-            <h2>Latest News</h2>
-            <div id="news-content">
-              <p>Loading news...</p>
-            </div>
-          </section>
-          
-          <!-- Satoshi Quotes -->
-          <section id="satoshi-quotes">
-            <h2>Words of Satoshi</h2>
-            <div class="quote-container">
-              <blockquote id="satoshi-quote">
-                "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust."
-              </blockquote>
-              <div class="quote-author">- Satoshi Nakamoto</div>
-            </div>
-          </section>
         </div>
+        
+        <!-- Latest News -->
+        <section id="news-summary">
+          <h2>Latest news</h2>
+          <div id="news-content">
+            <p>Loading news...</p>
+          </div>
+        </section>
+        
+        <!-- Satoshi Quotes -->
+        <section id="satoshi-quotes">
+          <h2>Words of Satoshi</h2>
+          <div class="quote-container">
+            <blockquote id="satoshi-quote">
+              "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust."
+            </blockquote>
+            <div class="quote-author">- Satoshi Nakamoto</div>
+          </div>
+        </section>
       </div>
     </div>
   </main>
