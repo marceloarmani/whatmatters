@@ -47,7 +47,7 @@ header.compact-header {
 
 .header-logo {
   display: inline-block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.0rem;
 }
 
 .header-logo svg {
