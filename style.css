@@ -361,10 +361,17 @@ canvas {
   margin-bottom: 1.5rem;
 }
 
+.calendar-container {
+  max-height: 180px; /* Limit height */
+  overflow: hidden;
+}
+
 .events-list {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 1fr; /* Force single row */
   gap: 0.8rem;
+  height: 100%;
 }
 
 .event-item {
@@ -373,6 +380,8 @@ canvas {
   background: #f8f9fa;
   border-left: 3px solid #ddd;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .event-item.high {
@@ -409,26 +418,6 @@ canvas {
   background: #ddd;
 }
 
-.impact-legend {
-  position: absolute;
-  top: -20px;
-  right: 0;
-  background: rgba(255,255,255,0.95);
-  padding: 3px 6px;
-  border-radius: 3px;
-  font-size: 0.7rem;
-  color: #666;
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.2s;
-  pointer-events: none;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.event-impact:hover .impact-legend {
-  opacity: 1;
-}
-
 .high .impact-dot {
   background: #f44336;
 }
@@ -460,15 +449,25 @@ canvas {
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   margin-bottom: 1.5rem;
-  max-height: 400px;
+  max-height: 350px; /* Reduced height */
   overflow-y: auto;
 }
 
-.market-cap-header {
+.section-header-with-total {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+}
+
+.section-header-with-total h2 {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  color: #2c3e50;
+  font-size: 1.2rem;
+  font-weight: 500;
 }
 
 .market-cap-total {
@@ -593,19 +592,22 @@ canvas {
   padding: 0.3rem 0.6rem;
   border-radius: 4px;
   font-size: 0.8rem;
-  color: #fff;
+  background: transparent;
 }
 
 .scarcity-comparison-item.bitcoin {
-  background: #f7931a;
+  color: #f7931a;
+  border: 1px solid #f7931a;
 }
 
 .scarcity-comparison-item.gold {
-  background: #d4af37;
+  color: #d4af37;
+  border: 1px solid #d4af37;
 }
 
 .scarcity-comparison-item.silver {
-  background: #a0a0a0;
+  color: #a0a0a0;
+  border: 1px solid #a0a0a0;
 }
 
 /* Visualization of mined bitcoins */
@@ -622,6 +624,7 @@ canvas {
   height: 100%;
   background: #f7931a;
   border-radius: 4px;
+  opacity: 0.8; /* Improved visibility */
 }
 
 .supply-progress-text {
@@ -631,8 +634,9 @@ canvas {
   transform: translate(-50%, -50%);
   font-size: 0.8rem;
   color: #fff;
-  text-shadow: 0 0 2px rgba(0,0,0,0.5);
+  text-shadow: 0 0 3px rgba(0,0,0,0.7); /* Enhanced text shadow for better visibility */
   white-space: nowrap;
+  font-weight: 600; /* Make text bolder */
 }
 
 .days-remaining {
@@ -777,7 +781,7 @@ footer {
   }
   
   .events-list {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
   
   .scarcity-metrics-grid {
@@ -799,6 +803,10 @@ footer {
 
 @media (max-width: 480px) {
   .sentiment-indicators {
+    grid-template-columns: 1fr;
+  }
+  
+  .events-list {
     grid-template-columns: 1fr;
   }
   
