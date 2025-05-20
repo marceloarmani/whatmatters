@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -6,16 +6,6 @@
   <title>Scarcity Panel</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    .compact-header .header-content {
-      padding-top: 2rem;
-      padding-bottom: 2rem;
-    }
-
-    .header-logo {
-      margin-top: 0.5rem;
-    }
-  </style>
 </head>
 <body>
   <header class="compact-header">
