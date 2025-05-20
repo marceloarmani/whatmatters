@@ -9,35 +9,24 @@
 </head>
 <body>
   <header class="compact-header">
-    <div class="header-stripes">
-      <div class="header-stripe"></div>
-      <div class="header-stripe"></div>
-      <div class="header-stripe"></div>
-      <div class="header-stripe"></div>
-      <div class="header-stripe"></div>
-    </div>
+    <div class="header-accent"></div>
     <h1>Scarcity Panel</h1>
     <p>Navigating the digital scarcity horizon in an ocean of monetary abundance</p>
   </header>
   <main>
     <div class="main-layout">
-      <!-- Main indicators (one per row ) -->
-      <section id="main-indicators" class="primary-section">
+      <!-- Main indicators (one per row with individual charts ) -->
+      <section id="main-indicators" class="standard-section">
+        <h2 class="section-header">Asset indicators</h2>
         <div id="quotes" class="vertical-quotes"></div>
-        <div id="chart-area" class="chart-area">
-          <!-- Area dedicated for charts -->
-          <div class="chart-container" id="main-chart-container">
-            <canvas id="main-chart"></canvas>
-          </div>
-        </div>
       </section>
       
       <div class="content-layout">
-        <!-- Two-column layout for Market Sentiment and Upcoming Events -->
-        <div class="two-column-layout">
+        <!-- Vertical layout for Market Sentiment and Upcoming Events -->
+        <div class="vertical-sections">
           <!-- Market Sentiment -->
-          <section id="market-sentiment" class="secondary-section">
-            <h2>Market sentiment</h2>
+          <section id="market-sentiment" class="standard-section">
+            <h2 class="section-header">Market sentiment</h2>
             <div class="sentiment-indicators">
               <div class="indicator">
                 <div class="indicator-title">Fear & Greed Index</div>
@@ -102,28 +91,22 @@
             </div>
           </section>
           
-          <!-- Upcoming Events (5 events) -->
-          <section id="economic-calendar" class="tertiary-section">
-            <h2>Upcoming events</h2>
+          <!-- Upcoming Events (4 columns in a single row) -->
+          <section id="economic-calendar" class="standard-section">
+            <h2 class="section-header">Upcoming events</h2>
             <div class="calendar-container">
               <div class="events-list" id="events-container">
                 <!-- Events will be inserted via JavaScript -->
-              </div>
-              <div class="events-scroll-indicator">
-                <div class="scroll-dots">
-                  <span class="scroll-dot active"></span>
-                  <span class="scroll-dot"></span>
-                </div>
               </div>
             </div>
           </section>
         </div>
         
-        <!-- Two-column layout for Scarcity Metrics and Market Capitalization -->
-        <div class="metrics-layout">
+        <!-- Vertical layout for Scarcity Metrics and Market Capitalization -->
+        <div class="vertical-sections">
           <!-- Scarcity Metrics -->
-          <section id="scarcity-metrics">
-            <h2>Scarcity metrics</h2>
+          <section id="scarcity-metrics" class="standard-section">
+            <h2 class="section-header">Scarcity metrics</h2>
             <div class="scarcity-container">
               <div class="scarcity-metrics-grid">
                 <!-- Scarcity metrics will be inserted via JavaScript -->
@@ -132,8 +115,8 @@
           </section>
           
           <!-- Market Capitalization -->
-          <section id="market-cap-comparison" class="compact-section">
-            <h2>Market capitalization</h2>
+          <section id="market-cap-comparison" class="standard-section">
+            <h2 class="section-header">Market capitalization</h2>
             <div class="market-cap-container">
               <div class="market-cap-header">
                 <div class="market-cap-total">Total Capitalization: <span id="total-market-cap">$532.7T</span></div>
@@ -150,16 +133,16 @@
         </div>
         
         <!-- Latest News -->
-        <section id="news-summary">
-          <h2>Latest news</h2>
+        <section id="news-summary" class="standard-section">
+          <h2 class="section-header">Latest news</h2>
           <div id="news-content">
             <p>Loading news...</p>
           </div>
         </section>
         
         <!-- Satoshi Quotes -->
-        <section id="satoshi-quotes">
-          <h2>Words of Satoshi</h2>
+        <section id="satoshi-quotes" class="standard-section">
+          <h2 class="section-header">Words of Satoshi</h2>
           <div class="quote-container">
             <blockquote id="satoshi-quote">
               "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust."
