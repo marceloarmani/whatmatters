@@ -1,238 +1,847 @@
-// Dados dos ativos e preços
-const assets = [
-  { name: "Bitcoin", symbol: "BTC", price: "$69,420.69", change: "+2.3%", color: "#f7931a", api: "coindesk" },
-  { name: "Gold", symbol: "XAU", price: "$2,712.80", change: "+0.7%", color: "#d4af37", api: "metals" },
-  { name: "Silver", symbol: "XAG", price: "$32.45", change: "+1.2%", color: "#c0c0c0", api: "metals" },
-  { name: "10-Year Treasury Yield", symbol: "10Y", price: "4.31%", change: "+0.03%", color: "#6a5acd", api: "treasury", tooltip: "Reveals the cost of government debt financing and signals market expectations for inflation. Rising yields expose the unsustainable nature of endless deficit spending and currency debasement." },
-  { name: "Dollar Index", symbol: "DXY", price: "102.85", change: "-0.3%", color: "#20b2aa", api: "forex", tooltip: "Measures the strength of the US dollar against a basket of major foreign currencies. Declining values reflect the erosion of purchasing power through monetary expansion." }
-];
-
-// Dados históricos para gráficos (exemplo abreviado)
-const historicalData = {
-  "Bitcoin": [
-    { year: 2020, data: [7200, 8300, 9450, 8700, 9800, 9200, 11300, 11800, 10500, 13800, 17500, 29000] },
-    { year: 2021, data: [33000, 45000, 58000, 56000, 37000, 35000, 42000, 47000, 43000, 61000, 58000, 46000] },
-    { year: 2022, data: [38000, 44000, 40000, 39000, 31000, 20000, 23000, 24000, 19000, 20500, 17000, 16500] },
-    { year: 2023, data: [16800, 23500, 28000, 30000, 27000, 30500, 29800, 28000, 26500, 34000, 37000, 42000] },
-    { year: 2024, data: [45000, 52000, 61000, 64000, 59000, 62000, 65000, 67000, 66000, 68000, 67500, 68900] },
-    { year: 2025, data: [66500, 68200, 69500, 68700, 69420] }
-  ],
-  "Gold": [
-    { year: 2020, data: [1520, 1585, 1620, 1680, 1730, 1780, 1960, 1920, 1880, 1900, 1860, 1895] },
-    { year: 2021, data: [1850, 1810, 1730, 1770, 1900, 1780, 1810, 1815, 1760, 1780, 1820, 1805] },
-    { year: 2022, data: [1800, 1870, 1920, 1880, 1840, 1810, 1760, 1770, 1670, 1650, 1750, 1820] },
-    { year: 2023, data: [1910, 1830, 1970, 1990, 1960, 1920, 1970, 2010, 1920, 1980, 2040, 2060] },
-    { year: 2024, data: [2050, 2120, 2180, 2220, 2260, 2290, 2310, 2330, 2400, 2480, 2550, 2625] },
-    { year: 2025, data: [2580, 2610, 2640, 2680, 2713] }
-  ],
-  "Silver": [
-    { year: 2020, data: [17.8, 18.5, 14.6, 15.7, 17.9, 18.2, 24.5, 27.4, 24.2, 24.1, 23.8, 26.3] },
-    { year: 2021, data: [27.0, 26.7, 25.0, 26.1, 27.4, 26.0, 25.5, 24.0, 22.5, 23.9, 23.1, 22.5] },
-    { year: 2022, data: [22.4, 24.3, 24.9, 23.0, 21.6, 20.3, 19.2, 19.5, 18.8, 19.5, 21.5, 23.9] },
-    { year: 2023, data: [24.1, 21.7, 24.2, 25.0, 23.5, 22.8, 24.5, 24.8, 23.0, 22.7, 24.5, 24.3] },
-    { year: 2024, data: [23.8, 25.6, 26.9, 27.5, 28.2, 28.9, 29.3, 29.8, 30.2, 30.5, 31.0, 31.8] },
-    { year: 2025, data: [30.9, 31.2, 31.5, 32.1, 32.45] }
-  ],
-  "10-Year Treasury Yield": [
-    { year: 2020, data: [1.88, 1.50, 0.70, 0.66, 0.65, 0.68, 0.55, 0.72, 0.68, 0.85, 0.84, 0.93] },
-    { year: 2021, data: [1.07, 1.44, 1.74, 1.65, 1.58, 1.45, 1.24, 1.30, 1.52, 1.55, 1.44, 1.51] },
-    { year: 2022, data: [1.78, 1.83, 2.32, 2.89, 2.84, 3.01, 2.65, 3.19, 3.83, 4.05, 3.68, 3.88] },
-    { year: 2023, data: [3.51, 3.92, 3.47, 3.45, 3.64, 3.84, 3.96, 4.10, 4.57, 4.89, 4.47, 3.88] },
-    { year: 2024, data: [4.05, 4.25, 4.35, 4.50, 4.60, 4.55, 4.48, 4.42, 4.38, 4.35, 4.30, 4.28] },
-    { year: 2025, data: [4.30, 4.32, 4.35, 4.30, 4.31] }
-  ],
-  "Dollar Index": [
-    { year: 2020, data: [97.3, 98.1, 99.0, 99.5, 98.3, 97.4, 93.3, 92.1, 93.9, 94.0, 92.3, 89.9] },
-    { year: 2021, data: [90.5, 90.9, 93.2, 91.3, 90.0, 92.4, 92.1, 92.5, 94.2, 94.1, 95.9, 95.7] },
-    { year: 2022, data: [96.5, 96.7, 98.3, 102.9, 101.8, 104.7, 106.1, 108.7, 112.1, 111.5, 106.7, 103.5] },
-    { year: 2023, data: [102.1, 104.4, 102.5, 101.9, 104.2, 102.6, 101.9, 104.1, 106.1, 106.6, 103.4, 101.9] },
-    { year: 2024, data: [103.4, 104.1, 104.5, 105.2, 104.8, 104.3, 103.9, 103.7, 103.5, 103.3, 103.2, 103.1] },
-    { year: 2025, data: [103.6, 103.5, 103.3, 103.0, 102.85] }
-  ]
-};
-
-// Eventos futuros
-const upcomingEvents = [
-  { date: "May 25, 2025", title: "FOMC Meeting", description: "Federal Reserve interest rate decision", impact: "high" },
-  { date: "June 02, 2025", title: "US Inflation Report", description: "Consumer Price Index (CPI) release", impact: "high" },
-  { date: "June 10, 2025", title: "Bitcoin 2025 Conference", description: "Largest annual Bitcoin event in Miami", impact: "medium" },
-  { date: "June 15, 2025", title: "US Employment Report", description: "US labor market data", impact: "medium" }
-];
-
-// Métricas de escassez
-const scarcityMetrics = [
-  { title: "Stock-to-Flow", value: "56", description: "Ratio between existing stock and annual production", comparison: [ { name: "Bitcoin", value: "56" }, { name: "Gold", value: "62" }, { name: "Silver", value: "22" } ] },
-  { title: "Annual Inflation", value: "1.74%", description: "Annual issuance rate relative to total supply", comparison: [ { name: "Bitcoin", value: "1.74%" }, { name: "Gold", value: "1.60%" }, { name: "Silver", value: "4.50%" } ] },
-  { title: "Bitcoins Mined", value: "19,368,750", description: "Amount of bitcoins already mined out of 21 million total", percentage: 92.23, remaining: "1,631,250" },
-  { title: "Next Halving", value: "April 2028", description: "Event that cuts mining reward in half", daysRemaining: 1056 }
-];
-
-// Renderiza próximos 4 eventos lado a lado
-function renderUpcomingEvents() {
-  const container = document.getElementById('events-container');
-  container.innerHTML = '';
-  upcomingEvents.slice(0, 4).forEach(event => {
-    const card = document.createElement('div');
-    card.className = 'event-card';
-    card.innerHTML = `
-      <h3>${event.title}</h3>
-      <p><strong>${event.date}</strong></p>
-      <p>${event.description}</p>
-    `;
-    container.appendChild(card);
-  });
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f9f9f9;
+  color: #333;
+  padding: 0;
+  margin: 0;
+  line-height: 1.6;
+  transition: all 0.3s ease;
 }
 
-// Renderiza métricas de escassez sem bordas, alinhadas na mesma linha
-function renderScarcityMetrics() {
-  const container = document.querySelector('.scarcity-metrics-grid');
-  container.innerHTML = '';
-
-  // Exemplo simples: mostrar Gold, Silver, Bitcoin na mesma linha
-  const goldDiv = document.createElement('div');
-  goldDiv.className = 'gold';
-  goldDiv.textContent = `Gold: $2,712.80`;
-
-  const silverDiv = document.createElement('div');
-  silverDiv.className = 'silver';
-  silverDiv.textContent = `Silver: $32.45`;
-
-  const bitcoinDiv = document.createElement('div');
-  bitcoinDiv.className = 'bitcoin';
-  bitcoinDiv.textContent = `Bitcoin: $69,420.69`;
-
-  container.appendChild(goldDiv);
-  container.appendChild(silverDiv);
-  container.appendChild(bitcoinDiv);
+/* Modern and elegant header with geometric pattern */
+header.compact-header {
+  text-align: center;
+  padding: 2rem 0 1.5rem;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  color: #fff;
 }
 
-// Atualiza indicadores de Market Sentiment (exemplo estático)
-function renderMarketSentiment() {
-  // Exemplo de atualização dos gauges (pode ser substituído por dados reais)
-  document.getElementById('fear-greed').querySelector('.gauge-fill').style.width = '65%';
-  document.querySelector('#fear-greed .gauge-value').textContent = '65 - Greed';
-  document.querySelector('#fear-greed .indicator-change').textContent = '+5% (24h)';
-
-  document.getElementById('volatility').querySelector('.gauge-fill').style.width = '42%';
-  document.querySelector('#volatility .gauge-value').textContent = '42% - Moderate';
-  document.querySelector('#volatility .indicator-change').textContent = '-3% (24h)';
-
-  document.getElementById('btc-dominance').querySelector('.gauge-fill').style.width = '53%';
-  document.querySelector('#btc-dominance .gauge-value').textContent = '53%';
-  document.querySelector('#btc-dominance .indicator-change').textContent = '+0.8% (24h)';
-
-  document.getElementById('transaction-volume').querySelector('.gauge-fill').style.width = '68%';
-  document.querySelector('#transaction-volume .gauge-value').textContent = '$78.5B - High';
-  document.querySelector('#transaction-volume .indicator-change').textContent = '+12% (24h)';
-
-  document.getElementById('market-cap').querySelector('.gauge-fill').style.width = '58%';
-  document.querySelector('#market-cap .gauge-value').textContent = '$2.0T';
-  document.querySelector('#market-cap .indicator-change').textContent = '+5.8% (24h)';
-
-  document.getElementById('market-liquidity').querySelector('.gauge-fill').style.width = '62%';
-  document.querySelector('#market-liquidity .gauge-value').textContent = 'Moderate-High';
-  document.querySelector('#market-liquidity .indicator-change').textContent = '+2.3% (24h)';
+.header-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.1;
+  z-index: 0;
 }
 
-// Renderiza gráfico para um ativo usando Chart.js com margem inferior maior para anos
-function renderChart(assetName, color, canvasId) {
-  const ctx = document.getElementById(canvasId).getContext('2d');
-  const assetData = historicalData[assetName];
-  if (!assetData) return;
-
-  const labels = [];
-  const data = [];
-
-  assetData.forEach(yearData => {
-    yearData.data.forEach((value, monthIndex) => {
-      labels.push(`${monthIndex + 1}/${yearData.year}`);
-      data.push(value);
-    });
-  });
-
-  return new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label: assetName,
-        data,
-        borderColor: color,
-        backgroundColor: `${color}20`,
-        borderWidth: 2,
-        pointRadius: 0,
-        tension: 0.4,
-        fill: true
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      layout: {
-        padding: {
-          bottom: 40 // espaço extra para labels do eixo X (anos)
-        }
-      },
-      scales: {
-        x: {
-          ticks: {
-            maxRotation: 45,
-            minRotation: 45,
-            autoSkip: true,
-            maxTicksLimit: 12
-          },
-          grid: {
-            display: false
-          }
-        },
-        y: {
-          beginAtZero: false,
-          grid: {
-            color: '#eee'
-          }
-        }
-      },
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
-          labels: {
-            font: { family: "'Segoe UI', sans-serif", size: 12 },
-            color: '#666'
-          }
-        },
-        tooltip: {
-          mode: 'index',
-          intersect: false,
-          backgroundColor: '#fff',
-          titleColor: '#333',
-          bodyColor: '#666',
-          borderColor: '#ddd',
-          borderWidth: 1,
-          padding: 10,
-          callbacks: {
-            label(context) {
-              let label = context.dataset.label || '';
-              if (label) label += ': ';
-              if (context.parsed.y !== null) {
-                label += assetName === "Bitcoin" || assetName === "Gold" || assetName === "Silver"
-                  ? '$' + context.parsed.y.toLocaleString()
-                  : context.parsed.y.toLocaleString();
-              }
-              return label;
-            }
-          }
-        }
-      }
-    }
-  });
+.header-content {
+  position: relative;
+  z-index: 1;
 }
 
-// Inicialização ao carregar a página
-document.addEventListener('DOMContentLoaded', () => {
-  renderUpcomingEvents();
-  renderMarketSentiment();
-  renderScarcityMetrics();
+.header-accent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #f7931a, #d4af37, #6a5acd);
+}
 
-  // Aqui você pode adicionar inicialização dos gráficos e outras funções
-});
+.header-logo {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.header-logo svg {
+  width: 40px;
+  height: 40px;
+  fill: #f7931a;
+  margin-bottom: 0.5rem;
+}
+
+header.compact-header h1 {
+  font-size: 2.2rem;
+  margin: 0 0 0.3rem;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+header.compact-header p {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.8);
+  margin: 0.5rem auto 0;
+  max-width: 800px;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+}
+
+.main-layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.content-layout {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+/* Standard section styling */
+.standard-section {
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.section-header {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-family: 'Segoe UI', sans-serif;
+  color: #2c3e50;
+  font-size: 1.2rem;
+  font-weight: 500;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+}
+
+/* Main indicators with individual charts */
+#main-indicators {
+  margin-bottom: 1.5rem;
+}
+
+/* Vertical buttons for the 5 indices with reduced width */
+#quotes.vertical-quotes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.quote-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.quote {
+  background: #fff;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+  margin-bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1rem;
+  min-height: 40px;
+}
+
+.quote:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.quote.active {
+  background: #f8f9fa;
+  border-left-width: 6px;
+}
+
+.quote-left {
+  display: flex;
+  align-items: center;
+}
+
+.quote strong {
+  color: #2c3e50;
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+  display: inline;
+}
+
+.quote-price {
+  font-weight: 500;
+}
+
+.quote-change {
+  margin-left: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Individual chart areas for each asset */
+.asset-chart-area {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.5s ease;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.asset-chart-area.visible {
+  height: 250px;
+}
+
+.chart-container {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  height: 100%;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.chart-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  background: #f8f9fa;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  border: none;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.chart-close:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Specific colors for each asset */
+.quote-wrapper:nth-child(1) .quote {
+  border-left-color: #f7931a; /* Bitcoin */
+}
+
+.quote-wrapper:nth-child(2) .quote {
+  border-left-color: #d4af37; /* Gold */
+}
+
+.quote-wrapper:nth-child(3) .quote {
+  border-left-color: #c0c0c0; /* Silver */
+}
+
+.quote-wrapper:nth-child(4) .quote {
+  border-left-color: #6a5acd; /* Treasury */
+}
+
+.quote-wrapper:nth-child(5) .quote {
+  border-left-color: #20b2aa; /* Dollar Index */
+}
+
+/* Discrete explanation for indices */
+.index-tooltip {
+  position: relative;
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 0.8rem;
+  color: #7f8c8d;
+  cursor: help;
+}
+
+.index-tooltip .tooltip-text {
+  visibility: hidden;
+  width: 220px;
+  background-color: #fff;
+  color: #555;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -110px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.index-tooltip .tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #fff transparent transparent transparent;
+}
+
+.index-tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Market Sentiment */
+#market-sentiment {
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+}
+
+/* Three-column grid for market sentiment */
+.sentiment-indicators {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 1rem;
+}
+
+.indicator {
+  margin-bottom: 0.5rem;
+}
+
+.indicator-title {
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.gauge {
+  height: 8px;
+  background: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.4rem;
+}
+
+.gauge-fill {
+  height: 100%;
+  background: linear-gradient(to right, #4caf50, #ffeb3b, #f44336);
+  border-radius: 4px;
+}
+
+.gauge-value {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+
+.indicator-change {
+  font-size: 0.8rem;
+  color: #4caf50;
+}
+
+.indicator-change.negative {
+  color: #f44336;
+}
+
+/* Upcoming Events - Single row, 4 columns */
+#economic-calendar {
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+}
+
+.calendar-container {
+  max-height: 150px; /* Reduced height */
+  overflow: hidden;
+}
+
+.events-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 1fr; /* Force single row */
+  gap: 0.8rem;
+  height: 100%;
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+.event-item {
+  padding: 0.6rem; /* Reduced padding */
+  border-radius: 6px;
+  background: #f8f9fa;
+  border-left: 3px solid #ddd;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Hide overflow content */
+}
+
+.event-item.high {
+  border-left-color: #f44336;
+}
+
+.event-item.medium {
+  border-left-color: #ff9800;
+}
+
+.event-item.low {
+  border-left-color: #4caf50;
+}
+
+.event-date {
+  font-size: 0.75rem; /* Smaller font */
+  color: #666;
+  margin-bottom: 0.2rem; /* Reduced margin */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-impact {
+  display: flex;
+  gap: 2px;
+  position: relative;
+}
+
+.impact-dot {
+  width: 5px; /* Smaller dots */
+  height: 5px; /* Smaller dots */
+  border-radius: 50%;
+  background: #ddd;
+}
+
+.high .impact-dot {
+  background: #f44336;
+}
+
+.medium .impact-dot:nth-child(1),
+.medium .impact-dot:nth-child(2) {
+  background: #ff9800;
+}
+
+.low .impact-dot:nth-child(1) {
+  background: #4caf50;
+}
+
+.event-title {
+  font-weight: 500;
+  margin-bottom: 0.2rem; /* Reduced margin */
+  color: #333;
+  font-size: 0.85rem; /* Smaller font */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-description {
+  font-size: 0.75rem; /* Smaller font */
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Global Market Capitalization - No scroll */
+#market-cap-comparison {
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+  overflow: hidden; /* Hide overflow, no scroll */
+}
+
+.section-header-with-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+}
+
+.section-header-with-total h2 {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  color: #2c3e50;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.market-cap-total {
+  font-weight: 500;
+  color: #333;
+}
+
+.market-cap-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem; /* Reduced gap */
+}
+
+.market-cap-item {
+  margin-bottom: 0.4rem; /* Reduced margin */
+}
+
+.market-cap-item-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.2rem; /* Reduced margin */
+}
+
+.market-cap-item-name {
+  font-weight: 500;
+  color: #333;
+  font-size: 0.9rem; /* Smaller font */
+}
+
+.market-cap-item-value {
+  color: #666;
+  font-size: 0.9rem; /* Smaller font */
+}
+
+.market-cap-item-bar {
+  height: 16px; /* Smaller height */
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.market-cap-item-fill {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.market-cap-item-percentage {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem; /* Smaller font */
+  color: #fff;
+  text-shadow: 0 0 2px rgba(0,0,0,0.5);
+}
+
+.sources-button {
+  background: none;
+  border: none;
+  color: #7f8c8d;
+  font-size: 0.75rem; /* Smaller font */
+  cursor: pointer;
+  padding: 0;
+  margin-top: 0.3rem; /* Reduced margin */
+  text-decoration: underline;
+}
+
+.market-cap-sources {
+  display: none;
+  font-size: 0.75rem; /* Smaller font */
+  color: #7f8c8d;
+  margin-top: 0.3rem; /* Reduced margin */
+}
+
+/* Scarcity Metrics */
+#scarcity-metrics {
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+}
+
+.scarcity-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.scarcity-metric {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.scarcity-metric-title {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.scarcity-metric-value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.scarcity-metric-description {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.8rem;
+}
+
+.scarcity-comparison {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.scarcity-comparison-item {
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  background: transparent;
+}
+
+.scarcity-comparison-item.bitcoin {
+  color: #f7931a;
+  border: 1px solid #f7931a;
+}
+
+.scarcity-comparison-item.gold {
+  color: #d4af37;
+  border: 1px solid #d4af37;
+}
+
+.scarcity-comparison-item.silver {
+  color: #a0a0a0;
+  border: 1px solid #a0a0a0;
+}
+
+/* Visualization of mined bitcoins */
+.supply-progress {
+  height: 24px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  margin-top: 0.8rem;
+}
+
+.supply-progress-fill {
+  height: 100%;
+  background: #f7931a;
+  border-radius: 4px;
+  opacity: 0.8; /* Improved visibility */
+}
+
+.supply-progress-text {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.8rem;
+  color: #fff;
+  text-shadow: 0 0 3px rgba(0,0,0,0.7); /* Enhanced text shadow for better visibility */
+  white-space: nowrap;
+  font-weight: 600; /* Make text bolder */
+}
+
+.days-remaining {
+  display: block;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+/* Latest News */
+#news-summary {
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+}
+
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.news-item {
+  background: #f8f9fa;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.news-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.news-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.news-content {
+  padding: 1rem;
+}
+
+.news-source {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background: #e9ecef;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.news-title {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.news-description {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.news-date {
+  font-size: 0.75rem;
+  color: #999;
+}
+
+/* Word of Satoshi - Standard width */
+#satoshi-quotes {
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.quote-container {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #f7931a;
+}
+
+blockquote {
+  margin: 0 0 0.8rem 0;
+  font-style: italic;
+  color: #555;
+  line-height: 1.6;
+}
+
+.quote-author {
+  text-align: right;
+  font-weight: 500;
+  color: #666;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 1rem;
+  color: #7f8c8d;
+  font-size: 0.8rem;
+  margin-top: 2rem;
+}
+
+/* Responsiveness */
+@media (min-width: 992px) {
+  .vertical-sections {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 991px) {
+  .sentiment-indicators {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .events-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .scarcity-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .sentiment-indicators {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .events-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .scarcity-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .news-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  header.compact-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  header.compact-header p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sentiment-indicators {
+    grid-template-columns: 1fr;
+  }
+  
+  .events-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .market-cap-item-header {
+    flex-direction: column;
+  }
+  
+  .market-cap-item-percentage {
+    font-size: 0.7rem;
+  }
+  
+  .quote strong {
+    font-size: 1rem;
+  }
+  
+  .quote {
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  header.compact-header h1 {
+    font-size: 1.6rem;
+  }
+  
+  header.compact-header p {
+    font-size: 0.8rem;
+  }
+}
