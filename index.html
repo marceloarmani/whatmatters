@@ -1,169 +1,97 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scarcity Panel</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-  <header class="compact-header">
-    <div class="header-pattern"></div>
-    <div class="header-content">
-      <div class="header-logo">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M11.5 1L2 6v12l9.5 5 9.5-5V6l-9.5-5zm7.5 16.5l-7.5 3.94-7.5-3.94V6.5l7.5-3.94 7.5 3.94v11z"/>
-          <path d="M8.5 12v4l3 1.5 3-1.5v-4l-3-1.5-3 1.5z"/>
-        </svg>
-      </div>
-      <h1>Scarcity Panel</h1>
-      <p>Navigating the digital scarcity horizon in an ocean of monetary abundance</p>
-    </div>
-    <div class="header-accent"></div>
-  </header>
-  <main>
-    <div class="main-layout">
-      <!-- Main indicators (one per row with individual charts) -->
-      <section id="main-indicators" class="standard-section">
-        <div id="quotes" class="vertical-quotes"></div>
+import React, { useEffect, useState } from 'react';
+import './style.css';
+import { fetchMarketData, fetchEvents, fetchScarcityMetrics } from './script';
+
+export default function Home() {
+  const [marketData, setMarketData] = useState(null);
+  const [events, setEvents] = useState([]);
+  const [scarcityMetrics, setScarcityMetrics] = useState(null);
+
+  useEffect(() => {
+    async function loadData() {
+      const data = await fetchMarketData();
+      setMarketData(data);
+
+      const upcomingEvents = await fetchEvents();
+      setEvents(upcomingEvents.slice(0, 4)); // próximos 4 eventos
+
+      const scarcity = await fetchScarcityMetrics();
+      setScarcityMetrics(scarcity);
+    }
+    loadData();
+  }, []);
+
+  return (
+    <div className="page-container">
+      {/* Bloco inicial */}
+      <header className="header-block">
+        <h1>What Matters</h1>
+        <p>Your guide to market insights and scarcity metrics</p>
+      </header>
+
+      {/* Market sentiment */}
+      {marketData && (
+        <section className="section-block">
+          <h2>Market sentiment</h2>
+          <div className="market-sentiment">
+            <div>Fear & Greed Index: {marketData.fearGreedIndex} - {marketData.sentiment}</div>
+            <div>Volatility (30d): {marketData.volatility30d}% - {marketData.volatilityStatus}</div>
+            <div>BTC Dominance: {marketData.btcDominance}%</div>
+            <div>Transaction Volume (24h): {marketData.transactionVolume}</div>
+            <div>Total Market Cap: {marketData.totalMarketCap}</div>
+            <div>Market Liquidity: {marketData.marketLiquidity}</div>
+          </div>
+        </section>
+      )}
+
+      {/* Upcoming events */}
+      <section className="section-block">
+        <h2>Upcoming events</h2>
+        <div className="events-container">
+          {events.map((event, idx) => (
+            <div key={idx} className="event-card">
+              <h3>{event.title}</h3>
+              <p>{event.date}</p>
+              <p>{event.description}</p>
+            </div>
+          ))}
+        </div>
       </section>
-      
-      <div class="content-layout">
-        <!-- Vertical layout for Market Sentiment and Upcoming Events -->
-        <div class="vertical-sections">
-          <!-- Market Sentiment -->
-          <section id="market-sentiment" class="standard-section">
-            <h2 class="section-header">Market sentiment</h2>
-            <div class="sentiment-indicators">
-              <div class="indicator">
-                <div class="indicator-title">Fear & Greed Index</div>
-                <div class="indicator-value" id="fear-greed">
-                  <div class="gauge">
-                    <div class="gauge-fill" style="width: 65%;"></div>
-                  </div>
-                  <div class="gauge-value">65 - Greed</div>
-                  <div class="indicator-change">+5% (24h)</div>
-                </div>
-              </div>
-              <div class="indicator">
-                <div class="indicator-title">Volatility (30d)</div>
-                <div class="indicator-value" id="volatility">
-                  <div class="gauge">
-                    <div class="gauge-fill" style="width: 42%;"></div>
-                  </div>
-                  <div class="gauge-value">42% - Moderate</div>
-                  <div class="indicator-change">-3% (24h)</div>
-                </div>
-              </div>
-              <div class="indicator">
-                <div class="indicator-title">BTC Dominance</div>
-                <div class="indicator-value" id="btc-dominance">
-                  <div class="gauge">
-                    <div class="gauge-fill" style="width: 53%;"></div>
-                  </div>
-                  <div class="gauge-value">53%</div>
-                  <div class="indicator-change">+0.8% (24h)</div>
-                </div>
-              </div>
-              <div class="indicator">
-                <div class="indicator-title">Transaction Volume (24h)</div>
-                <div class="indicator-value" id="transaction-volume">
-                  <div class="gauge">
-                    <div class="gauge-fill" style="width: 68%;"></div>
-                  </div>
-                  <div class="gauge-value">$78.5B - High</div>
-                  <div class="indicator-change">+12% (24h)</div>
-                </div>
-              </div>
-              <div class="indicator">
-                <div class="indicator-title">Total Market Cap</div>
-                <div class="indicator-value" id="market-cap">
-                  <div class="gauge">
-                    <div class="gauge-fill" style="width: 58%;"></div>
-                  </div>
-                  <div class="gauge-value">$2.0T</div>
-                  <div class="indicator-change">+5.8% (24h)</div>
-                </div>
-              </div>
-              <div class="indicator">
-                <div class="indicator-title">Market Liquidity</div>
-                <div class="indicator-value" id="market-liquidity">
-                  <div class="gauge">
-                    <div class="gauge-fill" style="width: 62%;"></div>
-                  </div>
-                  <div class="gauge-value">Moderate-High</div>
-                  <div class="indicator-change">+2.3% (24h)</div>
-                </div>
-              </div>
-            </div>
-          </section>
-          
-          <!-- Upcoming Events (4 columns in a single row) -->
-          <section id="economic-calendar" class="standard-section">
-            <h2 class="section-header">Upcoming events</h2>
-            <div class="calendar-container">
-              <div class="events-list" id="events-container">
-                <!-- Events will be inserted via JavaScript -->
-              </div>
-            </div>
-          </section>
-        </div>
-        
-        <!-- Vertical layout for Scarcity Metrics and Market Capitalization -->
-        <div class="vertical-sections">
-          <!-- Scarcity Metrics -->
-          <section id="scarcity-metrics" class="standard-section">
-            <h2 class="section-header">Scarcity metrics</h2>
-            <div class="scarcity-container">
-              <div class="scarcity-metrics-grid">
-                <!-- Scarcity metrics will be inserted via JavaScript -->
-              </div>
-            </div>
-          </section>
-          
-          <!-- Global Market Capitalization -->
-          <section id="market-cap-comparison" class="standard-section">
-            <div class="section-header-with-total">
-              <h2>Global market capitalization</h2>
-              <div class="market-cap-total">Total Capitalization: <span id="total-market-cap">$690.7T</span></div>
-            </div>
-            <div class="market-cap-container">
-              <div class="market-cap-visual" id="market-cap-treemap">
-                <!-- Bar visualization will be inserted via JavaScript -->
-              </div>
-              <button id="sources-toggle" class="sources-button">Show sources</button>
-              <div class="market-cap-sources" id="market-cap-sources">
-                <p>Sources: Visual Capitalist, Bank for International Settlements (BIS), McKinsey Global Institute, World Gold Council, <a href="https://www.onceinaspecies.com/" target="_blank">Jesse Myers (onceinaspecies.com)</a></p>
-              </div>
-            </div>
-          </section>
-        </div>
-        
-        <!-- Latest News -->
-        <section id="news-summary" class="standard-section">
-          <h2 class="section-header">Latest news</h2>
-          <div id="news-content">
-            <p>Loading news...</p>
+
+      {/* Scarcity metrics */}
+      {scarcityMetrics && (
+        <section className="section-block scarcity-metrics">
+          <h2>Scarcity metrics</h2>
+          <div className="scarcity-container">
+            <div className="scarcity-item gold">{scarcityMetrics.gold}</div>
+            <div className="scarcity-item silver">{scarcityMetrics.silver}</div>
+            <div className="scarcity-item bitcoin">{scarcityMetrics.bitcoin}</div>
           </div>
         </section>
-        
-        <!-- Word of Satoshi -->
-        <section id="satoshi-quotes" class="standard-section">
-          <h2 class="section-header">Word of Satoshi</h2>
-          <div class="quote-container">
-            <blockquote id="satoshi-quote">
-              "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust."
-            </blockquote>
-            <div class="quote-author">- Satoshi Nakamoto</div>
-          </div>
-        </section>
-      </div>
+      )}
+
+      {/* Global market capitalization */}
+      <section className="section-block">
+        <h2>Global market capitalization</h2>
+        <p>Total Capitalization: $690.7T</p>
+        <p className="sources">
+          Sources: Visual Capitalist, Bank for International Settlements (BIS), McKinsey Global Institute, World Gold Council, Jesse Myers (onceinaspecies.com)
+        </p>
+      </section>
+
+      {/* Latest news */}
+      <section className="section-block">
+        <h2>Latest news</h2>
+        <p>Loading news...</p>
+      </section>
+
+      {/* Word of Satoshi */}
+      <section className="section-block">
+        <h2>Word of Satoshi</h2>
+        <blockquote>
+          "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust."
+        </blockquote>
+      </section>
     </div>
-  </main>
-  <footer>
-    <p>© 2025 Scarcity Panel</p>
-  </footer>
-  <script src="script.js"></script>
-</body>
-</html>
+  );
+}
