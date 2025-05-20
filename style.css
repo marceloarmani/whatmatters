@@ -36,7 +36,7 @@ header.compact-header {
 }
 
 .header-logo {
-  margin-bottom: 0.2rem; /* reduz espaço entre logo e título */
+  margin-bottom: 0.0rem; /* reduz espaço entre logo e título */
 }
 
 }
