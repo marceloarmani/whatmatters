@@ -8,7 +8,7 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Header mais compacto e discreto */
+/* Compact and discrete header */
 header.compact-header {
   text-align: center;
   padding: 0.8rem 0.6rem;
@@ -33,21 +33,29 @@ header.compact-header p {
 }
 
 .main-layout {
-  max-width: 1400px;
+  max-width: 1200px; /* Reduced from 1400px for better width */
   margin: 0 auto;
   padding: 0 1rem;
 }
 
 .content-layout {
   margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr; /* Will be changed to 2 columns in larger screens */
+  gap: 1.5rem;
 }
 
 .left-content {
   width: 100%;
-  min-width: 0; /* Importante para evitar overflow */
+  min-width: 0; /* Important to prevent overflow */
 }
 
-/* Indicadores principais (expandidos horizontalmente) */
+.right-content {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Main indicators (vertical layout - one per row) */
 #main-indicators {
   margin-bottom: 1.5rem;
   background: #fff;
@@ -56,11 +64,11 @@ header.compact-header p {
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-/* Botões horizontais maiores para os 5 índices */
-#quotes.expanded-quotes {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
+/* Vertical buttons for the 5 indices */
+#quotes.vertical-quotes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
 .quote-wrapper {
@@ -70,20 +78,18 @@ header.compact-header p {
 
 .quote {
   background: #fff;
-  padding: 1.2rem 1.5rem;
+  padding: 1rem 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   cursor: pointer;
   transition: all 0.3s ease;
   border-left: 4px solid transparent;
   margin-bottom: 0;
-  height: 100%;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
   font-size: 1.1rem;
-  min-height: 60px; /* Menos alto */
-  max-height: 80px; /* Limitar altura */
+  min-height: 50px; /* Less tall */
 }
 
 .quote:hover {
@@ -96,24 +102,38 @@ header.compact-header p {
   border-left-width: 6px;
 }
 
+.quote-left {
+  display: flex;
+  align-items: center;
+}
+
 .quote strong {
   color: #2c3e50;
   font-size: 1.2rem;
-  margin-bottom: 0.3rem;
-  display: block;
+  margin-right: 0.5rem;
+  display: inline;
 }
 
-/* Cores específicas para cada ativo */
+.quote-price {
+  font-weight: 500;
+}
+
+.quote-change {
+  margin-left: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Specific colors for each asset */
 .quote-wrapper:nth-child(1) .quote {
   border-left-color: #f7931a; /* Bitcoin */
 }
 
 .quote-wrapper:nth-child(2) .quote {
-  border-left-color: #d4af37; /* Ouro */
+  border-left-color: #d4af37; /* Gold */
 }
 
 .quote-wrapper:nth-child(3) .quote {
-  border-left-color: #c0c0c0; /* Prata */
+  border-left-color: #c0c0c0; /* Silver */
 }
 
 .quote-wrapper:nth-child(4) .quote {
@@ -124,7 +144,7 @@ header.compact-header p {
   border-left-color: #20b2aa; /* Dollar Index */
 }
 
-/* Explicação discreta para Dollar Index */
+/* Discrete explanation for indices */
 .index-tooltip {
   position: relative;
   display: inline-block;
@@ -170,7 +190,7 @@ header.compact-header p {
   opacity: 1;
 }
 
-/* Área dedicada para gráficos */
+/* Area dedicated to graphs */
 .chart-area {
   margin-top: 1.5rem;
   height: 0;
@@ -222,7 +242,7 @@ canvas {
   height: 100% !important;
 }
 
-/* Sentimento de Mercado */
+/* Market Sentiment */
 #market-sentiment {
   background: #fff;
   padding: 1.2rem;
@@ -242,10 +262,10 @@ canvas {
   padding-bottom: 0.5rem;
 }
 
-/* Distribuição simétrica dos indicadores em duas linhas */
+/* Symmetric distribution of indicators in two rows */
 .sentiment-indicators {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
 }
 
@@ -290,7 +310,7 @@ canvas {
   color: #f44336;
 }
 
-/* Próximos Eventos - Melhor dimensionado */
+/* Upcoming Events - Better sized */
 #economic-calendar {
   background: #fff;
   padding: 1.2rem;
@@ -407,7 +427,7 @@ canvas {
   background: #2c3e50;
 }
 
-/* Capitalização de Mercado Global - Barras horizontais para melhor legibilidade */
+/* Global Market Capitalization - Horizontal bars for better readability */
 #market-cap-comparison {
   background: #fff;
   padding: 1.2rem;
@@ -505,7 +525,7 @@ canvas {
   margin-top: 0.5rem;
 }
 
-/* Métricas de Escassez */
+/* Scarcity Metrics */
 #scarcity-metrics {
   background: #fff;
   padding: 1.2rem;
@@ -574,15 +594,15 @@ canvas {
   background: #f7931a;
 }
 
-.scarcity-comparison-item.ouro {
+.scarcity-comparison-item.gold {
   background: #d4af37;
 }
 
-.scarcity-comparison-item.prata {
+.scarcity-comparison-item.silver {
   background: #a0a0a0;
 }
 
-/* Visualização de bitcoins minerados */
+/* Visualization of mined bitcoins */
 .supply-progress {
   height: 24px;
   background: #f0f0f0;
@@ -609,7 +629,7 @@ canvas {
   white-space: nowrap;
 }
 
-/* Últimas Notícias */
+/* Latest News */
 #news-summary {
   background: #fff;
   padding: 1.2rem;
@@ -687,7 +707,7 @@ canvas {
   color: #999;
 }
 
-/* Palavras de Satoshi */
+/* Satoshi Quotes */
 #satoshi-quotes {
   background: #fff;
   padding: 1.2rem;
@@ -736,7 +756,31 @@ footer {
   margin-top: 2rem;
 }
 
-/* Responsividade */
+/* Responsiveness */
+@media (min-width: 992px) {
+  .content-layout {
+    grid-template-columns: 2fr 1fr;
+  }
+  
+  .sentiment-indicators {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 991px) {
+  .content-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .sentiment-indicators {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .scarcity-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .sentiment-indicators {
     grid-template-columns: repeat(2, 1fr);
@@ -748,10 +792,6 @@ footer {
   
   .news-grid {
     grid-template-columns: 1fr;
-  }
-  
-  .quote {
-    min-height: 50px;
   }
 }
 
@@ -773,7 +813,7 @@ footer {
   }
   
   .quote {
-    padding: 1rem;
+    padding: 0.8rem 1rem;
     font-size: 0.9rem;
   }
 }
