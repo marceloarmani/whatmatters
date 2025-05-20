@@ -47,14 +47,14 @@ header.compact-header {
 
 .header-logo {
   display: inline-block;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.0rem;
 }
 
 .header-logo svg {
   width: 40px;
   height: 40px;
   fill: #f7931a;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
 }
 
 header.compact-header h1 {
