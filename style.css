@@ -11,7 +11,7 @@ body {
 /* Modern and elegant header with geometric pattern */
 header.compact-header {
   text-align: center;
-  padding: 2rem 0 1.5rem;
+  padding: 0.5rem 0 0.6rem;
   background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   margin-bottom: 1.5rem;
