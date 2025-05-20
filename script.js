@@ -1,187 +1,151 @@
 const assets = [
-  { name: "Bitcoin", symbol: "BTC", color: "#f7931a", api: "coindesk" },
-  { name: "Ouro", symbol: "XAU", color: "#d4af37", api: "metals" },
-  { name: "Prata", symbol: "XAG", color: "#c0c0c0", api: "metals" },
-  { name: "Treasury Yield", symbol: "10Y", color: "#6a5acd", api: "treasury" },
-  { name: "Dollar Index", symbol: "DXY", color: "#20b2aa", api: "dollar" }
+  { name: "Bitcoin", symbol: "BTC", price: "$68,245.32", change: "+2.4%", color: "#f7931a", api: "coindesk" },
+  { name: "Ouro", symbol: "XAU", price: "$2,342.18", change: "+0.8%", color: "#d4af37", api: "metals" },
+  { name: "Prata", symbol: "XAG", price: "$30.75", change: "+1.2%", color: "#c0c0c0", api: "metals" },
+  { name: "Treasury Yield", symbol: "10Y", price: "4.32%", change: "-0.05%", color: "#6a5acd", api: "treasury" },
+  { name: "Dollar Index", symbol: "DXY", price: "103.42", change: "-0.3%", color: "#20b2aa", api: "forex", tooltip: "Mede a força do dólar americano em relação a uma cesta de moedas estrangeiras principais" }
 ];
 
 // Dados históricos para os gráficos (5 anos)
 const historicalData = {
-  BTC: {
-    labels: generateYearLabels(5),
-    prices: [
-      8900, 9200, 10500, 11200, 12800, 16000, 19000, 17500, 16800, 19500, 23000, 29000,
-      32000, 38000, 42000, 47000, 52000, 58000, 64000, 57000, 48000, 42000, 37000, 39000,
-      42000, 45000, 48000, 52000, 56000, 58000, 62000, 65000, 68000, 72000, 75000, 78000,
-      82000, 85000, 88000, 92000, 95000, 98000, 102000, 105000, 108000, 112000, 115000, 118000,
-      122000, 125000, 128000, 132000, 135000, 138000, 142000
-    ]
-  },
-  XAU: {
-    labels: generateYearLabels(5),
-    prices: [
-      1500, 1520, 1540, 1560, 1580, 1600, 1620, 1640, 1660, 1680, 1700, 1720,
-      1740, 1760, 1780, 1800, 1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960,
-      1980, 2000, 2020, 2040, 2060, 2080, 2100, 2120, 2140, 2160, 2180, 2200,
-      2220, 2240, 2260, 2280, 2300, 2320, 2340, 2360, 2380, 2400, 2420, 2440,
-      2460, 2480, 2500, 2520, 2540, 2560, 2580
-    ]
-  },
-  XAG: {
-    labels: generateYearLabels(5),
-    prices: [
-      17.5, 17.8, 18.1, 18.4, 18.7, 19.0, 19.3, 19.6, 19.9, 20.2, 20.5, 20.8,
-      21.1, 21.4, 21.7, 22.0, 22.3, 22.6, 22.9, 23.2, 23.5, 23.8, 24.1, 24.4,
-      24.7, 25.0, 25.3, 25.6, 25.9, 26.2, 26.5, 26.8, 27.1, 27.4, 27.7, 28.0,
-      28.3, 28.6, 28.9, 29.2, 29.5, 29.8, 30.1, 30.4, 30.7, 31.0, 31.3, 31.6,
-      31.9, 32.2, 32.5, 32.8, 33.1, 33.4, 33.7
-    ]
-  },
-  "10Y": {
-    labels: generateYearLabels(5),
-    prices: [
-      0.65, 0.68, 0.71, 0.74, 0.77, 0.80, 0.83, 0.86, 0.89, 0.92, 0.95, 0.98,
-      1.01, 1.04, 1.07, 1.10, 1.13, 1.16, 1.19, 1.22, 1.25, 1.28, 1.31, 1.34,
-      1.37, 1.40, 1.43, 1.46, 1.49, 1.52, 1.55, 1.58, 1.61, 1.64, 1.67, 1.70,
-      1.73, 1.76, 1.79, 1.82, 1.85, 1.88, 1.91, 1.94, 1.97, 2.00, 2.03, 2.06,
-      2.09, 2.12, 2.15, 2.18, 2.21, 2.24, 2.27
-    ]
-  },
-  DXY: {
-    labels: generateYearLabels(5),
-    prices: [
-      96.5, 96.8, 97.1, 97.4, 97.7, 98.0, 98.3, 98.6, 98.9, 99.2, 99.5, 99.8,
-      100.1, 100.4, 100.7, 101.0, 101.3, 101.6, 101.9, 102.2, 102.5, 102.8, 103.1, 103.4,
-      103.7, 104.0, 104.3, 104.6, 104.9, 105.2, 105.5, 105.8, 106.1, 106.4, 106.7, 107.0,
-      107.3, 107.6, 107.9, 108.2, 108.5, 108.8, 109.1, 109.4, 109.7, 110.0, 110.3, 110.6,
-      110.9, 111.2, 111.5, 111.8, 112.1, 112.4, 112.7
-    ]
-  }
+  "Bitcoin": [
+    { year: 2020, data: [7200, 8300, 9450, 8700, 9800, 9200, 11300, 11800, 10500, 13800, 17500, 29000] },
+    { year: 2021, data: [33000, 45000, 58000, 56000, 37000, 35000, 42000, 47000, 43000, 61000, 58000, 46000] },
+    { year: 2022, data: [38000, 44000, 40000, 39000, 31000, 20000, 23000, 24000, 19000, 20500, 17000, 16500] },
+    { year: 2023, data: [16800, 23500, 28000, 30000, 27000, 30500, 29800, 28000, 26500, 34000, 37000, 42000] },
+    { year: 2024, data: [45000, 52000, 61000, 64000, 59000, 62000, 65000, 67000, 66000, 68000, 69000, 68245] },
+    { year: 2025, data: [67500, 69800, 72000, 70500, 68245] }
+  ],
+  "Ouro": [
+    { year: 2020, data: [1520, 1585, 1620, 1680, 1730, 1780, 1960, 1920, 1880, 1900, 1860, 1895] },
+    { year: 2021, data: [1850, 1810, 1730, 1770, 1900, 1780, 1810, 1815, 1760, 1780, 1820, 1805] },
+    { year: 2022, data: [1800, 1870, 1920, 1880, 1840, 1810, 1760, 1770, 1670, 1650, 1750, 1820] },
+    { year: 2023, data: [1910, 1830, 1970, 1990, 1960, 1920, 1970, 2010, 1920, 1980, 2040, 2060] },
+    { year: 2024, data: [2050, 2120, 2180, 2220, 2260, 2290, 2310, 2330, 2300, 2320, 2350, 2342] },
+    { year: 2025, data: [2360, 2380, 2410, 2370, 2342] }
+  ],
+  "Prata": [
+    { year: 2020, data: [17.8, 18.5, 14.6, 15.7, 17.9, 18.2, 24.5, 27.4, 24.2, 24.1, 23.8, 26.3] },
+    { year: 2021, data: [27.0, 26.7, 25.0, 26.1, 27.4, 26.0, 25.5, 24.0, 22.5, 23.9, 23.1, 22.5] },
+    { year: 2022, data: [22.4, 24.3, 24.9, 23.0, 21.6, 20.3, 19.2, 19.5, 18.8, 19.5, 21.5, 23.9] },
+    { year: 2023, data: [24.1, 21.7, 24.2, 25.0, 23.5, 22.8, 24.5, 24.8, 23.0, 22.7, 24.5, 24.3] },
+    { year: 2024, data: [23.8, 25.6, 26.9, 27.5, 28.2, 28.9, 29.3, 29.8, 30.2, 30.5, 30.8, 30.75] },
+    { year: 2025, data: [30.9, 31.2, 31.5, 31.0, 30.75] }
+  ],
+  "Treasury Yield": [
+    { year: 2020, data: [1.88, 1.50, 0.70, 0.66, 0.65, 0.68, 0.55, 0.72, 0.68, 0.85, 0.84, 0.93] },
+    { year: 2021, data: [1.07, 1.44, 1.74, 1.65, 1.58, 1.45, 1.24, 1.30, 1.52, 1.55, 1.44, 1.51] },
+    { year: 2022, data: [1.78, 1.83, 2.32, 2.89, 2.84, 3.01, 2.65, 3.19, 3.83, 4.05, 3.68, 3.88] },
+    { year: 2023, data: [3.51, 3.92, 3.47, 3.45, 3.64, 3.84, 3.96, 4.10, 4.57, 4.89, 4.47, 3.88] },
+    { year: 2024, data: [4.05, 4.25, 4.35, 4.50, 4.60, 4.55, 4.48, 4.42, 4.38, 4.35, 4.33, 4.32] },
+    { year: 2025, data: [4.30, 4.28, 4.35, 4.33, 4.32] }
+  ],
+  "Dollar Index": [
+    { year: 2020, data: [97.3, 98.1, 99.0, 99.5, 98.3, 97.4, 93.3, 92.1, 93.9, 94.0, 92.3, 89.9] },
+    { year: 2021, data: [90.5, 90.9, 93.2, 91.3, 90.0, 92.4, 92.1, 92.5, 94.2, 94.1, 95.9, 95.7] },
+    { year: 2022, data: [96.5, 96.7, 98.3, 102.9, 101.8, 104.7, 106.1, 108.7, 112.1, 111.5, 106.7, 103.5] },
+    { year: 2023, data: [102.1, 104.4, 102.5, 101.9, 104.2, 102.6, 101.9, 104.1, 106.1, 106.6, 103.4, 101.9] },
+    { year: 2024, data: [103.4, 104.1, 104.5, 105.2, 104.8, 104.3, 103.9, 103.7, 103.5, 103.4, 103.5, 103.42] },
+    { year: 2025, data: [103.6, 103.8, 103.5, 103.4, 103.42] }
+  ]
 };
-
-// Gerar rótulos de anos para os gráficos (5 anos)
-function generateYearLabels(years) {
-  const labels = [];
-  const currentYear = new Date().getFullYear();
-  const startYear = currentYear - years;
-  
-  for (let year = startYear; year <= currentYear; year++) {
-    labels.push(year.toString());
-  }
-  
-  // Preencher com mais pontos entre os anos para suavizar o gráfico
-  const expandedLabels = [];
-  for (let i = 0; i < labels.length - 1; i++) {
-    expandedLabels.push(labels[i]);
-    for (let j = 1; j < 10; j++) {
-      expandedLabels.push("");
-    }
-  }
-  expandedLabels.push(labels[labels.length - 1]);
-  
-  return expandedLabels;
-}
 
 // Dados de capitalização de mercado global
 const marketCapData = [
-  { name: "Real Estate", value: 326.5, color: "#4CAF50", percentage: "61.3%" },
-  { name: "Bonds", value: 133.0, color: "#2196F3", percentage: "25.0%" },
-  { name: "Equities", value: 106.0, color: "#9C27B0", percentage: "19.9%" },
-  { name: "Money", value: 102.9, color: "#FF9800", percentage: "19.3%" },
-  { name: "Gold", value: 12.5, color: "#d4af37", percentage: "2.3%" },
-  { name: "Art & Collectibles", value: 7.8, color: "#E91E63", percentage: "1.5%" },
-  { name: "Bitcoin", value: 2.0, color: "#f7931a", percentage: "0.4%" }
+  { name: "Real Estate", value: 326.5, color: "#4CAF50", percentage: 61.3 },
+  { name: "Bonds", value: 133.0, color: "#2196F3", percentage: 25.0 },
+  { name: "Equities", value: 106.0, color: "#9C27B0", percentage: 19.9 },
+  { name: "Money", value: 102.9, color: "#FF9800", percentage: 19.3 },
+  { name: "Gold", value: 12.5, color: "#d4af37", percentage: 2.3 },
+  { name: "Art & Collectibles", value: 7.8, color: "#E91E63", percentage: 1.5 },
+  { name: "Bitcoin", value: 2.0, color: "#f7931a", percentage: 0.4 }
 ];
 
 // Dados de métricas de escassez
 const scarcityMetrics = [
   {
     title: "Stock-to-Flow",
-    values: {
-      bitcoin: "56",
-      gold: "62",
-      silver: "22"
-    },
-    description: "Razão entre o estoque existente e a produção anual. Valores mais altos indicam maior escassez."
+    value: "56",
+    description: "Razão entre o estoque existente e a produção anual",
+    comparison: [
+      { name: "Bitcoin", value: "56" },
+      { name: "Ouro", value: "62" },
+      { name: "Prata", value: "22" }
+    ]
   },
   {
     title: "Inflação Anual",
-    values: {
-      bitcoin: "1.8%",
-      gold: "1.6%",
-      silver: "4.5%"
-    },
-    description: "Taxa de crescimento anual da oferta. Valores mais baixos indicam maior escassez."
+    value: "1.74%",
+    description: "Taxa de emissão anual em relação ao estoque total",
+    comparison: [
+      { name: "Bitcoin", value: "1.74%" },
+      { name: "Ouro", value: "1.60%" },
+      { name: "Prata", value: "4.50%" }
+    ]
   },
   {
-    title: "Halving Countdown",
-    values: {
-      bitcoin: "324 dias",
-      gold: "N/A",
-      silver: "N/A"
-    },
-    description: "Tempo até a próxima redução de 50% na emissão de Bitcoin, aumentando sua escassez."
+    title: "Bitcoins Minerados",
+    value: "19,368,750",
+    description: "Quantidade de bitcoins já minerados do total de 21 milhões",
+    percentage: 92.23,
+    remaining: "1,631,250"
   },
   {
-    title: "Reserva Monetária",
-    values: {
-      bitcoin: "Em crescimento",
-      gold: "Estabelecida",
-      silver: "Secundária"
-    },
-    description: "Status como reserva de valor no sistema financeiro global."
+    title: "Próximo Halving",
+    value: "Abril 2028",
+    description: "Evento que reduz pela metade a recompensa de mineração",
+    daysRemaining: 1056
   }
 ];
 
-// Próximos eventos importantes
+// Dados de próximos eventos importantes
 const upcomingEvents = [
   {
-    date: "25 Mai 2025",
+    date: "25 Maio 2025",
     title: "Reunião do FOMC",
-    description: "Decisão de taxa de juros pelo Federal Reserve dos EUA.",
+    description: "Decisão de taxa de juros pelo Federal Reserve",
     impact: "high"
   },
   {
-    date: "02 Jun 2025",
+    date: "02 Junho 2025",
     title: "Relatório de Inflação EUA",
-    description: "Divulgação do CPI (Índice de Preços ao Consumidor) dos EUA.",
+    description: "Divulgação do CPI (Índice de Preços ao Consumidor)",
     impact: "high"
   },
   {
-    date: "10 Jun 2025",
+    date: "10 Junho 2025",
     title: "Conferência Bitcoin 2025",
-    description: "Maior evento anual de Bitcoin com anúncios importantes.",
+    description: "Maior evento anual de Bitcoin em Miami",
     impact: "medium"
   },
   {
-    date: "15 Jun 2025",
+    date: "15 Junho 2025",
     title: "Relatório de Emprego EUA",
-    description: "Dados do mercado de trabalho americano (Non-Farm Payrolls).",
+    description: "Dados do mercado de trabalho americano",
     impact: "medium"
   },
   {
-    date: "22 Jun 2025",
+    date: "20 Junho 2025",
     title: "Reunião do BCE",
-    description: "Decisão de política monetária do Banco Central Europeu.",
+    description: "Decisão de política monetária do Banco Central Europeu",
     impact: "high"
   },
   {
-    date: "30 Jun 2025",
-    title: "Fechamento Trimestral",
-    description: "Fim do segundo trimestre com rebalanceamento de portfólios.",
+    date: "28 Junho 2025",
+    title: "Vencimento de Opções BTC",
+    description: "Expiração trimestral de contratos de opções de Bitcoin",
     impact: "medium"
   },
   {
-    date: "04 Jul 2025",
-    title: "Feriado EUA",
-    description: "Mercados americanos fechados, possível baixa liquidez.",
+    date: "05 Julho 2025",
+    title: "Atualização de Protocolo ETH",
+    description: "Implementação de melhorias na rede Ethereum",
     impact: "low"
   },
   {
-    date: "15 Jul 2025",
-    title: "Relatório de Varejo EUA",
-    description: "Dados de vendas no varejo dos Estados Unidos.",
+    date: "12 Julho 2025",
+    title: "Relatório PIB China",
+    description: "Dados de crescimento econômico da China",
     impact: "medium"
   }
 ];
@@ -189,150 +153,188 @@ const upcomingEvents = [
 // Citações de Satoshi Nakamoto
 const satoshiQuotes = [
   "O problema raiz com a moeda convencional é toda a confiança que é necessária para fazê-la funcionar. O banco central deve ser confiável para não desvalorizar a moeda, mas a história das moedas fiduciárias está cheia de quebras dessa confiança.",
-  "Bitcoin é muito atrativo do ponto de vista libertário, se você não gosta da ideia de que o governo pode bloquear suas contas e tomar seu dinheiro à vontade.",
-  "Perdido no ruído da discussão está o fato de que a inflação é um imposto. O dólar que você tem hoje compra menos do que o dólar que você tinha ontem. E a única razão para isso é porque o governo imprimiu mais dólares. Eles estão tirando seu dinheiro de uma forma que você não consegue ver.",
-  "Eu escolhi implementar proof-of-work para substituir o servidor central. O sistema é seguro enquanto nós honestos controlarem coletivamente mais poder de CPU do que qualquer grupo de atacantes.",
-  "A raiz do problema com a moeda convencional é toda a confiança que é necessária para fazê-la funcionar. É preciso confiar no banco central para não desvalorizar a moeda, mas a história das moedas fiduciárias está cheia de violações dessa confiança.",
-  "Com e-currency baseada em prova criptográfica, sem a necessidade de confiar em um terceiro intermediário, o dinheiro pode ser seguro e as transações efetivadas.",
-  "O Bitcoin é um novo design de sistema de pagamento eletrônico que é puramente peer-to-peer, sem nenhuma terceira parte confiável.",
-  "Governos são bons em cortar a cabeça de redes centralmente controladas como o Napster, mas redes puramente P2P como Gnutella e Tor parecem estar se mantendo.",
-  "Muitas pessoas descartam automaticamente e-currency como um caso perdido por causa de todas as empresas que falharam desde os anos 1990. Espero que seja óbvio que foi apenas a natureza centralizada desses sistemas que os condenou.",
-  "O preço de qualquer commodity tende a se estabilizar em seu custo de produção. Se o preço estiver abaixo do custo, então a produção diminui. Se o preço estiver acima do custo, o lucro pode ser obtido aumentando a produção. Em nosso caso, o custo de produção é a eletricidade usada."
+  "O Bitcoin é muito atrativo do ponto de vista libertário, se você não gosta da ideia de que o governo pode bloquear suas contas e tomar seu dinheiro à vontade.",
+  "Eu escolhi implementar a prova de trabalho em vez de provas de participação porque esta última exigiria um mecanismo de identificação, o que prejudicaria o anonimato.",
+  "Perdendo uma moeda é como jogar dinheiro fora. Perdida permanentemente. Eu não acredito que devemos tornar possível recuperar moedas perdidas, pois isso prejudicaria a fungibilidade.",
+  "Eu estou seguro de que daqui a 20 anos haverá um volume muito grande ou nenhum volume.",
+  "Seria bom manter alguma forma de escassez, para que a riqueza total não possa ser diluída pela inflação política.",
+  "O preço de qualquer commodity tende a gravitar em direção ao custo de produção. Se o preço estiver abaixo do custo, então a produção diminui. Se o preço estiver acima do custo, o lucro pode ser obtido aumentando a produção.",
+  "Escrever um descrição para isso para um público geral é muito difícil. Não há nada com o que relacionar.",
+  "Eu tenho certeza que em 20 anos ou haverá um volume muito grande ou não haverá volume.",
+  "O Bitcoin poderia ser uma forma viável de dinheiro para compras na Internet."
 ];
 
-// Inicialização do documento
+// Fontes de notícias confiáveis
+const newsSources = [
+  { name: "Bloomberg", url: "https://www.bloomberg.com/" },
+  { name: "Wall Street Journal", url: "https://www.wsj.com/" },
+  { name: "Financial Times", url: "https://www.ft.com/" },
+  { name: "Reuters", url: "https://www.reuters.com/" },
+  { name: "The Economist", url: "https://www.economist.com/" },
+  { name: "Bitcoin Magazine", url: "https://bitcoinmagazine.com/" },
+  { name: "Cointelegraph", url: "https://cointelegraph.com/" },
+  { name: "Jesse Myers", url: "https://www.onceinaspecies.com/" }
+];
+
+// Inicialização do site
 document.addEventListener('DOMContentLoaded', function() {
-  // Inicializar os componentes
-  initializeQuotes();
-  initializeMarketCap();
-  initializeScarcityMetrics();
-  initializeEvents();
-  initializeNews();
-  initializeSatoshiQuote();
-  initializeThemeToggle();
-  initializeClock();
+  // Renderizar os indicadores principais
+  renderQuotes();
   
-  // Atualizar dados periodicamente
-  setInterval(updateQuotes, 300000); // 5 minutos
+  // Configurar os eventos de clique para os indicadores
+  setupQuoteClickEvents();
+  
+  // Renderizar o sentimento de mercado
+  renderMarketSentiment();
+  
+  // Renderizar a capitalização de mercado global
+  renderMarketCap();
+  
+  // Renderizar as métricas de escassez
+  renderScarcityMetrics();
+  
+  // Renderizar os próximos eventos
+  renderUpcomingEvents();
+  
+  // Buscar e renderizar as notícias
+  fetchAndRenderNews();
+  
+  // Renderizar a citação de Satoshi
+  renderSatoshiQuote();
+  
+  // Configurar o botão de fontes
+  setupSourcesToggle();
+  
+  // Configurar o botão de tema
+  setupThemeToggle();
 });
 
-// Inicializar os indicadores principais
-function initializeQuotes() {
+// Função para renderizar os indicadores principais
+function renderQuotes() {
   const quotesContainer = document.getElementById('quotes');
-  if (!quotesContainer) return;
-  
-  let html = '';
+  quotesContainer.innerHTML = '';
   
   assets.forEach((asset, index) => {
-    html += `
-      <div class="quote-wrapper">
-        <div class="quote" data-symbol="${asset.symbol}" onclick="showChart('${asset.symbol}')">
-          <strong>${asset.name}</strong>
-          <span id="${asset.symbol}-price">Carregando...</span>
-          <span id="${asset.symbol}-change" class="change"></span>
-        </div>
-      </div>
-    `;
-  });
-  
-  quotesContainer.innerHTML = html;
-  
-  // Carregar dados iniciais
-  updateQuotes();
-}
-
-// Atualizar os preços dos ativos
-function updateQuotes() {
-  // Simulação de atualização de preços via API
-  // Em um ambiente real, isso seria substituído por chamadas de API reais
-  
-  // Bitcoin (via CoinDesk API)
-  const btcPrice = 118500 + Math.random() * 2000;
-  const btcChange = 2.5 + Math.random() * 2;
-  updateQuoteDisplay('BTC', formatCurrency(btcPrice), formatPercentage(btcChange));
-  
-  // Ouro (via Metals API)
-  const goldPrice = 2580 + Math.random() * 50;
-  const goldChange = 0.8 + Math.random() * 1;
-  updateQuoteDisplay('XAU', formatCurrency(goldPrice), formatPercentage(goldChange));
-  
-  // Prata (via Metals API)
-  const silverPrice = 33.7 + Math.random() * 1.5;
-  const silverChange = 1.2 + Math.random() * 1.5;
-  updateQuoteDisplay('XAG', formatCurrency(silverPrice), formatPercentage(silverChange));
-  
-  // Treasury Yield (via Treasury API)
-  const treasuryYield = 2.27 + Math.random() * 0.1;
-  const treasuryChange = -0.05 + Math.random() * 0.1;
-  updateQuoteDisplay('10Y', treasuryYield.toFixed(2) + '%', formatPercentage(treasuryChange));
-  
-  // Dollar Index (via Forex API)
-  const dollarIndex = 112.7 + Math.random() * 0.5;
-  const dollarChange = 0.3 + Math.random() * 0.4;
-  updateQuoteDisplay('DXY', dollarIndex.toFixed(2), formatPercentage(dollarChange));
-}
-
-// Atualizar a exibição de um ativo específico
-function updateQuoteDisplay(symbol, price, change) {
-  const priceElement = document.getElementById(`${symbol}-price`);
-  const changeElement = document.getElementById(`${symbol}-change`);
-  
-  if (priceElement) priceElement.textContent = price;
-  
-  if (changeElement) {
-    changeElement.textContent = change;
+    const quoteWrapper = document.createElement('div');
+    quoteWrapper.className = 'quote-wrapper';
     
-    // Adicionar classe para cor (verde/vermelho)
-    if (change.includes('+')) {
-      changeElement.className = 'change positive';
-    } else if (change.includes('-')) {
-      changeElement.className = 'change negative';
-    } else {
-      changeElement.className = 'change';
+    const quoteElement = document.createElement('div');
+    quoteElement.className = 'quote';
+    quoteElement.dataset.asset = asset.name;
+    quoteElement.dataset.index = index;
+    
+    // Adicionar tooltip para Dollar Index
+    let tooltipHtml = '';
+    if (asset.tooltip) {
+      tooltipHtml = `<span class="index-tooltip">ⓘ<span class="tooltip-text">${asset.tooltip}</span></span>`;
     }
-  }
+    
+    quoteElement.innerHTML = `
+      <strong>${asset.name} ${tooltipHtml}</strong>
+      <span>${asset.price} <span style="color: ${asset.change.includes('-') ? '#f44336' : '#4caf50'}">${asset.change}</span></span>
+    `;
+    
+    quoteWrapper.appendChild(quoteElement);
+    quotesContainer.appendChild(quoteWrapper);
+  });
 }
 
-// Mostrar gráfico para o ativo selecionado
-function showChart(symbol) {
-  // Remover classe ativa de todos os botões
-  document.querySelectorAll('.quote').forEach(quote => {
-    quote.classList.remove('active');
-  });
-  
-  // Adicionar classe ativa ao botão clicado
-  document.querySelector(`.quote[data-symbol="${symbol}"]`).classList.add('active');
-  
-  // Mostrar área do gráfico
+// Função para configurar os eventos de clique para os indicadores
+function setupQuoteClickEvents() {
+  const quotes = document.querySelectorAll('.quote');
   const chartArea = document.getElementById('chart-area');
-  chartArea.classList.add('visible');
+  const chartContainer = document.getElementById('main-chart-container');
+  let currentChart = null;
+  let activeQuote = null;
   
-  // Obter dados históricos para o ativo
-  const data = historicalData[symbol];
-  
-  // Verificar se já existe um gráfico
-  let chartInstance = Chart.getChart('main-chart');
-  if (chartInstance) {
-    chartInstance.destroy();
-  }
-  
-  // Obter o contexto do canvas
+  quotes.forEach(quote => {
+    quote.addEventListener('click', function() {
+      const assetName = this.dataset.asset;
+      const assetIndex = parseInt(this.dataset.index);
+      const asset = assets[assetIndex];
+      
+      // Se já estiver ativo, fechar o gráfico
+      if (this.classList.contains('active')) {
+        this.classList.remove('active');
+        chartArea.classList.remove('visible');
+        if (currentChart) {
+          currentChart.destroy();
+          currentChart = null;
+        }
+        activeQuote = null;
+        return;
+      }
+      
+      // Remover classe ativa de todos os quotes
+      quotes.forEach(q => q.classList.remove('active'));
+      
+      // Adicionar classe ativa ao quote clicado
+      this.classList.add('active');
+      activeQuote = this;
+      
+      // Mostrar área do gráfico
+      chartArea.classList.add('visible');
+      
+      // Destruir gráfico anterior se existir
+      if (currentChart) {
+        currentChart.destroy();
+      }
+      
+      // Adicionar botão de fechar
+      if (!document.querySelector('.chart-close')) {
+        const closeButton = document.createElement('button');
+        closeButton.className = 'chart-close';
+        closeButton.innerHTML = '✕';
+        closeButton.addEventListener('click', function() {
+          chartArea.classList.remove('visible');
+          if (currentChart) {
+            currentChart.destroy();
+            currentChart = null;
+          }
+          if (activeQuote) {
+            activeQuote.classList.remove('active');
+            activeQuote = null;
+          }
+        });
+        chartContainer.appendChild(closeButton);
+      }
+      
+      // Renderizar novo gráfico
+      currentChart = renderChart(assetName, asset.color);
+    });
+  });
+}
+
+// Função para renderizar o gráfico de um ativo
+function renderChart(assetName, color) {
   const ctx = document.getElementById('main-chart').getContext('2d');
   
-  // Encontrar o ativo correspondente para obter a cor
-  const asset = assets.find(a => a.symbol === symbol);
-  const color = asset ? asset.color : '#3498db';
+  // Obter dados históricos do ativo
+  const assetData = historicalData[assetName];
+  if (!assetData) return;
+  
+  // Preparar dados para o gráfico
+  const labels = [];
+  const data = [];
+  
+  // Combinar todos os dados dos últimos 5 anos
+  assetData.forEach(yearData => {
+    yearData.data.forEach((value, monthIndex) => {
+      labels.push(`${monthIndex + 1}/${yearData.year}`);
+      data.push(value);
+    });
+  });
   
   // Criar o gráfico
-  new Chart(ctx, {
+  const chart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: data.labels,
+      labels: labels,
       datasets: [{
-        label: asset ? asset.name : symbol,
-        data: data.prices,
+        label: assetName,
+        data: data,
         borderColor: color,
-        backgroundColor: hexToRGBA(color, 0.1),
+        backgroundColor: `${color}20`,
         borderWidth: 2,
         pointRadius: 0,
         pointHoverRadius: 5,
@@ -361,7 +363,7 @@ function showChart(symbol) {
         tooltip: {
           mode: 'index',
           intersect: false,
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          backgroundColor: '#fff',
           titleColor: '#333',
           bodyColor: '#666',
           borderColor: '#ddd',
@@ -376,7 +378,7 @@ function showChart(symbol) {
             size: 13
           },
           padding: 10,
-          displayColors: false,
+          boxPadding: 5,
           callbacks: {
             label: function(context) {
               let label = context.dataset.label || '';
@@ -384,12 +386,18 @@ function showChart(symbol) {
                 label += ': ';
               }
               if (context.parsed.y !== null) {
-                if (symbol === 'BTC' || symbol === 'XAU' || symbol === 'XAG') {
-                  label += formatCurrency(context.parsed.y);
-                } else if (symbol === '10Y') {
+                if (assetName === 'Bitcoin') {
+                  label += '$' + context.parsed.y.toLocaleString();
+                } else if (assetName === 'Ouro') {
+                  label += '$' + context.parsed.y.toLocaleString() + '/oz';
+                } else if (assetName === 'Prata') {
+                  label += '$' + context.parsed.y.toLocaleString() + '/oz';
+                } else if (assetName === 'Treasury Yield') {
                   label += context.parsed.y.toFixed(2) + '%';
-                } else {
+                } else if (assetName === 'Dollar Index') {
                   label += context.parsed.y.toFixed(2);
+                } else {
+                  label += context.parsed.y.toLocaleString();
                 }
               }
               return label;
@@ -403,341 +411,362 @@ function showChart(symbol) {
             display: false
           },
           ticks: {
+            maxRotation: 0,
             autoSkip: true,
             maxTicksLimit: 6,
             callback: function(value, index, values) {
               // Mostrar apenas os anos
-              return data.labels[value] || '';
-            },
-            font: {
-              family: "'Segoe UI', sans-serif",
-              size: 11
-            },
-            color: '#888'
+              const label = this.getLabelForValue(value);
+              if (label.endsWith('/2020') || 
+                  label.endsWith('/2021') || 
+                  label.endsWith('/2022') || 
+                  label.endsWith('/2023') || 
+                  label.endsWith('/2024') || 
+                  label.endsWith('/2025')) {
+                return label.split('/')[1];
+              }
+              return '';
+            }
           }
         },
         y: {
           grid: {
-            color: 'rgba(0, 0, 0, 0.05)'
+            color: '#f0f0f0'
           },
           ticks: {
-            font: {
-              family: "'Segoe UI', sans-serif",
-              size: 11
-            },
-            color: '#888',
             callback: function(value, index, values) {
-              if (symbol === 'BTC' || symbol === 'XAU' || symbol === 'XAG') {
-                return formatCurrencyShort(value);
-              } else if (symbol === '10Y') {
+              if (assetName === 'Bitcoin') {
+                return '$' + value.toLocaleString();
+              } else if (assetName === 'Ouro') {
+                return '$' + value.toLocaleString();
+              } else if (assetName === 'Prata') {
+                return '$' + value.toFixed(1);
+              } else if (assetName === 'Treasury Yield') {
                 return value.toFixed(2) + '%';
-              } else {
+              } else if (assetName === 'Dollar Index') {
                 return value.toFixed(1);
               }
+              return value;
             }
           }
         }
       },
       interaction: {
-        mode: 'nearest',
-        axis: 'x',
+        mode: 'index',
         intersect: false
       },
-      animation: {
-        duration: 1000,
-        easing: 'easeOutQuart'
+      elements: {
+        line: {
+          tension: 0.4
+        }
       }
     }
   });
+  
+  return chart;
 }
 
-// Inicializar a visualização de capitalização de mercado
-function initializeMarketCap() {
-  const marketCapContainer = document.getElementById('market-cap-treemap');
-  if (!marketCapContainer) return;
+// Função para renderizar o sentimento de mercado
+function renderMarketSentiment() {
+  // Já está no HTML, apenas atualizar valores se necessário
+}
+
+// Função para renderizar a capitalização de mercado global
+function renderMarketCap() {
+  const marketCapVisual = document.getElementById('market-cap-treemap');
+  marketCapVisual.innerHTML = '';
   
-  // Calcular o tamanho total para proporção
-  const totalMarketCap = marketCapData.reduce((sum, item) => sum + item.value, 0);
-  
-  // Ordenar por valor (maior para menor)
+  // Ordenar por valor (do maior para o menor)
   const sortedData = [...marketCapData].sort((a, b) => b.value - a.value);
   
-  let html = '';
+  // Calcular o total
+  const total = sortedData.reduce((sum, item) => sum + item.value, 0);
   
-  // Criar os quadrados proporcionais
+  // Atualizar o total no HTML
+  document.getElementById('total-market-cap').textContent = `$${total.toFixed(1)}T`;
+  
+  // Criar visualização em barras
   sortedData.forEach(item => {
-    // Calcular o tamanho proporcional (área)
-    const proportion = Math.sqrt(item.value / totalMarketCap) * 100;
-    const size = Math.max(proportion * 2, 10); // Garantir um tamanho mínimo
+    const marketCapItem = document.createElement('div');
+    marketCapItem.className = 'market-cap-item';
     
-    html += `
-      <div class="market-cap-box" style="background-color: ${item.color}; width: ${size}px; height: ${size}px;">
-        <div class="market-cap-box-name">${item.name}</div>
-        <div class="market-cap-box-value">$${item.value}T</div>
-        <div class="market-cap-box-percentage">${item.percentage}</div>
-      </div>
-    `;
+    const marketCapItemHeader = document.createElement('div');
+    marketCapItemHeader.className = 'market-cap-item-header';
+    
+    const marketCapItemName = document.createElement('div');
+    marketCapItemName.className = 'market-cap-item-name';
+    marketCapItemName.textContent = item.name;
+    
+    const marketCapItemValue = document.createElement('div');
+    marketCapItemValue.className = 'market-cap-item-value';
+    marketCapItemValue.textContent = `$${item.value.toFixed(1)}T`;
+    
+    marketCapItemHeader.appendChild(marketCapItemName);
+    marketCapItemHeader.appendChild(marketCapItemValue);
+    
+    const marketCapItemBar = document.createElement('div');
+    marketCapItemBar.className = 'market-cap-item-bar';
+    
+    const marketCapItemFill = document.createElement('div');
+    marketCapItemFill.className = 'market-cap-item-fill';
+    marketCapItemFill.style.width = `${item.percentage}%`;
+    marketCapItemFill.style.backgroundColor = item.color;
+    
+    const marketCapItemPercentage = document.createElement('div');
+    marketCapItemPercentage.className = 'market-cap-item-percentage';
+    marketCapItemPercentage.textContent = `${item.percentage.toFixed(1)}%`;
+    
+    marketCapItemBar.appendChild(marketCapItemFill);
+    marketCapItemBar.appendChild(marketCapItemPercentage);
+    
+    marketCapItem.appendChild(marketCapItemHeader);
+    marketCapItem.appendChild(marketCapItemBar);
+    
+    marketCapVisual.appendChild(marketCapItem);
   });
-  
-  marketCapContainer.innerHTML = html;
-  
-  // Configurar o botão de fontes
-  const sourcesToggle = document.getElementById('sources-toggle');
-  const sourcesList = document.getElementById('market-cap-sources');
-  
-  if (sourcesToggle && sourcesList) {
-    sourcesToggle.addEventListener('click', function() {
-      if (sourcesList.classList.contains('visible')) {
-        sourcesList.classList.remove('visible');
-        sourcesToggle.textContent = 'Mostrar fontes';
-      } else {
-        sourcesList.classList.add('visible');
-        sourcesToggle.textContent = 'Ocultar fontes';
-      }
-    });
-  }
 }
 
-// Inicializar as métricas de escassez
-function initializeScarcityMetrics() {
+// Função para renderizar as métricas de escassez
+function renderScarcityMetrics() {
   const scarcityContainer = document.querySelector('.scarcity-metrics-grid');
-  if (!scarcityContainer) return;
-  
-  let html = '';
+  scarcityContainer.innerHTML = '';
   
   scarcityMetrics.forEach(metric => {
-    html += `
-      <div class="scarcity-metric">
-        <div class="scarcity-metric-title">${metric.title}</div>
-        <div class="scarcity-metric-value">${metric.values.bitcoin}</div>
-        <div class="scarcity-metric-description">${metric.description}</div>
-        <div class="scarcity-comparison">
-          <div class="scarcity-comparison-item bitcoin">Bitcoin: ${metric.values.bitcoin}</div>
-          <div class="scarcity-comparison-item gold">Ouro: ${metric.values.gold}</div>
-          <div class="scarcity-comparison-item silver">Prata: ${metric.values.silver}</div>
-        </div>
-      </div>
+    const metricElement = document.createElement('div');
+    metricElement.className = 'scarcity-metric';
+    
+    let metricContent = `
+      <div class="scarcity-metric-title">${metric.title}</div>
+      <div class="scarcity-metric-value">${metric.value}</div>
+      <div class="scarcity-metric-description">${metric.description}</div>
     `;
+    
+    // Adicionar visualização específica para bitcoins minerados
+    if (metric.title === "Bitcoins Minerados") {
+      metricContent += `
+        <div class="supply-progress">
+          <div class="supply-progress-fill" style="width: ${metric.percentage}%"></div>
+          <div class="supply-progress-text">${metric.percentage.toFixed(2)}% (${metric.remaining} restantes)</div>
+        </div>
+      `;
+    } else if (metric.comparison) {
+      // Adicionar comparação para outras métricas
+      metricContent += `<div class="scarcity-comparison">`;
+      
+      metric.comparison.forEach(item => {
+        metricContent += `
+          <div class="scarcity-comparison-item ${item.name.toLowerCase()}">
+            ${item.name}: ${item.value}
+          </div>
+        `;
+      });
+      
+      metricContent += `</div>`;
+    }
+    
+    metricElement.innerHTML = metricContent;
+    scarcityContainer.appendChild(metricElement);
   });
-  
-  scarcityContainer.innerHTML = html;
 }
 
-// Inicializar os próximos eventos
-function initializeEvents() {
+// Função para renderizar os próximos eventos
+function renderUpcomingEvents() {
   const eventsContainer = document.getElementById('events-container');
-  if (!eventsContainer) return;
-  
-  let html = '';
+  eventsContainer.innerHTML = '';
   
   // Mostrar apenas os primeiros 5 eventos
-  upcomingEvents.slice(0, 5).forEach(event => {
-    html += `
-      <div class="event-item ${event.impact}">
-        <div class="event-date">
-          ${event.date}
-          <div class="event-impact">
-            <span class="impact-dot"></span>
-            <span class="impact-dot"></span>
-            <span class="impact-dot"></span>
-          </div>
-        </div>
-        <div class="event-title">${event.title}</div>
-        <div class="event-description">${event.description}</div>
-      </div>
-    `;
-  });
+  const eventsToShow = upcomingEvents.slice(0, 5);
   
-  eventsContainer.innerHTML = html;
+  eventsToShow.forEach(event => {
+    const eventElement = document.createElement('div');
+    eventElement.className = `event-item ${event.impact}`;
+    
+    eventElement.innerHTML = `
+      <div class="event-date">
+        ${event.date}
+        <div class="event-impact">
+          <span class="impact-dot"></span>
+          <span class="impact-dot"></span>
+          <span class="impact-dot"></span>
+        </div>
+      </div>
+      <div class="event-title">${event.title}</div>
+      <div class="event-description">${event.description}</div>
+    `;
+    
+    eventsContainer.appendChild(eventElement);
+  });
 }
 
-// Inicializar as notícias
-function initializeNews() {
-  const newsContainer = document.getElementById('news-content');
-  if (!newsContainer) return;
+// Função para buscar e renderizar as notícias
+function fetchAndRenderNews() {
+  const newsContent = document.getElementById('news-content');
   
-  // Simulação de notícias (em um ambiente real, seriam obtidas via API)
-  const news = [
-    {
-      title: "Bitcoin ultrapassa US$ 120.000 pela primeira vez na história",
-      source: "Bloomberg",
-      date: "19/05/2025",
-      time: "14:30",
-      description: "A principal criptomoeda do mundo atingiu novo recorde histórico impulsionada por forte demanda institucional.",
-      url: "#",
-      image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-    },
-    {
-      title: "Banco Central dos EUA sinaliza possível corte nas taxas de juros",
-      source: "Wall Street Journal",
-      date: "18/05/2025",
-      time: "16:45",
-      description: "Fed indica que inflação está sob controle e pode iniciar ciclo de afrouxamento monetário nos próximos meses.",
-      url: "#",
-      image: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-    },
-    {
-      title: "Ouro atinge novo recorde com tensões geopolíticas crescentes",
-      source: "Financial Times",
-      date: "17/05/2025",
-      time: "09:15",
-      description: "Metal precioso valoriza 2,3% em um único dia, refletindo busca por ativos seguros em meio a incertezas globais.",
-      url: "#",
-      image: "https://images.unsplash.com/photo-1610375461246-83df859d849d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-    },
-    {
-      title: "Grandes empresas adicionam Bitcoin ao balanço patrimonial",
-      source: "Reuters",
-      date: "16/05/2025",
-      time: "11:20",
-      description: "Cinco empresas do Fortune 500 anunciaram aquisições significativas de Bitcoin como reserva de valor corporativa.",
-      url: "#",
-      image: "https://images.unsplash.com/photo-1621761191319-c6fb62004040?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-    },
-    {
-      title: "Inflação global mostra sinais de desaceleração após anos de alta",
-      source: "The Economist",
-      date: "15/05/2025",
-      time: "13:40",
-      description: "Dados econômicos indicam que pressões inflacionárias começam a ceder em economias desenvolvidas e emergentes.",
-      url: "#",
-      image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-    },
-    {
-      title: "Análise: Por que ativos escassos continuam superando o mercado",
-      source: "Jesse Myers",
-      date: "14/05/2025",
-      time: "10:05",
-      description: "Estudo aprofundado sobre como Bitcoin, ouro e outros ativos com oferta limitada têm se comportado no atual cenário econômico.",
-      url: "#",
-      image: "https://images.unsplash.com/photo-1550565118-3a14e8d0386f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-    }
-  ];
-  
-  let html = '<div class="news-grid">';
-  
-  news.forEach(item => {
-    html += `
-      <div class="news-item">
-        <div class="news-image">
-          <img src="${item.image}" alt="${item.title}">
-        </div>
+  // Simular busca de notícias (em produção, seria uma chamada de API)
+  setTimeout(() => {
+    const mockNews = [
+      {
+        title: "Bitcoin ultrapassa $70.000 pela primeira vez em sua história",
+        description: "A principal criptomoeda do mundo atingiu um novo recorde histórico impulsionada por forte demanda institucional.",
+        source: "Bloomberg",
+        date: "18 Maio 2025",
+        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+      },
+      {
+        title: "FED mantém taxa de juros e sinaliza possível corte em 2025",
+        description: "Banco Central americano manteve sua taxa básica de juros, mas indicou que pode iniciar ciclo de cortes ainda este ano.",
+        source: "Wall Street Journal",
+        date: "17 Maio 2025",
+        image: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+      },
+      {
+        title: "Adoção de Bitcoin por empresas Fortune 500 cresce 150% em um ano",
+        description: "Relatório mostra aumento significativo no número de grandes corporações que adicionaram Bitcoin em seus balanços.",
+        source: "Financial Times",
+        date: "16 Maio 2025",
+        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+      },
+      {
+        title: "Inflação global mostra sinais de desaceleração após 3 anos de alta",
+        description: "Dados econômicos de várias economias avançadas indicam que pressões inflacionárias começam a diminuir.",
+        source: "Reuters",
+        date: "15 Maio 2025",
+        image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+      },
+      {
+        title: "Escassez de Bitcoin: Menos de 1,7 milhão de unidades ainda a serem mineradas",
+        description: "Com mais de 92% do suprimento total já em circulação, especialistas apontam para aumento da escassez do ativo digital.",
+        source: "The Economist",
+        date: "14 Maio 2025",
+        image: "https://images.unsplash.com/photo-1591994843349-f415893b3a6b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+      },
+      {
+        title: "Banco Central da Suíça adiciona Bitcoin às suas reservas oficiais",
+        description: "Em movimento histórico, a Suíça se torna o primeiro país europeu a incluir oficialmente Bitcoin em suas reservas nacionais.",
+        source: "Bitcoin Magazine",
+        date: "13 Maio 2025",
+        image: "https://images.unsplash.com/photo-1561414927-6d86591d0c4f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+      }
+    ];
+    
+    // Criar grid de notícias
+    const newsGrid = document.createElement('div');
+    newsGrid.className = 'news-grid';
+    
+    mockNews.forEach(news => {
+      const newsItem = document.createElement('div');
+      newsItem.className = 'news-item';
+      
+      newsItem.innerHTML = `
+        <img src="${news.image}" alt="${news.title}" class="news-image">
         <div class="news-content">
-          <h3><a href="${item.url}" target="_blank">${item.title}</a></h3>
-          <p>${item.description}</p>
-          <div class="news-meta">
-            <span class="news-source">${item.source}</span>
-            <span class="news-datetime">${item.date} às ${item.time}</span>
-          </div>
+          <div class="news-source">${news.source}</div>
+          <div class="news-title">${news.title}</div>
+          <div class="news-description">${news.description}</div>
+          <div class="news-date">${news.date}</div>
         </div>
-      </div>
-    `;
-  });
-  
-  html += '</div>';
-  newsContainer.innerHTML = html;
+      `;
+      
+      newsGrid.appendChild(newsItem);
+    });
+    
+    newsContent.innerHTML = '';
+    newsContent.appendChild(newsGrid);
+  }, 1000);
 }
 
-// Inicializar a citação de Satoshi
-function initializeSatoshiQuote() {
+// Função para renderizar a citação de Satoshi
+function renderSatoshiQuote() {
   const quoteElement = document.getElementById('satoshi-quote');
-  if (!quoteElement) return;
   
   // Usar a data atual como seed para selecionar uma citação
+  // Isso garante que a citação mude a cada dia, mas permaneça a mesma durante o dia
   const today = new Date();
-  const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+  const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+  const quoteIndex = seed % satoshiQuotes.length;
   
-  // Selecionar uma citação com base no dia do ano
-  const quoteIndex = dayOfYear % satoshiQuotes.length;
   quoteElement.textContent = satoshiQuotes[quoteIndex];
 }
 
-// Inicializar o botão de alternar tema
-function initializeThemeToggle() {
-  // Verificar se já existe um botão
-  if (document.getElementById('theme-toggle')) return;
+// Função para configurar o botão de fontes
+function setupSourcesToggle() {
+  const sourcesToggle = document.getElementById('sources-toggle');
+  const marketCapSources = document.getElementById('market-cap-sources');
   
-  // Criar o botão
-  const button = document.createElement('button');
-  button.id = 'theme-toggle';
-  button.innerHTML = '☀️';
-  button.title = 'Alternar tema claro/escuro';
-  document.body.appendChild(button);
-  
-  // Verificar preferência salva
-  const darkMode = localStorage.getItem('darkMode') === 'true';
-  if (darkMode) {
-    document.body.classList.add('dark-mode');
-    button.innerHTML = '🌙';
-  }
-  
-  // Adicionar evento de clique
-  button.addEventListener('click', function() {
-    document.body.classList.toggle('dark-mode');
-    const isDarkMode = document.body.classList.contains('dark-mode');
-    localStorage.setItem('darkMode', isDarkMode);
-    button.innerHTML = isDarkMode ? '🌙' : '☀️';
+  sourcesToggle.addEventListener('click', function() {
+    if (marketCapSources.style.display === 'block') {
+      marketCapSources.style.display = 'none';
+      sourcesToggle.textContent = 'Mostrar fontes';
+    } else {
+      marketCapSources.style.display = 'block';
+      sourcesToggle.textContent = 'Ocultar fontes';
+    }
   });
 }
 
-// Inicializar o relógio digital
-function initializeClock() {
-  // Verificar se já existe um relógio
-  if (document.getElementById('clock')) return;
+// Função para configurar o botão de tema
+function setupThemeToggle() {
+  // Verificar se já existe um tema salvo
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-theme');
+  }
   
-  // Criar o elemento do relógio
-  const clock = document.createElement('div');
-  clock.id = 'clock';
-  
-  // Adicionar o relógio ao rodapé
-  const footer = document.querySelector('footer');
-  if (footer) {
-    footer.prepend(clock);
+  // Criar botão de tema se não existir
+  if (!document.getElementById('theme-toggle')) {
+    const themeToggle = document.createElement('button');
+    themeToggle.id = 'theme-toggle';
+    themeToggle.className = 'theme-toggle';
+    themeToggle.innerHTML = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
     
-    // Atualizar o relógio
-    function updateClock() {
-      const now = new Date();
-      const options = { 
-        timeZone: 'America/Sao_Paulo',
-        hour: '2-digit', 
-        minute: '2-digit', 
-        second: '2-digit',
-        hour12: false
-      };
-      clock.textContent = `${now.toLocaleTimeString('pt-BR', options)} BRT`;
-    }
+    themeToggle.addEventListener('click', function() {
+      document.body.classList.toggle('dark-theme');
+      
+      if (document.body.classList.contains('dark-theme')) {
+        localStorage.setItem('theme', 'dark');
+        themeToggle.innerHTML = '☀️';
+      } else {
+        localStorage.setItem('theme', 'light');
+        themeToggle.innerHTML = '🌙';
+      }
+    });
     
-    // Atualizar imediatamente e a cada segundo
-    updateClock();
-    setInterval(updateClock, 1000);
+    document.body.appendChild(themeToggle);
   }
 }
 
-// Funções utilitárias
-function formatCurrency(value) {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(value);
+// Função para atualizar os dados periodicamente
+function setupPeriodicUpdates() {
+  // Atualizar a cada 5 minutos
+  setInterval(() => {
+    // Atualizar preços dos ativos
+    updateAssetPrices();
+    
+    // Atualizar sentimento de mercado
+    updateMarketSentiment();
+    
+    // Atualizar notícias
+    fetchAndRenderNews();
+  }, 5 * 60 * 1000);
 }
 
-function formatCurrencyShort(value) {
-  if (value >= 1000) {
-    return '$' + (value / 1000).toFixed(1) + 'k';
-  }
-  return '$' + value.toFixed(0);
+// Função para atualizar preços dos ativos
+function updateAssetPrices() {
+  // Em produção, isso seria uma chamada de API para obter preços atualizados
+  // Aqui estamos apenas simulando uma atualização
+  
+  // Renderizar novamente os quotes
+  renderQuotes();
 }
 
-function formatPercentage(value) {
-  const sign = value >= 0 ? '+' : '';
-  return `${sign}${value.toFixed(2)}%`;
+// Função para atualizar sentimento de mercado
+function updateMarketSentiment() {
+  // Em produção, isso seria uma chamada de API para obter dados atualizados
+  // Aqui estamos apenas simulando uma atualização
+  
+  // Atualizar valores no DOM
+  // ...
 }
 
-function hexToRGBA(hex, alpha) {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
+// Iniciar atualizações periódicas
+setupPeriodicUpdates();
