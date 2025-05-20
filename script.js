@@ -1,6 +1,6 @@
 const assets = [
-  { name: "Bitcoin", symbol: "BTC", price: "$68,245.32", change: "+2.4%", color: "#f7931a", api: "coindesk" },
-  { name: "Gold", symbol: "XAU", price: "$2,342.18", change: "+0.8%", color: "#d4af37", api: "metals" },
+  { name: "Bitcoin", symbol: "BTC", price: "$69,420.69", change: "+2.4%", color: "#f7931a", api: "coindesk" },
+  { name: "Gold", symbol: "XAU", price: "$2,512.35", change: "+0.8%", color: "#d4af37", api: "metals" },
   { name: "Silver", symbol: "XAG", price: "$30.75", change: "+1.2%", color: "#c0c0c0", api: "metals" },
   { name: "10-Year Treasury Yield", symbol: "10Y", price: "4.32%", change: "-0.05%", color: "#6a5acd", api: "treasury", tooltip: "Reveals the cost of government debt financing and signals market expectations for inflation. Rising yields expose the unsustainable nature of endless deficit spending and currency debasement." },
   { name: "Dollar Index", symbol: "DXY", price: "103.42", change: "-0.3%", color: "#20b2aa", api: "forex", tooltip: "Measures the strength of the US dollar against a basket of major foreign currencies. Declining values reflect the erosion of purchasing power through monetary expansion." }
@@ -13,16 +13,16 @@ const historicalData = {
     { year: 2021, data: [33000, 45000, 58000, 56000, 37000, 35000, 42000, 47000, 43000, 61000, 58000, 46000] },
     { year: 2022, data: [38000, 44000, 40000, 39000, 31000, 20000, 23000, 24000, 19000, 20500, 17000, 16500] },
     { year: 2023, data: [16800, 23500, 28000, 30000, 27000, 30500, 29800, 28000, 26500, 34000, 37000, 42000] },
-    { year: 2024, data: [45000, 52000, 61000, 64000, 59000, 62000, 65000, 67000, 66000, 68000, 69000, 68245] },
-    { year: 2025, data: [67500, 69800, 72000, 70500, 68245] }
+    { year: 2024, data: [45000, 52000, 61000, 64000, 59000, 62000, 65000, 67000, 66000, 68000, 69000, 69420] },
+    { year: 2025, data: [67500, 69800, 72000, 70500, 69420] }
   ],
   "Gold": [
     { year: 2020, data: [1520, 1585, 1620, 1680, 1730, 1780, 1960, 1920, 1880, 1900, 1860, 1895] },
     { year: 2021, data: [1850, 1810, 1730, 1770, 1900, 1780, 1810, 1815, 1760, 1780, 1820, 1805] },
     { year: 2022, data: [1800, 1870, 1920, 1880, 1840, 1810, 1760, 1770, 1670, 1650, 1750, 1820] },
     { year: 2023, data: [1910, 1830, 1970, 1990, 1960, 1920, 1970, 2010, 1920, 1980, 2040, 2060] },
-    { year: 2024, data: [2050, 2120, 2180, 2220, 2260, 2290, 2310, 2330, 2300, 2320, 2350, 2342] },
-    { year: 2025, data: [2360, 2380, 2410, 2370, 2342] }
+    { year: 2024, data: [2050, 2120, 2180, 2220, 2260, 2290, 2310, 2330, 2300, 2420, 2480, 2512] },
+    { year: 2025, data: [2360, 2380, 2410, 2470, 2512] }
   ],
   "Silver": [
     { year: 2020, data: [17.8, 18.5, 14.6, 15.7, 17.9, 18.2, 24.5, 27.4, 24.2, 24.1, 23.8, 26.3] },
@@ -123,30 +123,6 @@ const upcomingEvents = [
     title: "US Employment Report",
     description: "US labor market data",
     impact: "medium"
-  },
-  {
-    date: "June 20, 2025",
-    title: "ECB Meeting",
-    description: "European Central Bank monetary policy decision",
-    impact: "high"
-  },
-  {
-    date: "June 28, 2025",
-    title: "BTC Options Expiry",
-    description: "Quarterly Bitcoin options contracts expiration",
-    impact: "medium"
-  },
-  {
-    date: "July 05, 2025",
-    title: "ETH Protocol Update",
-    description: "Ethereum network improvements implementation",
-    impact: "low"
-  },
-  {
-    date: "July 12, 2025",
-    title: "China GDP Report",
-    description: "Chinese economic growth data",
-    impact: "medium"
   }
 ];
 
@@ -217,6 +193,7 @@ function renderQuotes() {
   assets.forEach((asset, index) => {
     const quoteWrapper = document.createElement('div');
     quoteWrapper.className = 'quote-wrapper';
+    quoteWrapper.id = `quote-wrapper-${index}`;
     
     const quoteElement = document.createElement('div');
     quoteElement.className = 'quote';
@@ -239,7 +216,22 @@ function renderQuotes() {
       </div>
     `;
     
+    // Create individual chart area for this asset
+    const chartArea = document.createElement('div');
+    chartArea.className = 'asset-chart-area';
+    chartArea.id = `chart-area-${index}`;
+    
+    const chartContainer = document.createElement('div');
+    chartContainer.className = 'chart-container';
+    
+    const canvas = document.createElement('canvas');
+    canvas.id = `chart-${index}`;
+    
+    chartContainer.appendChild(canvas);
+    chartArea.appendChild(chartContainer);
+    
     quoteWrapper.appendChild(quoteElement);
+    quoteWrapper.appendChild(chartArea);
     quotesContainer.appendChild(quoteWrapper);
   });
 }
@@ -247,72 +239,68 @@ function renderQuotes() {
 // Function to set up click events for indicators
 function setupQuoteClickEvents() {
   const quotes = document.querySelectorAll('.quote');
-  const chartArea = document.getElementById('chart-area');
-  const chartContainer = document.getElementById('main-chart-container');
-  let currentChart = null;
-  let activeQuote = null;
+  const charts = {};
   
   quotes.forEach(quote => {
     quote.addEventListener('click', function() {
       const assetName = this.dataset.asset;
       const assetIndex = parseInt(this.dataset.index);
       const asset = assets[assetIndex];
+      const chartArea = document.getElementById(`chart-area-${assetIndex}`);
       
-      // If already active, close the chart
+      // Toggle chart visibility
       if (this.classList.contains('active')) {
         this.classList.remove('active');
         chartArea.classList.remove('visible');
-        if (currentChart) {
-          currentChart.destroy();
-          currentChart = null;
+        if (charts[assetIndex]) {
+          charts[assetIndex].destroy();
+          charts[assetIndex] = null;
         }
-        activeQuote = null;
-        return;
-      }
-      
-      // Remove active class from all quotes
-      quotes.forEach(q => q.classList.remove('active'));
-      
-      // Add active class to clicked quote
-      this.classList.add('active');
-      activeQuote = this;
-      
-      // Show chart area
-      chartArea.classList.add('visible');
-      
-      // Destroy previous chart if exists
-      if (currentChart) {
-        currentChart.destroy();
-      }
-      
-      // Add close button
-      if (!document.querySelector('.chart-close')) {
-        const closeButton = document.createElement('button');
-        closeButton.className = 'chart-close';
-        closeButton.innerHTML = '✕';
-        closeButton.addEventListener('click', function() {
-          chartArea.classList.remove('visible');
-          if (currentChart) {
-            currentChart.destroy();
-            currentChart = null;
-          }
-          if (activeQuote) {
-            activeQuote.classList.remove('active');
-            activeQuote = null;
+      } else {
+        // Close any other open charts
+        quotes.forEach((q, i) => {
+          if (q !== this && q.classList.contains('active')) {
+            q.classList.remove('active');
+            document.getElementById(`chart-area-${i}`).classList.remove('visible');
+            if (charts[i]) {
+              charts[i].destroy();
+              charts[i] = null;
+            }
           }
         });
-        chartContainer.appendChild(closeButton);
+        
+        // Open this chart
+        this.classList.add('active');
+        chartArea.classList.add('visible');
+        
+        // Add close button if it doesn't exist
+        const chartContainer = chartArea.querySelector('.chart-container');
+        if (!chartContainer.querySelector('.chart-close')) {
+          const closeButton = document.createElement('button');
+          closeButton.className = 'chart-close';
+          closeButton.innerHTML = '✕';
+          closeButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            quote.classList.remove('active');
+            chartArea.classList.remove('visible');
+            if (charts[assetIndex]) {
+              charts[assetIndex].destroy();
+              charts[assetIndex] = null;
+            }
+          });
+          chartContainer.appendChild(closeButton);
+        }
+        
+        // Render chart
+        charts[assetIndex] = renderChart(assetName, asset.color, `chart-${assetIndex}`);
       }
-      
-      // Render new chart
-      currentChart = renderChart(assetName, asset.color);
     });
   });
 }
 
 // Function to render chart for an asset
-function renderChart(assetName, color) {
-  const ctx = document.getElementById('main-chart').getContext('2d');
+function renderChart(assetName, color, canvasId) {
+  const ctx = document.getElementById(canvasId).getContext('2d');
   
   // Get historical data for the asset
   const assetData = historicalData[assetName];
@@ -391,15 +379,15 @@ function renderChart(assetName, color) {
                 label += ': ';
               }
               if (context.parsed.y !== null) {
-                if (assetName === 'Bitcoin') {
+                if (assetName === "Bitcoin") {
                   label += '$' + context.parsed.y.toLocaleString();
-                } else if (assetName === 'Gold') {
+                } else if (assetName === "Gold") {
                   label += '$' + context.parsed.y.toLocaleString() + '/oz';
-                } else if (assetName === 'Silver') {
+                } else if (assetName === "Silver") {
                   label += '$' + context.parsed.y.toLocaleString() + '/oz';
-                } else if (assetName === '10-Year Treasury Yield') {
+                } else if (assetName === "10-Year Treasury Yield") {
                   label += context.parsed.y.toFixed(2) + '%';
-                } else if (assetName === 'Dollar Index') {
+                } else if (assetName === "Dollar Index") {
                   label += context.parsed.y.toFixed(2);
                 } else {
                   label += context.parsed.y.toLocaleString();
@@ -441,15 +429,15 @@ function renderChart(assetName, color) {
           },
           ticks: {
             callback: function(value, index, values) {
-              if (assetName === 'Bitcoin') {
+              if (assetName === "Bitcoin") {
                 return '$' + value.toLocaleString();
-              } else if (assetName === 'Gold') {
+              } else if (assetName === "Gold") {
                 return '$' + value.toLocaleString();
-              } else if (assetName === 'Silver') {
+              } else if (assetName === "Silver") {
                 return '$' + value.toFixed(1);
-              } else if (assetName === '10-Year Treasury Yield') {
+              } else if (assetName === "10-Year Treasury Yield") {
                 return value.toFixed(2) + '%';
-              } else if (assetName === 'Dollar Index') {
+              } else if (assetName === "Dollar Index") {
                 return value.toFixed(1);
               }
               return value;
@@ -588,8 +576,8 @@ function renderUpcomingEvents() {
   const eventsContainer = document.getElementById('events-container');
   eventsContainer.innerHTML = '';
   
-  // Show only the first 5 events
-  const eventsToShow = upcomingEvents.slice(0, 5);
+  // Show only the first 4 events
+  const eventsToShow = upcomingEvents.slice(0, 4);
   
   eventsToShow.forEach(event => {
     const eventElement = document.createElement('div');
