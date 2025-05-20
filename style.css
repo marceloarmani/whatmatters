@@ -8,19 +8,47 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Compact and discrete header */
+/* Compact and discrete header with horizontal stripes */
 header.compact-header {
   text-align: center;
   padding: 0.8rem 0.6rem;
   background: #fff;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
   margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.header-stripes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.header-stripe {
+  height: 4px;
+  width: 100%;
+  background: #f0f0f0;
+  margin-bottom: 8px;
+}
+
+.header-stripe:nth-child(2n) {
+  background: #e6e6e6;
+}
+
+.header-stripe:nth-child(3n) {
+  background: #d9d9d9;
 }
 
 header.compact-header h1 {
   font-size: 1.6rem;
   margin-bottom: 0.2rem;
   color: #2c3e50;
+  position: relative;
+  z-index: 1;
 }
 
 header.compact-header p {
@@ -30,10 +58,12 @@ header.compact-header p {
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .main-layout {
-  max-width: 1200px; /* Reduced from 1400px for better width */
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -41,7 +71,7 @@ header.compact-header p {
 .content-layout {
   margin-top: 1rem;
   display: grid;
-  grid-template-columns: 1fr; /* Will be changed to 2 columns in larger screens */
+  grid-template-columns: 1fr;
   gap: 1.5rem;
 }
 
@@ -55,6 +85,14 @@ header.compact-header p {
   min-width: 0;
 }
 
+/* Two-column layout for side-by-side sections */
+.two-column-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
 /* Main indicators (vertical layout - one per row) */
 #main-indicators {
   margin-bottom: 1.5rem;
@@ -64,11 +102,13 @@ header.compact-header p {
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-/* Vertical buttons for the 5 indices */
+/* Vertical buttons for the 5 indices with reduced width */
 #quotes.vertical-quotes {
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+  max-width: 600px; /* Reduced width */
+  margin: 0 auto;
 }
 
 .quote-wrapper {
@@ -78,7 +118,7 @@ header.compact-header p {
 
 .quote {
   background: #fff;
-  padding: 1rem 1.5rem;
+  padding: 0.8rem 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   cursor: pointer;
@@ -88,8 +128,8 @@ header.compact-header p {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 1.1rem;
-  min-height: 50px; /* Less tall */
+  font-size: 1rem;
+  min-height: 40px; /* Smaller height */
 }
 
 .quote:hover {
@@ -109,7 +149,7 @@ header.compact-header p {
 
 .quote strong {
   color: #2c3e50;
-  font-size: 1.2rem;
+  font-size: 1.1rem; /* Slightly smaller */
   margin-right: 0.5rem;
   display: inline;
 }
@@ -249,6 +289,7 @@ canvas {
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   margin-bottom: 1.5rem;
+  height: 100%;
 }
 
 #market-sentiment h2 {
@@ -317,6 +358,7 @@ canvas {
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   margin-bottom: 1.5rem;
+  height: 100%;
 }
 
 #economic-calendar h2 {
@@ -427,13 +469,14 @@ canvas {
   background: #2c3e50;
 }
 
-/* Global Market Capitalization - Horizontal bars for better readability */
+/* Market Capitalization - Horizontal bars for better readability */
 #market-cap-comparison {
   background: #fff;
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   margin-bottom: 1.5rem;
+  height: 100%;
 }
 
 #market-cap-comparison h2 {
@@ -532,6 +575,7 @@ canvas {
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   margin-bottom: 1.5rem;
+  height: 100%;
 }
 
 #scarcity-metrics h2 {
@@ -627,6 +671,13 @@ canvas {
   color: #fff;
   text-shadow: 0 0 2px rgba(0,0,0,0.5);
   white-space: nowrap;
+}
+
+.days-remaining {
+  display: block;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.5rem;
 }
 
 /* Latest News */
@@ -759,7 +810,17 @@ footer {
 /* Responsiveness */
 @media (min-width: 992px) {
   .content-layout {
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr;
+  }
+  
+  .two-column-layout {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .metrics-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
   }
   
   .sentiment-indicators {
@@ -770,6 +831,16 @@ footer {
 @media (max-width: 991px) {
   .content-layout {
     grid-template-columns: 1fr;
+  }
+  
+  .two-column-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .metrics-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
   
   .sentiment-indicators {
