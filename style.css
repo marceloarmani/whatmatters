@@ -362,7 +362,7 @@ canvas {
 }
 
 .calendar-container {
-  max-height: 180px; /* Limit height */
+  max-height: 150px; /* Reduced height */
   overflow: hidden;
 }
 
@@ -372,16 +372,18 @@ canvas {
   grid-template-rows: 1fr; /* Force single row */
   gap: 0.8rem;
   height: 100%;
+  white-space: nowrap; /* Prevent text wrapping */
 }
 
 .event-item {
-  padding: 0.8rem;
+  padding: 0.6rem; /* Reduced padding */
   border-radius: 6px;
   background: #f8f9fa;
   border-left: 3px solid #ddd;
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden; /* Hide overflow content */
 }
 
 .event-item.high {
@@ -397,9 +399,9 @@ canvas {
 }
 
 .event-date {
-  font-size: 0.8rem;
+  font-size: 0.75rem; /* Smaller font */
   color: #666;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.2rem; /* Reduced margin */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -412,8 +414,8 @@ canvas {
 }
 
 .impact-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px; /* Smaller dots */
+  height: 5px; /* Smaller dots */
   border-radius: 50%;
   background: #ddd;
 }
@@ -433,24 +435,30 @@ canvas {
 
 .event-title {
   font-weight: 500;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.2rem; /* Reduced margin */
   color: #333;
+  font-size: 0.85rem; /* Smaller font */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .event-description {
-  font-size: 0.85rem;
+  font-size: 0.75rem; /* Smaller font */
   color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Global Market Capitalization - Compact height */
+/* Global Market Capitalization - No scroll */
 #market-cap-comparison {
   background: #fff;
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   margin-bottom: 1.5rem;
-  max-height: 350px; /* Reduced height */
-  overflow-y: auto;
+  overflow: hidden; /* Hide overflow, no scroll */
 }
 
 .section-header-with-total {
@@ -478,30 +486,32 @@ canvas {
 .market-cap-visual {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.4rem; /* Reduced gap */
 }
 
 .market-cap-item {
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.4rem; /* Reduced margin */
 }
 
 .market-cap-item-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.2rem; /* Reduced margin */
 }
 
 .market-cap-item-name {
   font-weight: 500;
   color: #333;
+  font-size: 0.9rem; /* Smaller font */
 }
 
 .market-cap-item-value {
   color: #666;
+  font-size: 0.9rem; /* Smaller font */
 }
 
 .market-cap-item-bar {
-  height: 20px; /* Slightly smaller */
+  height: 16px; /* Smaller height */
   background: #f0f0f0;
   border-radius: 4px;
   overflow: hidden;
@@ -518,7 +528,7 @@ canvas {
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 0.8rem;
+  font-size: 0.75rem; /* Smaller font */
   color: #fff;
   text-shadow: 0 0 2px rgba(0,0,0,0.5);
 }
@@ -527,18 +537,18 @@ canvas {
   background: none;
   border: none;
   color: #7f8c8d;
-  font-size: 0.8rem;
+  font-size: 0.75rem; /* Smaller font */
   cursor: pointer;
   padding: 0;
-  margin-top: 0.5rem;
+  margin-top: 0.3rem; /* Reduced margin */
   text-decoration: underline;
 }
 
 .market-cap-sources {
   display: none;
-  font-size: 0.8rem;
+  font-size: 0.75rem; /* Smaller font */
   color: #7f8c8d;
-  margin-top: 0.5rem;
+  margin-top: 0.3rem; /* Reduced margin */
 }
 
 /* Scarcity Metrics */
