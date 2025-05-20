@@ -1,11 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Scarcity Panel</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Ajuste para reduzir altura do header em 1cm (~37.8px) e afastar logo do topo */
+    .compact-header {
+      padding-top: calc(20px - 37.8px); /* reduz 1cm do padding superior original */
+      padding-bottom: calc(20px - 37.8px); /* reduz 1cm do padding inferior original */
+      /* mantém os outros estilos do header */
+    }
+
+    /* Posiciona o logo um pouco mais abaixo para não ficar grudado no topo */
+    .header-logo {
+      margin-top: 12px; /* ajuste para afastar do topo */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 60px;
+      height: 60px;
+    }
+
+    .header-logo svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  </style>
 </head>
 <body>
   <header class="compact-header">
