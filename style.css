@@ -1,15 +1,48 @@
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  color: #333;
+  line-height: 1.5;
+}
+
+.compact-header {
+  padding: 20px 10px; /* Menor altura */
+  text-align: center;
+  background: #f5f5f5;
+  position: relative;
+}
+
+.header-logo svg {
+  width: 48px;
+  height: 48px;
+  fill: #333;
+  margin-bottom: 10px;
+}
+
+.header-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 6px;
+}
+
+.header-content p {
+  font-size: 1.1rem;
+  color: #666;
+}
+
 /* Espaçamento uniforme entre sessões */
 .standard-section {
-  margin-bottom: 40px; /* espaçamento consistente */
+  margin-bottom: 40px;
+  padding: 0 15px;
 }
 
-/* Bloco inicial menor altura */
-.compact-header {
-  padding: 20px 10px; /* menos alto que antes */
-  text-align: center;
-}
-
-/* Upcoming events lado a lado */
+/* Upcoming events: 4 cards lado a lado */
 .calendar-container #events-container {
   display: flex;
   gap: 20px;
@@ -26,7 +59,18 @@
   min-width: 220px;
 }
 
-/* Scarcity metrics - remover bordas e alinhar na mesma linha */
+.calendar-container #events-container .event-card h3 {
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+}
+
+.calendar-container #events-container .event-card p {
+  font-size: 0.9rem;
+  color: #444;
+  margin-bottom: 6px;
+}
+
+/* Scarcity metrics - flex, sem bordas */
 .scarcity-metrics-grid {
   display: flex;
   gap: 30px;
@@ -55,9 +99,70 @@
   color: #f7931a;
 }
 
-/* Ajuste gráfico - mais espaço para labels eixo X */
+/* Market sentiment gauges */
+.indicator {
+  margin-bottom: 15px;
+}
+
+.gauge {
+  background: #ddd;
+  border-radius: 10px;
+  height: 12px;
+  width: 100%;
+  margin: 6px 0;
+  overflow: hidden;
+}
+
+.gauge-fill {
+  background-color: #4caf50;
+  height: 100%;
+  width: 0;
+  transition: width 0.5s ease;
+}
+
+.gauge-value {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.indicator-change {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* Chart container - espaço extra para labels do eixo X */
 .chart-container {
   position: relative;
-  height: 300px; /* altura suficiente */
+  height: 300px;
   margin-bottom: 60px; /* espaço extra para anos */
+}
+
+/* Market cap sources toggle */
+.market-cap-sources {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.sources-button {
+  margin-top: 10px;
+  cursor: pointer;
+  background: none;
+  border: 1px solid #666;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+  .calendar-container #events-container {
+    flex-direction: column;
+  }
+  .calendar-container #events-container .event-card {
+    flex: 1 1 100%;
+  }
+  .scarcity-metrics-grid {
+    flex-wrap: wrap;
+  }
 }
