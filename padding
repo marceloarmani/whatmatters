@@ -14,7 +14,7 @@ header.compact-header {
   padding: 0.5rem 0 0.6rem;
   background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  margin-bottom: 1.0rem;
+  margin-bottom: 1.5rem;
   position: relative;
   overflow: hidden;
   color: #fff;
@@ -60,6 +60,11 @@ header.compact-header {
   height: 40px;
   fill: #f7931a;
   margin-bottom: 0.0rem;
+}
+
+header.compact-header {
+  padding-top: 0.2rem;  /* diminui o espaço superior */
+  padding-bottom: 0.3rem; /* diminui o espaço inferior */
 }
 
 header.compact-header h1 {
