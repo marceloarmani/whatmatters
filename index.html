@@ -9,15 +9,25 @@
 </head>
 <body>
   <header class="compact-header">
+    <div class="header-pattern"></div>
+    <div class="header-content">
+      <div class="header-logo">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11.5 1L2 6v12l9.5 5 9.5-5V6l-9.5-5zm7.5 16.5l-7.5 3.94-7.5-3.94V6.5l7.5-3.94 7.5 3.94v11z"/>
+          <path d="M8.5 12v4l3 1.5 3-1.5v-4l-3-1.5-3 1.5z"/>
+        </svg>
+      </div>
+      <h1>Scarcity Panel</h1>
+      <p>Navigating the digital scarcity horizon in an ocean of monetary abundance</p>
+    </div>
     <div class="header-accent"></div>
-    <h1>Scarcity Panel</h1>
-    <p>Navigating the scarcity horizon in an ocean of monetary abundance</p>
   </header>
   <main>
     <div class="main-layout">
-      <!-- Main indicators (one per row with individual charts ) -->
+      <!-- Main indicators (one per row with individual charts) -->
       <section id="main-indicators" class="standard-section">
-            <div id="quotes" class="vertical-quotes"></div>
+        <h2 class="section-header">Asset indicators</h2>
+        <div id="quotes" class="vertical-quotes"></div>
       </section>
       
       <div class="content-layout">
@@ -73,7 +83,7 @@
                   <div class="gauge">
                     <div class="gauge-fill" style="width: 58%;"></div>
                   </div>
-                  <div class="gauge-value">$2.4T</div>
+                  <div class="gauge-value">$2.0T</div>
                   <div class="indicator-change">+5.8% (24h)</div>
                 </div>
               </div>
@@ -113,19 +123,19 @@
             </div>
           </section>
           
-          <!-- Market Capitalization -->
+          <!-- Global Market Capitalization -->
           <section id="market-cap-comparison" class="standard-section">
-            <h2 class="section-header">Market capitalization</h2>
+            <h2 class="section-header">Global market capitalization</h2>
             <div class="market-cap-container">
               <div class="market-cap-header">
-                <div class="market-cap-total">Total Capitalization: <span id="total-market-cap">$532.7T</span></div>
+                <div class="market-cap-total">Total Capitalization: <span id="total-market-cap">$690.7T</span></div>
               </div>
               <div class="market-cap-visual" id="market-cap-treemap">
                 <!-- Bar visualization will be inserted via JavaScript -->
               </div>
               <button id="sources-toggle" class="sources-button">Show sources</button>
               <div class="market-cap-sources" id="market-cap-sources">
-                <p>Sources: Visual Capitalist, Bank for International Settlements (BIS), McKinsey Global Institute, World Gold Council, <a href="https://www.onceinaspecies.com/" target="_blank">Jesse Myers (onceinaspecies.com )</a></p>
+                <p>Sources: Visual Capitalist, Bank for International Settlements (BIS), McKinsey Global Institute, World Gold Council, <a href="https://www.onceinaspecies.com/" target="_blank">Jesse Myers (onceinaspecies.com)</a></p>
               </div>
             </div>
           </section>
@@ -139,9 +149,9 @@
           </div>
         </section>
         
-        <!-- Satoshi Quotes -->
+        <!-- Word of Satoshi -->
         <section id="satoshi-quotes" class="standard-section">
-          <h2 class="section-header">Words of Satoshi</h2>
+          <h2 class="section-header">Word of Satoshi</h2>
           <div class="quote-container">
             <blockquote id="satoshi-quote">
               "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust."
