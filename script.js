@@ -52,13 +52,13 @@ const historicalData = {
 
 // Global market capitalization data
 const marketCapData = [
-  { name: "Real Estate", value: 326.5, color: "#4CAF50", percentage: 61.3 },
-  { name: "Bonds", value: 133.0, color: "#2196F3", percentage: 25.0 },
-  { name: "Equities", value: 106.0, color: "#9C27B0", percentage: 19.9 },
-  { name: "Money", value: 102.9, color: "#FF9800", percentage: 19.3 },
-  { name: "Gold", value: 12.5, color: "#d4af37", percentage: 2.3 },
-  { name: "Art & Collectibles", value: 7.8, color: "#E91E63", percentage: 1.5 },
-  { name: "Bitcoin", value: 2.0, color: "#f7931a", percentage: 0.4 }
+  { name: "Real Estate", value: 326.5, color: "#4CAF50", percentage: 47.3 },
+  { name: "Bonds", value: 133.0, color: "#2196F3", percentage: 19.3 },
+  { name: "Equities", value: 106.0, color: "#9C27B0", percentage: 15.3 },
+  { name: "Money", value: 102.9, color: "#FF9800", percentage: 14.9 },
+  { name: "Gold", value: 12.5, color: "#d4af37", percentage: 1.8 },
+  { name: "Art & Collectibles", value: 7.8, color: "#E91E63", percentage: 1.1 },
+  { name: "Bitcoin", value: 2.0, color: "#f7931a", percentage: 0.3 }
 ];
 
 // Scarcity metrics data
@@ -401,12 +401,22 @@ function renderChart(assetName, color, canvasId) {
       scales: {
         x: {
           grid: {
-            display: false
+            color: (context) => {
+              // Show vertical grid lines for January of each year
+              const label = context.tick.label;
+              if (label && label.split('/')[0] === '1') {
+                return '#e0e0e0';
+              }
+              return 'transparent';
+            },
+            drawBorder: true,
+            drawOnChartArea: true,
+            drawTicks: true
           },
           ticks: {
             maxRotation: 0,
             autoSkip: true,
-            maxTicksLimit: 6,
+            maxTicksLimit: 12,
             callback: function(value, index, values) {
               // Show only years
               const label = this.getLabelForValue(value);
@@ -420,12 +430,17 @@ function renderChart(assetName, color, canvasId) {
                 }
               }
               return ''; // Return empty string for all other ticks
+            },
+            font: {
+              weight: 'bold'
             }
           }
         },
         y: {
           grid: {
-            color: '#f0f0f0'
+            color: '#f0f0f0',
+            drawBorder: true,
+            drawOnChartArea: true
           },
           ticks: {
             callback: function(value, index, values) {
@@ -576,8 +591,45 @@ function renderUpcomingEvents() {
   const eventsContainer = document.getElementById('events-container');
   eventsContainer.innerHTML = '';
   
+  // Add impact legend at the top
+  const impactLegendContainer = document.createElement('div');
+  impactLegendContainer.className = 'impact-legend-container';
+  impactLegendContainer.innerHTML = `
+    <div class="impact-legend-title">Impact indicator: </div>
+    <div class="impact-legend-item">
+      <div class="impact-dots high">
+        <span class="impact-dot"></span>
+        <span class="impact-dot"></span>
+        <span class="impact-dot"></span>
+      </div>
+      <span>High</span>
+    </div>
+    <div class="impact-legend-item">
+      <div class="impact-dots medium">
+        <span class="impact-dot"></span>
+        <span class="impact-dot"></span>
+        <span class="impact-dot"></span>
+      </div>
+      <span>Medium</span>
+    </div>
+    <div class="impact-legend-item">
+      <div class="impact-dots low">
+        <span class="impact-dot"></span>
+        <span class="impact-dot"></span>
+        <span class="impact-dot"></span>
+      </div>
+      <span>Low</span>
+    </div>
+  `;
+  
+  eventsContainer.appendChild(impactLegendContainer);
+  
   // Show only the first 4 events
   const eventsToShow = upcomingEvents.slice(0, 4);
+  
+  // Create events grid
+  const eventsGrid = document.createElement('div');
+  eventsGrid.className = 'events-grid';
   
   eventsToShow.forEach(event => {
     const eventElement = document.createElement('div');
@@ -590,62 +642,65 @@ function renderUpcomingEvents() {
           <span class="impact-dot"></span>
           <span class="impact-dot"></span>
           <span class="impact-dot"></span>
+          <span class="impact-legend">Market impact</span>
         </div>
       </div>
       <div class="event-title">${event.title}</div>
       <div class="event-description">${event.description}</div>
     `;
     
-    eventsContainer.appendChild(eventElement);
+    eventsGrid.appendChild(eventElement);
   });
+  
+  eventsContainer.appendChild(eventsGrid);
 }
 
 // Function to fetch and render news
 function fetchAndRenderNews() {
   const newsContent = document.getElementById('news-content');
   
-  // Simulate news fetch (in production, this would be an API call)
+  // Simulate news fetch from Cointelegraph (in production, this would be an API call)
   setTimeout(() => {
     const mockNews = [
       {
         title: "Bitcoin Surpasses $70,000 for the First Time in History",
         description: "The world's leading cryptocurrency reached a new all-time high driven by strong institutional demand.",
-        source: "Bloomberg",
+        source: "Cointelegraph",
         date: "May 18, 2025",
         image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
       {
         title: "Fed Maintains Interest Rate, Signals Possible Cut in 2025",
         description: "The US Federal Reserve kept its benchmark interest rate unchanged but indicated it may begin cutting rates later this year.",
-        source: "Wall Street Journal",
+        source: "Cointelegraph",
         date: "May 17, 2025",
         image: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
       {
         title: "Bitcoin Adoption Among Fortune 500 Companies Grows 150% in One Year",
         description: "Report shows significant increase in the number of large corporations that have added Bitcoin to their balance sheets.",
-        source: "Financial Times",
+        source: "Cointelegraph",
         date: "May 16, 2025",
         image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
       {
         title: "Global Inflation Shows Signs of Slowing After 3 Years of Increases",
         description: "Economic data from various advanced economies indicate that inflationary pressures are beginning to ease.",
-        source: "Reuters",
+        source: "Cointelegraph",
         date: "May 15, 2025",
         image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
       {
         title: "Bitcoin Scarcity: Less Than 1.7 Million Units Still to Be Mined",
         description: "With over 92% of the total supply already in circulation, experts point to increasing scarcity of the digital asset.",
-        source: "The Economist",
+        source: "Cointelegraph",
         date: "May 14, 2025",
         image: "https://images.unsplash.com/photo-1591994843349-f415893b3a6b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       },
       {
         title: "Swiss Central Bank Adds Bitcoin to Official Reserves",
         description: "In a historic move, Switzerland becomes the first European country to officially include Bitcoin in its national reserves.",
-        source: "Bitcoin Magazine",
+        source: "Cointelegraph",
         date: "May 13, 2025",
         image: "https://images.unsplash.com/photo-1561414927-6d86591d0c4f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       }
