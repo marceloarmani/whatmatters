@@ -405,18 +405,18 @@ function renderChart(assetName, color, canvasId) {
               // Show vertical grid lines for January of each year
               const label = context.tick.label;
               if (label && label.split('/')[0] === '1') {
-                return '#e0e0e0';
+                return 'rgba(200, 200, 200, 0.8)'; // More visible year gridlines
               }
               return 'transparent';
             },
             drawBorder: true,
             drawOnChartArea: true,
-            drawTicks: true
+            drawTicks: true,
+            lineWidth: 2 // Thicker year gridlines
           },
           ticks: {
             maxRotation: 0,
-            autoSkip: true,
-            maxTicksLimit: 12,
+            autoSkip: false, // Don't skip any ticks to ensure all years are shown
             callback: function(value, index, values) {
               // Show only years
               const label = this.getLabelForValue(value);
@@ -432,8 +432,10 @@ function renderChart(assetName, color, canvasId) {
               return ''; // Return empty string for all other ticks
             },
             font: {
-              weight: 'bold'
-            }
+              weight: 'bold',
+              size: 14 // Larger font for year labels
+            },
+            color: '#333' // Darker color for better visibility
           }
         },
         y: {
@@ -494,7 +496,10 @@ function renderMarketCap() {
   // Update total in HTML
   document.getElementById('total-market-cap').textContent = `$${total.toFixed(1)}T`;
   
-  // Create bar visualization
+  // Create compact bar visualization
+  const marketCapCompact = document.createElement('div');
+  marketCapCompact.className = 'market-cap-compact';
+  
   sortedData.forEach(item => {
     const marketCapItem = document.createElement('div');
     marketCapItem.className = 'market-cap-item';
@@ -531,8 +536,10 @@ function renderMarketCap() {
     marketCapItem.appendChild(marketCapItemHeader);
     marketCapItem.appendChild(marketCapItemBar);
     
-    marketCapVisual.appendChild(marketCapItem);
+    marketCapCompact.appendChild(marketCapItem);
   });
+  
+  marketCapVisual.appendChild(marketCapCompact);
 }
 
 // Function to render scarcity metrics
