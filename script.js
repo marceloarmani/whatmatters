@@ -2,8 +2,8 @@ const assets = [
   { name: "Bitcoin", symbol: "BTC", price: "$68,245.32", change: "+2.4%", color: "#f7931a", api: "coindesk" },
   { name: "Gold", symbol: "XAU", price: "$2,342.18", change: "+0.8%", color: "#d4af37", api: "metals" },
   { name: "Silver", symbol: "XAG", price: "$30.75", change: "+1.2%", color: "#c0c0c0", api: "metals" },
-  { name: "10-Year Treasury Yield", symbol: "10Y", price: "4.32%", change: "-0.05%", color: "#6a5acd", api: "treasury", tooltip: "Measures the annual return investors demand to hold US government debt for 10 years, a key indicator of economic expectations and inflation outlook" },
-  { name: "Dollar Index", symbol: "DXY", price: "103.42", change: "-0.3%", color: "#20b2aa", api: "forex", tooltip: "Measures the strength of the US dollar against a basket of major foreign currencies" }
+  { name: "10-Year Treasury Yield", symbol: "10Y", price: "4.32%", change: "-0.05%", color: "#6a5acd", api: "treasury", tooltip: "Reveals the cost of government debt financing and signals market expectations for inflation. Rising yields expose the unsustainable nature of endless deficit spending and currency debasement." },
+  { name: "Dollar Index", symbol: "DXY", price: "103.42", change: "-0.3%", color: "#20b2aa", api: "forex", tooltip: "Measures the strength of the US dollar against a basket of major foreign currencies. Declining values reflect the erosion of purchasing power through monetary expansion." }
 ];
 
 // Historical data for charts (5 years)
@@ -554,6 +554,14 @@ function renderScarcityMetrics() {
           <div class="supply-progress-fill" style="width: ${metric.percentage}%"></div>
           <div class="supply-progress-text">${metric.percentage.toFixed(2)}% (${metric.remaining} remaining)</div>
         </div>
+      `;
+    } else if (metric.title === "Next Halving") {
+      // Calculate days remaining until next halving
+      const today = new Date();
+      const daysRemaining = metric.daysRemaining;
+      
+      metricContent += `
+        <div class="days-remaining">${daysRemaining} days remaining</div>
       `;
     } else if (metric.comparison) {
       // Add comparison for other metrics
