@@ -52,12 +52,12 @@ const historicalData = {
 
 // Market sentiment data
 const marketSentimentData = [
+  { title: "BTC Dominance", value: "52% - Moderate", percentage: 52, change: "+0.8% (24h)" },
+  { title: "Volatility (30D)", value: "3.8% - Low", percentage: 38, change: "-0.5% (24h)" },
+  { title: "Transaction Volume (24h)", value: "$78.5B - High", percentage: 68, change: "+12% (24h)" },
   { title: "Fear & Greed Index", value: "65 - Greed", percentage: 65, change: "+5% (24h)" },
-  { title: "MVRV Ratio", value: "3.2 - Overvalued", percentage: 72, change: "+0.3 (24h)" },
-  { title: "Realized Price", value: "$42,500 - Support", percentage: 58, change: "+1.2% (24h)" },
-  { title: "Stablecoin Supply Ratio", value: "4.8% - Moderate", percentage: 45, change: "-0.2% (24h)" },
-  { title: "Exchange Reserves", value: "2.1M BTC - Low", percentage: 32, change: "-0.8% (24h)" },
-  { title: "Miner Revenue", value: "$28.5M - Healthy", percentage: 63, change: "+4.3% (24h)" }
+  { title: "Total Market Cap", value: "$2.85T - All-time High", percentage: 75, change: "+2.3% (24h)" },
+  { title: "Open Interest", value: "$32.7B - Moderate", percentage: 58, change: "+3.1% (24h)" }
 ];
 
 // Global market capitalization data
@@ -196,6 +196,9 @@ const newsData = [
   }
 ];
 
+// Global variable to store chart instances
+let chartInstances = {};
+
 // Initialize the page when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
   // Generate random prices for assets
@@ -286,9 +289,13 @@ function updateAssetPrices() {
   assets[4].change = `${dollarChange > 0 ? '+' : ''}${dollarChange}%`;
   
   // Update footer prices
-  document.getElementById('footer-btc-price').textContent = assets[0].price;
-  document.getElementById('footer-gold-price').textContent = assets[1].price;
-  document.getElementById('footer-silver-price').textContent = assets[2].price;
+  const footerBtcPrice = document.getElementById('footer-btc-price');
+  const footerGoldPrice = document.getElementById('footer-gold-price');
+  const footerSilverPrice = document.getElementById('footer-silver-price');
+  
+  if (footerBtcPrice) footerBtcPrice.textContent = assets[0].price;
+  if (footerGoldPrice) footerGoldPrice.textContent = assets[1].price;
+  if (footerSilverPrice) footerSilverPrice.textContent = assets[2].price;
 }
 
 // Render main asset indicators
@@ -369,8 +376,13 @@ function renderAssetIndicators() {
 
 // Create chart for an asset
 function createAssetChart(asset, canvas) {
-  const data = historicalData[asset.name.split(' <')[0]];
-  if (!data) return;
+  const assetName = asset.name.split(' <')[0]; // Remove tooltip part if present
+  const data = historicalData[assetName];
+  
+  if (!data) {
+    console.error(`No historical data found for ${assetName}`);
+    return;
+  }
   
   // Prepare labels and datasets
   const labels = [];
@@ -385,26 +397,21 @@ function createAssetChart(asset, canvas) {
     });
   });
   
-  // Create chart
+  // Destroy existing chart if it exists
+  if (chartInstances[asset.symbol]) {
+    chartInstances[asset.symbol].destroy();
+  }
+  
+  // Get the canvas context
   const ctx = canvas.getContext('2d');
   
-  // Destroy existing chart if it exists
-  if (window.charts && window.charts[asset.symbol]) {
-    window.charts[asset.symbol].destroy();
-  }
-  
-  // Initialize charts object if it doesn't exist
-  if (!window.charts) {
-    window.charts = {};
-  }
-  
   // Create new chart
-  window.charts[asset.symbol] = new Chart(ctx, {
+  chartInstances[asset.symbol] = new Chart(ctx, {
     type: 'line',
     data: {
       labels: labels,
       datasets: [{
-        label: asset.name.split(' <')[0],
+        label: assetName,
         data: values,
         borderColor: asset.color,
         backgroundColor: `${asset.color}20`,
@@ -418,15 +425,41 @@ function createAssetChart(asset, canvas) {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          display: false
+          display: true,
+          position: 'top',
+          labels: {
+            color: '#333',
+            font: {
+              size: 14,
+              weight: 'bold'
+            }
+          }
         },
         tooltip: {
+          mode: 'index',
+          intersect: false,
           callbacks: {
             title: function(tooltipItems) {
               const label = tooltipItems[0].label.split('-');
               const year = label[0];
               const month = new Date(0, parseInt(label[1]) - 1).toLocaleString('default', { month: 'long' });
               return `${month} ${year}`;
+            },
+            label: function(context) {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              if (context.parsed.y !== null) {
+                if (assetName === "Bitcoin" || assetName === "Gold" || assetName === "Silver") {
+                  label += '$' + context.parsed.y.toLocaleString();
+                } else if (assetName === "10-Year Treasury Yield") {
+                  label += context.parsed.y.toFixed(2) + '%';
+                } else {
+                  label += context.parsed.y.toFixed(2);
+                }
+              }
+              return label;
             }
           }
         }
@@ -447,7 +480,7 @@ function createAssetChart(asset, canvas) {
               return '';
             },
             font: {
-              size: 16,
+              size: 12,
               weight: 'bold'
             },
             color: '#666'
@@ -462,9 +495,26 @@ function createAssetChart(asset, canvas) {
             font: {
               size: 12
             },
-            color: '#666'
+            color: '#666',
+            callback: function(value, index, values) {
+              if (assetName === "Bitcoin" || assetName === "Gold" || assetName === "Silver") {
+                return '$' + value.toLocaleString();
+              } else if (assetName === "10-Year Treasury Yield") {
+                return value.toFixed(2) + '%';
+              } else {
+                return value.toFixed(2);
+              }
+            }
           }
         }
+      },
+      interaction: {
+        mode: 'nearest',
+        axis: 'x',
+        intersect: false
+      },
+      animation: {
+        duration: 1000
       }
     }
   });
@@ -523,13 +573,21 @@ function renderSatoshiQuote() {
   const randomIndex = Math.floor(Math.random() * satoshiQuotes.length);
   const quote = satoshiQuotes[randomIndex];
   
-  quoteContainer.innerHTML = `
-    <h2 class="section-header">Word of Satoshi</h2>
-    <div class="quote-container">
+  const quoteSection = quoteContainer.querySelector('.quote-container');
+  if (quoteSection) {
+    quoteSection.innerHTML = `
       <blockquote>${quote}</blockquote>
       <div class="quote-author">- Satoshi Nakamoto</div>
-    </div>
-  `;
+    `;
+  } else {
+    quoteContainer.innerHTML = `
+      <h2 class="section-header">Word of Satoshi</h2>
+      <div class="quote-container">
+        <blockquote>${quote}</blockquote>
+        <div class="quote-author">- Satoshi Nakamoto</div>
+      </div>
+    `;
+  }
 }
 
 // Rotate Satoshi quotes
@@ -541,8 +599,10 @@ function rotateSatoshiQuote() {
   const quote = satoshiQuotes[randomIndex];
   
   const quoteElement = quoteContainer.querySelector('.quote-container');
+  if (!quoteElement) return;
   
   // Fade out
+  quoteElement.style.transition = 'opacity 0.5s ease';
   quoteElement.style.opacity = 0;
   
   // Update content and fade in after a short delay
