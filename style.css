@@ -14,7 +14,7 @@ header.compact-header {
   padding: 1.2rem 0 0.8rem; /* Further reduced padding (approximately 1cm less) */
   background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  margin-bottom: 2rem; /* Standard spacing after header */
+  margin-bottom: 1.5rem; /* Standard spacing after header */
   position: relative;
   overflow: hidden;
   color: #fff;
@@ -85,7 +85,7 @@ header.compact-header p {
   margin-top: 0;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem; /* Standard spacing between major content blocks */
+  gap: 1.5rem; /* Reduced spacing between major content blocks */
 }
 
 /* Standard section styling - uniform spacing */
@@ -94,7 +94,7 @@ header.compact-header p {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 2rem; /* Standard spacing between sections */
+  margin-bottom: 1.5rem; /* Reduced spacing between sections */
   width: 100%;
 }
 
@@ -111,7 +111,7 @@ header.compact-header p {
 
 /* Main indicators with individual charts */
 #main-indicators {
-  margin-bottom: 2rem; /* Standard spacing */
+  margin-bottom: 1.5rem; /* Standard spacing */
 }
 
 /* Vertical buttons for the 5 indices with reduced width */
@@ -186,6 +186,8 @@ header.compact-header p {
 
 .asset-chart-area.visible {
   height: 280px; /* Increased height for better year label visibility */
+  max-width: 90%; /* Reduced width of charts */
+  margin: 0 auto; /* Center the chart */
 }
 
 .chart-container {
@@ -300,7 +302,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 2rem; /* Standard spacing */
+  margin-bottom: 1.5rem; /* Standard spacing */
 }
 
 /* Three-column grid for market sentiment */
@@ -358,7 +360,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 2rem; /* Standard spacing */
+  margin-bottom: 1.5rem; /* Standard spacing */
 }
 
 .calendar-container {
@@ -464,7 +466,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 2rem; /* Standard spacing */
+  margin-bottom: 1.5rem; /* Standard spacing */
   overflow: hidden; /* Hide overflow, no scroll */
 }
 
@@ -564,7 +566,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 2rem; /* Standard spacing */
+  margin-bottom: 1.5rem; /* Standard spacing */
 }
 
 .scarcity-metrics-grid {
@@ -638,9 +640,9 @@ canvas {
 
 .supply-progress-fill {
   height: 100%;
-  background: #e67e22; /* Darker orange for better contrast */
+  background: #f7931a; /* Original Bitcoin orange */
   border-radius: 4px;
-  opacity: 1; /* Full opacity for better visibility */
+  opacity: 0.8; /* Slightly transparent */
 }
 
 .supply-progress-text {
@@ -649,10 +651,8 @@ canvas {
   top: 50%;
   transform: translate(-50%, -50%);
   font-size: 0.8rem;
-  color: #fff;
-  text-shadow: 0 0 4px rgba(0,0,0,0.9); /* Enhanced text shadow for better visibility */
-  white-space: nowrap;
-  font-weight: 700; /* Make text bolder */
+  color: #333; /* Dark text for better readability */
+  font-weight: 600; /* Make text bolder */
 }
 
 .days-remaining {
@@ -668,7 +668,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 2rem; /* Standard spacing */
+  margin-bottom: 1.5rem; /* Standard spacing */
 }
 
 .news-grid {
@@ -735,7 +735,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 2rem; /* Standard spacing */
+  margin-bottom: 1.5rem; /* Standard spacing */
   width: 100%;
 }
 
@@ -765,7 +765,7 @@ footer {
   padding: 1rem;
   color: #7f8c8d;
   font-size: 0.8rem;
-  margin-top: 2rem;
+  margin-top: 1.5rem; /* Reduced margin */
 }
 
 /* Responsiveness */
@@ -773,7 +773,7 @@ footer {
   .vertical-sections {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 2rem; /* Standard spacing */
+    gap: 1.5rem; /* Standard spacing */
   }
 }
 
