@@ -153,7 +153,10 @@ const adoptionData = {
     { name: "Marathon Digital", type: "Mining", holdings: 12232 },
     { name: "Riot Blockchain", type: "Mining", holdings: 6952 },
     { name: "Galaxy Digital", type: "Investment", holdings: 16400 },
-    { name: "Coinbase", type: "Exchange", holdings: 4487 }
+    { name: "Coinbase", type: "Exchange", holdings: 4487 },
+    { name: "Hut 8 Mining", type: "Mining", holdings: 5242 },
+    { name: "Grayscale", type: "Investment", holdings: 654000 },
+    { name: "NYDIG", type: "Investment", holdings: 30000 }
   ]
 };
 
@@ -228,19 +231,13 @@ const newsData = [
   }
 ];
 
-// Site initialization
+// Initialize the page when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-  // Fetch latest prices
-  fetchLatestPrices();
+  // Render main asset indicators
+  renderAssetIndicators();
   
-  // Set up click events for indicators
-  setupQuoteClickEvents();
-  
-  // Render market sentiment
-  renderMarketSentiment();
-  
-  // Render global market capitalization
-  renderMarketCap();
+  // Initialize charts
+  initializeCharts();
   
   // Render scarcity metrics
   renderScarcityMetrics();
@@ -248,486 +245,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // Render upcoming events
   renderUpcomingEvents();
   
-  // Render Bitcoin adoption map
-  renderBitcoinAdoption();
-  
-  // Render Bitcoin distribution
-  renderBitcoinDistribution();
-  
-  // Fetch and render news
+  // Render news
   renderNews();
   
-  // Render Satoshi quote
-  renderSatoshiQuote();
-  
-  // Set up sources toggle
-  setupSourcesToggle();
-  
-  // Set up theme toggle
-  setupThemeToggle();
-  
-  // Set up periodic updates
-  setupPeriodicUpdates();
-});
-
-// Function to fetch latest prices from the data file
-function fetchLatestPrices() {
-  // First render with default values
-  renderQuotes();
-  
-  // Then try to fetch the latest prices
-  fetch('/data/latest_prices.json')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(data => {
-      // Update assets with latest prices
-      assets[0].price = data.bitcoin.formatted_price;
-      assets[0].change = data.bitcoin.formatted_change;
-      
-      assets[1].price = data.gold.formatted_price;
-      assets[1].change = data.gold.formatted_change;
-      
-      assets[2].price = data.silver.formatted_price;
-      assets[2].change = data.silver.formatted_change;
-      
-      assets[3].price = data.treasury.formatted_price;
-      assets[3].change = data.treasury.formatted_change;
-      
-      assets[4].price = data.dollar.formatted_price;
-      assets[4].change = data.dollar.formatted_change;
-      
-      // Re-render quotes with updated prices
-      renderQuotes();
-      
-      console.log("Prices updated from API data:", data.formatted_time);
-    })
-    .catch(error => {
-      console.error('Error fetching latest prices:', error);
-      // Continue with default values
-    });
-}
-
-// Function to render main indicators
-function renderQuotes() {
-  const quotesContainer = document.getElementById('quotes');
-  quotesContainer.innerHTML = '';
-  
-  assets.forEach((asset, index) => {
-    const quoteWrapper = document.createElement('div');
-    quoteWrapper.className = 'quote-wrapper';
-    quoteWrapper.id = `quote-wrapper-${index}`;
-    
-    const quoteElement = document.createElement('div');
-    quoteElement.className = 'quote';
-    quoteElement.dataset.asset = asset.name;
-    quoteElement.dataset.index = index;
-    
-    // Add tooltip for indicators with explanations
-    let tooltipHtml = '';
-    if (asset.tooltip) {
-      tooltipHtml = `<span class="index-tooltip">ⓘ<span class="tooltip-text">${asset.tooltip}</span></span>`;
-    }
-    
-    quoteElement.innerHTML = `
-      <div class="quote-left">
-        <strong>${asset.name} ${tooltipHtml}</strong>
-      </div>
-      <div class="quote-right">
-        <span class="quote-price">${asset.price}</span>
-        <span class="quote-change" style="color: ${asset.change.includes('-') ? '#f44336' : '#4caf50'}">${asset.change}</span>
-      </div>
-    `;
-    
-    // Create individual chart area for this asset
-    const chartArea = document.createElement('div');
-    chartArea.className = 'asset-chart-area';
-    chartArea.id = `chart-area-${index}`;
-    
-    const chartContainer = document.createElement('div');
-    chartContainer.className = 'chart-container';
-    
-    const canvas = document.createElement('canvas');
-    canvas.id = `chart-${index}`;
-    
-    const closeButton = document.createElement('button');
-    closeButton.className = 'chart-close';
-    closeButton.innerHTML = '✕';
-    closeButton.addEventListener('click', function(e) {
-      e.stopPropagation();
-      quoteElement.classList.remove('active');
-      chartArea.classList.remove('visible');
-      if (window.charts && window.charts[index]) {
-        window.charts[index].destroy();
-        window.charts[index] = null;
-      }
-    });
-    
-    chartContainer.appendChild(closeButton);
-    chartContainer.appendChild(canvas);
-    chartArea.appendChild(chartContainer);
-    
-    quoteWrapper.appendChild(quoteElement);
-    quoteWrapper.appendChild(chartArea);
-    quotesContainer.appendChild(quoteWrapper);
-  });
-}
-
-// Function to set up click events for indicators
-function setupQuoteClickEvents() {
-  document.addEventListener('click', function(e) {
-    const quote = e.target.closest('.quote');
-    if (!quote) return;
-    
-    const assetName = quote.dataset.asset;
-    const assetIndex = parseInt(quote.dataset.index);
-    const asset = assets[assetIndex];
-    const chartArea = document.getElementById(`chart-area-${assetIndex}`);
-    
-    // Toggle chart visibility
-    if (quote.classList.contains('active')) {
-      quote.classList.remove('active');
-      chartArea.classList.remove('visible');
-      if (window.charts && window.charts[assetIndex]) {
-        window.charts[assetIndex].destroy();
-        window.charts[assetIndex] = null;
-      }
-    } else {
-      // Close any other open charts
-      document.querySelectorAll('.quote.active').forEach((activeQuote) => {
-        if (activeQuote !== quote) {
-          const activeIndex = parseInt(activeQuote.dataset.index);
-          activeQuote.classList.remove('active');
-          document.getElementById(`chart-area-${activeIndex}`).classList.remove('visible');
-          if (window.charts && window.charts[activeIndex]) {
-            window.charts[activeIndex].destroy();
-            window.charts[activeIndex] = null;
-          }
-        }
-      });
-      
-      // Open this chart
-      quote.classList.add('active');
-      chartArea.classList.add('visible');
-      
-      // Initialize charts array if it doesn't exist
-      if (!window.charts) {
-        window.charts = {};
-      }
-      
-      // Render chart
-      window.charts[assetIndex] = renderChart(assetName, asset.color, `chart-${assetIndex}`);
-    }
-  });
-}
-
-// Function to render chart for an asset
-function renderChart(assetName, color, canvasId) {
-  const ctx = document.getElementById(canvasId).getContext('2d');
-  
-  // Get historical data for the asset
-  const assetData = historicalData[assetName];
-  if (!assetData) return null;
-  
-  // Prepare data for the chart
-  const labels = [];
-  const data = [];
-  const yearLabels = [];
-  
-  // Combine all data from the last 5 years
-  assetData.forEach(yearData => {
-    const year = yearData.year;
-    yearData.data.forEach((value, monthIndex) => {
-      labels.push(`${monthIndex + 1}/${year}`);
-      data.push(value);
-      
-      // Mark the beginning of each year
-      if (monthIndex === 0) {
-        yearLabels.push({
-          value: labels.length - 1,
-          year: year
-        });
-      }
-    });
-  });
-  
-  // Create the chart
-  const chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: assetName,
-        data: data,
-        borderColor: color,
-        backgroundColor: `${color}20`,
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: color,
-        pointHoverBorderColor: '#fff',
-        pointHoverBorderWidth: 2,
-        tension: 0.4,
-        fill: true
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
-          labels: {
-            font: {
-              family: "'Segoe UI', sans-serif",
-              size: 12
-            },
-            color: '#666'
-          }
-        },
-        tooltip: {
-          mode: 'index',
-          intersect: false,
-          backgroundColor: '#fff',
-          titleColor: '#333',
-          bodyColor: '#666',
-          borderColor: '#ddd',
-          borderWidth: 1,
-          padding: 10,
-          boxPadding: 5,
-          cornerRadius: 4,
-          titleFont: {
-            family: "'Segoe UI', sans-serif",
-            size: 14,
-            weight: 'bold'
-          },
-          bodyFont: {
-            family: "'Segoe UI', sans-serif",
-            size: 12
-          },
-          callbacks: {
-            title: function(tooltipItems) {
-              const item = tooltipItems[0];
-              const parts = item.label.split('/');
-              const month = parseInt(parts[0]);
-              const year = parseInt(parts[1]);
-              const date = new Date(year, month - 1);
-              return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-            },
-            label: function(context) {
-              let label = context.dataset.label || '';
-              if (label) {
-                label += ': ';
-              }
-              if (context.parsed.y !== null) {
-                if (assetName === 'Bitcoin' || assetName === 'Gold' || assetName === 'Silver') {
-                  label += '$' + context.parsed.y.toLocaleString();
-                } else if (assetName === '10-Year Treasury Yield') {
-                  label += context.parsed.y.toFixed(2) + '%';
-                } else {
-                  label += context.parsed.y.toLocaleString();
-                }
-              }
-              return label;
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          grid: {
-            display: true,
-            drawOnChartArea: true,
-            drawTicks: true,
-            color: function(context) {
-              // Check if this is a year boundary
-              for (let i = 0; i < yearLabels.length; i++) {
-                if (context.index === yearLabels[i].value) {
-                  return 'rgba(200, 200, 200, 0.5)';
-                }
-              }
-              return 'rgba(0, 0, 0, 0)';
-            }
-          },
-          ticks: {
-            maxRotation: 0,
-            autoSkip: true,
-            maxTicksLimit: 12,
-            callback: function(value, index) {
-              // Only show year labels
-              for (let i = 0; i < yearLabels.length; i++) {
-                if (index === yearLabels[i].value) {
-                  return yearLabels[i].year;
-                }
-              }
-              return '';
-            },
-            font: {
-              size: 16,
-              weight: 'bold'
-            },
-            padding: 10
-          }
-        },
-        y: {
-          grid: {
-            color: '#f0f0f0'
-          },
-          ticks: {
-            font: {
-              family: "'Segoe UI', sans-serif",
-              size: 12
-            },
-            color: '#666',
-            padding: 10,
-            callback: function(value) {
-              if (assetName === 'Bitcoin' || assetName === 'Gold' || assetName === 'Silver') {
-                return '$' + value.toLocaleString();
-              } else if (assetName === '10-Year Treasury Yield') {
-                return value.toFixed(2) + '%';
-              } else {
-                return value.toLocaleString();
-              }
-            }
-          }
-        }
-      },
-      interaction: {
-        mode: 'index',
-        intersect: false
-      },
-      elements: {
-        line: {
-          tension: 0.4
-        }
-      },
-      layout: {
-        padding: {
-          top: 20,
-          right: 20,
-          bottom: 20,
-          left: 10
-        }
-      },
-      animation: {
-        duration: 1000
-      }
-    }
-  });
-  
-  return chart;
-}
-
-// Function to render market sentiment
-function renderMarketSentiment() {
-  // Fear & Greed Index
-  document.getElementById('fear-greed').innerHTML = `
-    <div class="gauge">
-      <div class="gauge-fill" style="width: 65%;"></div>
-    </div>
-    <div class="gauge-value">65 - Greed</div>
-    <div class="indicator-change">+5% (24h)</div>
-  `;
-  
-  // Volatility
-  document.getElementById('volatility').innerHTML = `
-    <div class="gauge">
-      <div class="gauge-fill" style="width: 42%;"></div>
-    </div>
-    <div class="gauge-value">42% - Moderate</div>
-    <div class="indicator-change negative">-3% (24h)</div>
-  `;
-  
-  // BTC Dominance
-  document.getElementById('btc-dominance').innerHTML = `
-    <div class="gauge">
-      <div class="gauge-fill" style="width: 53%;"></div>
-    </div>
-    <div class="gauge-value">53%</div>
-    <div class="indicator-change">+0.8% (24h)</div>
-  `;
-  
-  // Transaction Volume
-  document.getElementById('transaction-volume').innerHTML = `
-    <div class="gauge">
-      <div class="gauge-fill" style="width: 68%;"></div>
-    </div>
-    <div class="gauge-value">$78.5B - High</div>
-    <div class="indicator-change">+12% (24h)</div>
-  `;
-  
-  // Market Cap
-  document.getElementById('market-cap').innerHTML = `
-    <div class="gauge">
-      <div class="gauge-fill" style="width: 58%;"></div>
-    </div>
-    <div class="gauge-value">$2.0T</div>
-    <div class="indicator-change">+5.8% (24h)</div>
-  `;
-  
-  // Market Liquidity
-  document.getElementById('market-liquidity').innerHTML = `
-    <div class="gauge">
-      <div class="gauge-fill" style="width: 62%;"></div>
-    </div>
-    <div class="gauge-value">Moderate-High</div>
-    <div class="indicator-change">+2.3% (24h)</div>
-  `;
-}
-
-// Function to render global market capitalization
-function renderMarketCap() {
-  const marketCapContainer = document.getElementById('market-cap-treemap');
-  marketCapContainer.innerHTML = '';
-  
-  // Sort by value (descending)
-  const sortedData = [...marketCapData].sort((a, b) => b.value - a.value);
-  
-  // Create bar visualization
-  sortedData.forEach(item => {
-    const marketCapItem = document.createElement('div');
-    marketCapItem.className = 'market-cap-item';
-    
-    const marketCapItemHeader = document.createElement('div');
-    marketCapItemHeader.className = 'market-cap-item-header';
-    
-    const marketCapItemName = document.createElement('div');
-    marketCapItemName.className = 'market-cap-item-name';
-    marketCapItemName.textContent = item.name;
-    
-    const marketCapItemValue = document.createElement('div');
-    marketCapItemValue.className = 'market-cap-item-value';
-    marketCapItemValue.textContent = `$${item.value.toFixed(1)}T`;
-    
-    marketCapItemHeader.appendChild(marketCapItemName);
-    marketCapItemHeader.appendChild(marketCapItemValue);
-    
-    const marketCapItemBar = document.createElement('div');
-    marketCapItemBar.className = 'market-cap-item-bar';
-    
-    const marketCapItemFill = document.createElement('div');
-    marketCapItemFill.className = 'market-cap-item-fill';
-    marketCapItemFill.style.width = `${item.percentage}%`;
-    marketCapItemFill.style.backgroundColor = item.color;
-    
-    const marketCapItemPercentage = document.createElement('div');
-    marketCapItemPercentage.className = 'market-cap-item-percentage';
-    marketCapItemPercentage.textContent = `${item.percentage.toFixed(1)}%`;
-    
-    marketCapItemBar.appendChild(marketCapItemFill);
-    marketCapItemBar.appendChild(marketCapItemPercentage);
-    
-    marketCapItem.appendChild(marketCapItemHeader);
-    marketCapItem.appendChild(marketCapItemBar);
-    
-    marketCapContainer.appendChild(marketCapItem);
-  });
-  
-  // Set up sources toggle
+  // Add event listener for sources toggle
   document.getElementById('sources-toggle').addEventListener('click', function() {
     const sourcesElement = document.getElementById('market-cap-sources');
     if (sourcesElement.style.display === 'block') {
@@ -738,279 +259,194 @@ function renderMarketCap() {
       this.textContent = 'Hide sources';
     }
   });
+  
+  // Rotate Satoshi quotes periodically
+  setInterval(rotateSatoshiQuote, 30000);
+});
+
+// Render main asset indicators
+function renderAssetIndicators() {
+  const quotesContainer = document.getElementById('quotes');
+  if (!quotesContainer) return;
+  
+  quotesContainer.innerHTML = '';
+  
+  assets.forEach(asset => {
+    const assetElement = document.createElement('div');
+    assetElement.className = 'asset-quote';
+    
+    const changeClass = asset.change.startsWith('+') ? 'positive' : asset.change.startsWith('-') ? 'negative' : '';
+    
+    assetElement.innerHTML = `
+      <div class="asset-header">
+        <div class="asset-name">${asset.name}</div>
+        <div class="asset-price">${asset.price}</div>
+        <div class="asset-change ${changeClass}">${asset.change}</div>
+        ${asset.tooltip ? `<div class="asset-info"><span class="info-icon">ⓘ</span><span class="tooltip">${asset.tooltip}</span></div>` : ''}
+      </div>
+      <div class="asset-chart-container" id="chart-${asset.symbol}" style="display: none;">
+        <canvas class="asset-chart"></canvas>
+        <button class="close-chart">×</button>
+      </div>
+    `;
+    
+    quotesContainer.appendChild(assetElement);
+    
+    // Add click event to toggle chart visibility
+    const assetHeader = assetElement.querySelector('.asset-header');
+    const chartContainer = assetElement.querySelector('.asset-chart-container');
+    
+    assetHeader.addEventListener('click', function() {
+      if (chartContainer.style.display === 'none') {
+        // Hide all other charts first
+        document.querySelectorAll('.asset-chart-container').forEach(container => {
+          container.style.display = 'none';
+        });
+        
+        // Show this chart
+        chartContainer.style.display = 'block';
+        
+        // Create or update chart
+        createAssetChart(asset, chartContainer.querySelector('canvas'));
+      } else {
+        chartContainer.style.display = 'none';
+      }
+    });
+    
+    // Add close button functionality
+    const closeButton = assetElement.querySelector('.close-chart');
+    closeButton.addEventListener('click', function(e) {
+      e.stopPropagation();
+      chartContainer.style.display = 'none';
+    });
+  });
 }
 
-// Function to render scarcity metrics
+// Create chart for an asset
+function createAssetChart(asset, canvas) {
+  const data = historicalData[asset.name];
+  if (!data) return;
+  
+  // Prepare labels and datasets
+  const labels = [];
+  const values = [];
+  
+  // Flatten the data structure for Chart.js
+  data.forEach(yearData => {
+    const year = yearData.year;
+    yearData.data.forEach((value, monthIndex) => {
+      labels.push(`${year}-${monthIndex + 1}`);
+      values.push(value);
+    });
+  });
+  
+  // Create chart
+  const ctx = canvas.getContext('2d');
+  
+  // Destroy existing chart if it exists
+  if (canvas.chart) {
+    canvas.chart.destroy();
+  }
+  
+  // Create new chart
+  canvas.chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: asset.name,
+        data: values,
+        borderColor: asset.color,
+        backgroundColor: `${asset.color}20`,
+        borderWidth: 2,
+        fill: true,
+        tension: 0.1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            title: function(tooltipItems) {
+              const label = tooltipItems[0].label.split('-');
+              const year = label[0];
+              const month = new Date(0, parseInt(label[1]) - 1).toLocaleString('default', { month: 'long' });
+              return `${month} ${year}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            callback: function(value, index, values) {
+              const label = this.getLabelForValue(value).split('-');
+              // Only show year labels (when month is January)
+              return label[1] === '1' ? label[0] : '';
+            },
+            font: {
+              size: 16,
+              weight: 'bold'
+            }
+          },
+          grid: {
+            display: true,
+            drawOnChartArea: true,
+            drawTicks: true,
+            color: function(context) {
+              // Make vertical grid lines for January (start of year) more visible
+              const label = context.tick.label.split('-');
+              return label[1] === '1' ? 'rgba(200, 200, 200, 0.5)' : 'rgba(0, 0, 0, 0.05)';
+            }
+          }
+        },
+        y: {
+          beginAtZero: false
+        }
+      }
+    }
+  });
+}
+
+// Initialize all charts
+function initializeCharts() {
+  // Charts are created on demand when clicking asset headers
+}
+
+// Render scarcity metrics
 function renderScarcityMetrics() {
-  const scarcityContainer = document.querySelector('.scarcity-metrics-grid');
-  scarcityContainer.innerHTML = '';
+  const container = document.querySelector('.scarcity-metrics-grid');
+  if (!container) return;
   
-  scarcityMetrics.forEach(metric => {
-    const metricElement = document.createElement('div');
-    metricElement.className = 'scarcity-metric';
-    
-    const titleElement = document.createElement('div');
-    titleElement.className = 'scarcity-metric-title';
-    titleElement.textContent = metric.title;
-    
-    const valueElement = document.createElement('div');
-    valueElement.className = 'scarcity-metric-value';
-    valueElement.textContent = metric.value;
-    
-    const descriptionElement = document.createElement('div');
-    descriptionElement.className = 'scarcity-metric-description';
-    descriptionElement.textContent = metric.description;
-    
-    metricElement.appendChild(titleElement);
-    metricElement.appendChild(valueElement);
-    metricElement.appendChild(descriptionElement);
-    
-    // Add comparison if available
-    if (metric.comparison) {
-      const comparisonElement = document.createElement('div');
-      comparisonElement.className = 'scarcity-comparison';
-      
-      metric.comparison.forEach(item => {
-        const itemElement = document.createElement('div');
-        itemElement.className = `scarcity-comparison-item ${item.name.toLowerCase()}`;
-        itemElement.textContent = `${item.name}: ${item.value}`;
-        comparisonElement.appendChild(itemElement);
-      });
-      
-      metricElement.appendChild(comparisonElement);
-    }
-    
-    // Add progress bar for Bitcoins Mined
-    if (metric.title === 'Bitcoins Mined') {
-      const progressElement = document.createElement('div');
-      progressElement.className = 'supply-progress';
-      
-      const progressFill = document.createElement('div');
-      progressFill.className = 'supply-progress-fill';
-      
-      const progressText = document.createElement('div');
-      progressText.className = 'supply-progress-text';
-      progressText.textContent = `${metric.percentage.toFixed(2)}% (${metric.remaining} remaining)`;
-      
-      progressElement.appendChild(progressFill);
-      progressElement.appendChild(progressText);
-      metricElement.appendChild(progressElement);
-    }
-    
-    // Add days remaining for Next Halving
-    if (metric.title === 'Next Halving') {
-      const daysElement = document.createElement('div');
-      daysElement.className = 'days-remaining';
-      daysElement.textContent = `${metric.daysRemaining} days remaining`;
-      metricElement.appendChild(daysElement);
-    }
-    
-    scarcityContainer.appendChild(metricElement);
-  });
+  // Container is already populated in HTML
 }
 
-// Function to render upcoming events
+// Render upcoming events
 function renderUpcomingEvents() {
-  const eventsContainer = document.getElementById('events-container');
+  const container = document.getElementById('events-container');
+  if (!container) return;
   
-  // Create grid for events
-  const eventsGrid = document.createElement('div');
-  eventsGrid.className = 'events-grid';
-  
-  // Add events to grid
-  upcomingEvents.forEach(event => {
-    const eventItem = document.createElement('div');
-    eventItem.className = `event-item ${event.impact}`;
-    
-    const eventDate = document.createElement('div');
-    eventDate.className = 'event-date';
-    
-    const dateText = document.createElement('span');
-    dateText.textContent = event.date;
-    
-    const impactIndicator = document.createElement('div');
-    impactIndicator.className = 'event-impact';
-    
-    // Add impact dots
-    for (let i = 0; i < 3; i++) {
-      const dot = document.createElement('div');
-      dot.className = 'impact-dot';
-      impactIndicator.appendChild(dot);
-    }
-    
-    eventDate.appendChild(dateText);
-    eventDate.appendChild(impactIndicator);
-    
-    const eventTitle = document.createElement('div');
-    eventTitle.className = 'event-title';
-    eventTitle.textContent = event.title;
-    
-    const eventDescription = document.createElement('div');
-    eventDescription.className = 'event-description';
-    eventDescription.textContent = event.description;
-    
-    eventItem.appendChild(eventDate);
-    eventItem.appendChild(eventTitle);
-    eventItem.appendChild(eventDescription);
-    
-    eventsGrid.appendChild(eventItem);
-  });
-  
-  eventsContainer.appendChild(eventsGrid);
+  // Container is already populated in HTML
 }
 
-// Function to render Bitcoin adoption map
-function renderBitcoinAdoption() {
-  const mapContainer = document.getElementById('adoption-map');
-  
-  // In a real implementation, this would use a mapping library like Leaflet or Google Maps
-  // For this demo, we'll create a simple visualization
-  
-  mapContainer.innerHTML = `
-    <div style="padding: 20px; text-align: center;">
-      <h3>Bitcoin Legal Status Worldwide</h3>
-      <div style="display: flex; justify-content: space-around; margin-top: 20px;">
-        <div>
-          <div style="font-weight: bold; margin-bottom: 10px;">Legal Tender</div>
-          <div style="color: #4CAF50;">El Salvador</div>
-        </div>
-        <div>
-          <div style="font-weight: bold; margin-bottom: 10px;">Legal</div>
-          <div style="color: #2196F3;">United States, EU, Japan, South Korea, Australia, Canada, Brazil, Argentina, Singapore, Switzerland</div>
-        </div>
-        <div>
-          <div style="font-weight: bold; margin-bottom: 10px;">Restricted</div>
-          <div style="color: #FF9800;">Russia, Nigeria, India, Turkey</div>
-        </div>
-        <div>
-          <div style="font-weight: bold; margin-bottom: 10px;">Banned</div>
-          <div style="color: #F44336;">China, Egypt, Algeria, Bolivia</div>
-        </div>
-      </div>
-      <div style="margin-top: 30px;">
-        <h3>Major Corporate Holders</h3>
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px;">
-          ${adoptionData.companies.map(company => `
-            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; min-width: 200px;">
-              <div style="font-weight: bold;">${company.name}</div>
-              <div style="color: #666; font-size: 0.9rem;">${company.type}</div>
-              <div style="margin-top: 5px; font-weight: 500;">${company.holdings.toLocaleString()} BTC</div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-// Function to render Bitcoin distribution
-function renderBitcoinDistribution() {
-  const distributionContainer = document.getElementById('distribution-chart');
-  
-  // In a real implementation, this would use a charting library
-  // For this demo, we'll create a simple visualization
-  
-  distributionContainer.innerHTML = `
-    <div style="padding: 20px; text-align: center;">
-      <h3>Bitcoin Distribution by Holder Type</h3>
-      <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
-        ${distributionData.map(item => `
-          <div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-              <div>${item.category}</div>
-              <div>${item.percentage}%</div>
-            </div>
-            <div style="height: 20px; background: #f0f0f0; border-radius: 4px; overflow: hidden;">
-              <div style="height: 100%; width: ${item.percentage}%; background-color: ${item.color};"></div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-      <div style="margin-top: 30px; color: #666; font-size: 0.9rem;">
-        <p>Note: Some categories overlap. For example, a portion of exchange holdings may also be counted in short-term holders.</p>
-      </div>
-    </div>
-  `;
-}
-
-// Function to render news
+// Render news
 function renderNews() {
-  const newsContainer = document.getElementById('news-content');
+  const container = document.getElementById('news-content');
+  if (!container) return;
   
-  // Create news grid
-  const newsGrid = document.createElement('div');
-  newsGrid.className = 'news-grid';
-  
-  // Add news items to grid
-  newsData.forEach(news => {
-    const newsItem = document.createElement('div');
-    newsItem.className = 'news-item';
-    
-    const newsContent = document.createElement('div');
-    newsContent.className = 'news-content';
-    
-    const newsSource = document.createElement('div');
-    newsSource.className = 'news-source';
-    newsSource.textContent = news.source;
-    
-    const newsTitle = document.createElement('div');
-    newsTitle.className = 'news-title';
-    newsTitle.textContent = news.title;
-    
-    const newsDescription = document.createElement('div');
-    newsDescription.className = 'news-description';
-    newsDescription.textContent = news.description;
-    
-    const newsDate = document.createElement('div');
-    newsDate.className = 'news-date';
-    newsDate.textContent = news.date;
-    
-    newsContent.appendChild(newsSource);
-    newsContent.appendChild(newsTitle);
-    newsContent.appendChild(newsDescription);
-    newsContent.appendChild(newsDate);
-    
-    newsItem.appendChild(newsContent);
-    newsGrid.appendChild(newsItem);
-  });
-  
-  newsContainer.innerHTML = '';
-  newsContainer.appendChild(newsGrid);
+  // Container is already populated in HTML
 }
 
-// Function to render Satoshi quote
-function renderSatoshiQuote() {
+// Rotate Satoshi quotes
+function rotateSatoshiQuote() {
   const quoteElement = document.getElementById('satoshi-quote');
+  if (!quoteElement) return;
+  
   const randomIndex = Math.floor(Math.random() * satoshiQuotes.length);
   quoteElement.textContent = satoshiQuotes[randomIndex];
-}
-
-// Function to set up sources toggle
-function setupSourcesToggle() {
-  const sourcesToggle = document.getElementById('sources-toggle');
-  const sourcesElement = document.getElementById('market-cap-sources');
-  
-  sourcesToggle.addEventListener('click', function() {
-    if (sourcesElement.style.display === 'block') {
-      sourcesElement.style.display = 'none';
-      this.textContent = 'Show sources';
-    } else {
-      sourcesElement.style.display = 'block';
-      this.textContent = 'Hide sources';
-    }
-  });
-}
-
-// Function to set up theme toggle
-function setupThemeToggle() {
-  // This is a placeholder for future theme toggle functionality
-}
-
-// Function to set up periodic updates
-function setupPeriodicUpdates() {
-  // Update prices every 5 minutes
-  setInterval(fetchLatestPrices, 5 * 60 * 1000);
-  
-  // Update Satoshi quote every hour
-  setInterval(renderSatoshiQuote, 60 * 60 * 1000);
 }
