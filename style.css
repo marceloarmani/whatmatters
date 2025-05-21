@@ -655,8 +655,7 @@ canvas {
   left: 0;
   height: 100%;
   width: 92.23%;
-  background: rgba(247, 147, 26, 0.15); /* Very light Bitcoin orange */
-  border-right: 1px solid rgba(247, 147, 26, 0.5); /* Subtle border */
+  background: rgba(247, 147, 26, 0.3); /* Very light Bitcoin orange */
 }
 
 .supply-progress-text {
@@ -671,15 +670,14 @@ canvas {
 
 .days-remaining {
   display: inline-block;
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #333;
   margin-top: 0.8rem;
   font-weight: 600;
   background: #f8f9fa;
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.8rem;
   border-radius: 4px;
-  border-left: 4px solid #f7931a;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border-left: 3px solid #f7931a;
 }
 
 /* Bitcoin Adoption Map */
