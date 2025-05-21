@@ -175,6 +175,14 @@ header.compact-header p {
   font-size: 0.9rem;
 }
 
+.quote-change.positive {
+  color: #4caf50;
+}
+
+.quote-change.negative {
+  color: #f44336;
+}
+
 /* Individual chart areas for each asset */
 .asset-chart-area {
   height: 0;
@@ -829,139 +837,4 @@ footer {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(6, auto);
   }
-  
-  .scarcity-comparison {
-    flex-direction: column;
-  }
-}
-
-/* Asset indicators */
-.asset-quote {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 0.8rem;
-  overflow: hidden;
-}
-
-.asset-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.8rem 1.2rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.asset-header:hover {
-  background: #f8f9fa;
-}
-
-.asset-name {
-  font-weight: 500;
-  color: #333;
-  flex: 1;
-}
-
-.asset-price {
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 0 1rem;
-}
-
-.asset-change {
-  font-size: 0.9rem;
-  width: 60px;
-  text-align: right;
-}
-
-.asset-change.positive {
-  color: #4caf50;
-}
-
-.asset-change.negative {
-  color: #f44336;
-}
-
-.asset-info {
-  position: relative;
-  margin-left: 0.5rem;
-}
-
-.info-icon {
-  color: #7f8c8d;
-  cursor: help;
-}
-
-.tooltip {
-  visibility: hidden;
-  width: 220px;
-  background-color: #fff;
-  color: #555;
-  text-align: center;
-  border-radius: 6px;
-  padding: 8px;
-  position: absolute;
-  z-index: 1;
-  bottom: 125%;
-  right: 0;
-  margin-left: -110px;
-  opacity: 0;
-  transition: opacity 0.3s;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  font-size: 0.75rem;
-  line-height: 1.4;
-}
-
-.tooltip::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  right: 10px;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #fff transparent transparent transparent;
-}
-
-.asset-info:hover .tooltip {
-  visibility: visible;
-  opacity: 1;
-}
-
-.asset-chart-container {
-  padding: 1rem;
-  height: 300px;
-  position: relative;
-}
-
-.close-chart {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 24px;
-  height: 24px;
-  background: #f8f9fa;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 14px;
-  color: #666;
-  border: none;
-  z-index: 10;
-  transition: all 0.2s ease;
-}
-
-.close-chart:hover {
-  background: #e9ecef;
-  color: #333;
-}
-
-/* Vertical layout for sections */
-.vertical-sections {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem; /* Consistent spacing */
 }
