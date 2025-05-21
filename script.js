@@ -1,9 +1,9 @@
 const assets = [
-  { name: "Bitcoin", symbol: "BTC", price: "$70,125.45", change: "+1.8%", color: "#f7931a", api: "coindesk" },
-  { name: "Gold", symbol: "XAU", price: "$2,745.60", change: "+0.9%", color: "#d4af37", api: "metals" },
-  { name: "Silver", symbol: "XAG", price: "$33.12", change: "+1.5%", color: "#c0c0c0", api: "metals" },
-  { name: "10-Year Treasury Yield", symbol: "10Y", price: "4.35%", change: "+0.02%", color: "#6a5acd", api: "treasury", tooltip: "Reveals the cost of government debt financing and signals market expectations for inflation. Rising yields expose the unsustainable nature of endless deficit spending and currency debasement." },
-  { name: "Dollar Index", symbol: "DXY", price: "102.65", change: "-0.4%", color: "#20b2aa", api: "forex", tooltip: "Measures the strength of the US dollar against a basket of major foreign currencies. Declining values reflect the erosion of purchasing power through monetary expansion." }
+  { name: "Bitcoin", symbol: "BTC", price: "$71,245.80", change: "+2.1%", color: "#f7931a", api: "coindesk" },
+  { name: "Gold", symbol: "XAU", price: "$2,768.45", change: "+0.8%", color: "#d4af37", api: "metals" },
+  { name: "Silver", symbol: "XAG", price: "$33.75", change: "+1.2%", color: "#c0c0c0", api: "metals" },
+  { name: "10-Year Treasury Yield", symbol: "10Y", price: "4.38%", change: "+0.05%", color: "#6a5acd", api: "treasury", tooltip: "Reveals the cost of government debt financing and signals market expectations for inflation. Rising yields expose the unsustainable nature of endless deficit spending and currency debasement." },
+  { name: "Dollar Index", symbol: "DXY", price: "102.35", change: "-0.3%", color: "#20b2aa", api: "forex", tooltip: "Measures the strength of the US dollar against a basket of major foreign currencies. Declining values reflect the erosion of purchasing power through monetary expansion." }
 ];
 
 // Historical data for charts (5 years)
@@ -14,7 +14,7 @@ const historicalData = {
     { year: 2022, data: [38000, 44000, 40000, 39000, 31000, 20000, 23000, 24000, 19000, 20500, 17000, 16500] },
     { year: 2023, data: [16800, 23500, 28000, 30000, 27000, 30500, 29800, 28000, 26500, 34000, 37000, 42000] },
     { year: 2024, data: [45000, 52000, 61000, 64000, 59000, 62000, 65000, 67000, 66000, 68000, 67500, 68900] },
-    { year: 2025, data: [66500, 68200, 69500, 69800, 70125] }
+    { year: 2025, data: [66500, 68200, 69500, 70100, 71246] }
   ],
   "Gold": [
     { year: 2020, data: [1520, 1585, 1620, 1680, 1730, 1780, 1960, 1920, 1880, 1900, 1860, 1895] },
@@ -22,7 +22,7 @@ const historicalData = {
     { year: 2022, data: [1800, 1870, 1920, 1880, 1840, 1810, 1760, 1770, 1670, 1650, 1750, 1820] },
     { year: 2023, data: [1910, 1830, 1970, 1990, 1960, 1920, 1970, 2010, 1920, 1980, 2040, 2060] },
     { year: 2024, data: [2050, 2120, 2180, 2220, 2260, 2290, 2310, 2330, 2400, 2480, 2550, 2625] },
-    { year: 2025, data: [2580, 2610, 2640, 2680, 2746] }
+    { year: 2025, data: [2580, 2610, 2640, 2680, 2768] }
   ],
   "Silver": [
     { year: 2020, data: [17.8, 18.5, 14.6, 15.7, 17.9, 18.2, 24.5, 27.4, 24.2, 24.1, 23.8, 26.3] },
@@ -30,7 +30,7 @@ const historicalData = {
     { year: 2022, data: [22.4, 24.3, 24.9, 23.0, 21.6, 20.3, 19.2, 19.5, 18.8, 19.5, 21.5, 23.9] },
     { year: 2023, data: [24.1, 21.7, 24.2, 25.0, 23.5, 22.8, 24.5, 24.8, 23.0, 22.7, 24.5, 24.3] },
     { year: 2024, data: [23.8, 25.6, 26.9, 27.5, 28.2, 28.9, 29.3, 29.8, 30.2, 30.5, 31.0, 31.8] },
-    { year: 2025, data: [30.9, 31.2, 31.5, 32.4, 33.12] }
+    { year: 2025, data: [30.9, 31.2, 31.5, 32.4, 33.75] }
   ],
   "10-Year Treasury Yield": [
     { year: 2020, data: [1.88, 1.50, 0.70, 0.66, 0.65, 0.68, 0.55, 0.72, 0.68, 0.85, 0.84, 0.93] },
@@ -38,7 +38,7 @@ const historicalData = {
     { year: 2022, data: [1.78, 1.83, 2.32, 2.89, 2.84, 3.01, 2.65, 3.19, 3.83, 4.05, 3.68, 3.88] },
     { year: 2023, data: [3.51, 3.92, 3.47, 3.45, 3.64, 3.84, 3.96, 4.10, 4.57, 4.89, 4.47, 3.88] },
     { year: 2024, data: [4.05, 4.25, 4.35, 4.50, 4.60, 4.55, 4.48, 4.42, 4.38, 4.35, 4.30, 4.28] },
-    { year: 2025, data: [4.30, 4.32, 4.35, 4.33, 4.35] }
+    { year: 2025, data: [4.30, 4.32, 4.35, 4.36, 4.38] }
   ],
   "Dollar Index": [
     { year: 2020, data: [97.3, 98.1, 99.0, 99.5, 98.3, 97.4, 93.3, 92.1, 93.9, 94.0, 92.3, 89.9] },
@@ -46,7 +46,7 @@ const historicalData = {
     { year: 2022, data: [96.5, 96.7, 98.3, 102.9, 101.8, 104.7, 106.1, 108.7, 112.1, 111.5, 106.7, 103.5] },
     { year: 2023, data: [102.1, 104.4, 102.5, 101.9, 104.2, 102.6, 101.9, 104.1, 106.1, 106.6, 103.4, 101.9] },
     { year: 2024, data: [103.4, 104.1, 104.5, 105.2, 104.8, 104.3, 103.9, 103.7, 103.5, 103.3, 103.2, 103.1] },
-    { year: 2025, data: [103.6, 103.5, 103.3, 103.0, 102.65] }
+    { year: 2025, data: [103.6, 103.5, 103.3, 102.8, 102.35] }
   ]
 };
 
@@ -642,7 +642,7 @@ function fetchAndRenderNews() {
   setTimeout(() => {
     const mockNews = [
       {
-        title: "Bitcoin Surpasses $70,000 for the First Time in History",
+        title: "Bitcoin Surpasses $71,000 for the First Time in History",
         description: "The world's leading cryptocurrency reached a new all-time high driven by strong institutional demand.",
         source: "Cointelegraph",
         date: "May 21, 2025",
