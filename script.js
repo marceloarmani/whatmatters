@@ -271,6 +271,20 @@ function renderQuotes() {
     const canvas = document.createElement('canvas');
     canvas.id = `chart-${index}`;
     
+    const closeButton = document.createElement('button');
+    closeButton.className = 'chart-close';
+    closeButton.innerHTML = '✕';
+    closeButton.addEventListener('click', function(e) {
+      e.stopPropagation();
+      quoteElement.classList.remove('active');
+      chartArea.classList.remove('visible');
+      if (charts[index]) {
+        charts[index].destroy();
+        charts[index] = null;
+      }
+    });
+    
+    chartContainer.appendChild(closeButton);
     chartContainer.appendChild(canvas);
     chartArea.appendChild(chartContainer);
     
@@ -282,63 +296,49 @@ function renderQuotes() {
 
 // Function to set up click events for indicators
 function setupQuoteClickEvents() {
-  const quotes = document.querySelectorAll('.quote');
-  const charts = {};
-  
-  quotes.forEach(quote => {
-    quote.addEventListener('click', function() {
-      const assetName = this.dataset.asset;
-      const assetIndex = parseInt(this.dataset.index);
-      const asset = assets[assetIndex];
-      const chartArea = document.getElementById(`chart-area-${assetIndex}`);
-      
-      // Toggle chart visibility
-      if (this.classList.contains('active')) {
-        this.classList.remove('active');
-        chartArea.classList.remove('visible');
-        if (charts[assetIndex]) {
-          charts[assetIndex].destroy();
-          charts[assetIndex] = null;
-        }
-      } else {
-        // Close any other open charts
-        quotes.forEach((q, i) => {
-          if (q !== this && q.classList.contains('active')) {
-            q.classList.remove('active');
-            document.getElementById(`chart-area-${i}`).classList.remove('visible');
-            if (charts[i]) {
-              charts[i].destroy();
-              charts[i] = null;
-            }
-          }
-        });
-        
-        // Open this chart
-        this.classList.add('active');
-        chartArea.classList.add('visible');
-        
-        // Add close button if it doesn't exist
-        const chartContainer = chartArea.querySelector('.chart-container');
-        if (!chartContainer.querySelector('.chart-close')) {
-          const closeButton = document.createElement('button');
-          closeButton.className = 'chart-close';
-          closeButton.innerHTML = '✕';
-          closeButton.addEventListener('click', function(e) {
-            e.stopPropagation();
-            quote.classList.remove('active');
-            chartArea.classList.remove('visible');
-            if (charts[assetIndex]) {
-              charts[assetIndex].destroy();
-              charts[assetIndex] = null;
-            }
-          });
-          chartContainer.appendChild(closeButton);
-        }
-        
-        // Render chart
-        charts[assetIndex] = renderChart(assetName, asset.color, `chart-${assetIndex}`);
+  document.addEventListener('click', function(e) {
+    const quote = e.target.closest('.quote');
+    if (!quote) return;
+    
+    const assetName = quote.dataset.asset;
+    const assetIndex = parseInt(quote.dataset.index);
+    const asset = assets[assetIndex];
+    const chartArea = document.getElementById(`chart-area-${assetIndex}`);
+    
+    // Toggle chart visibility
+    if (quote.classList.contains('active')) {
+      quote.classList.remove('active');
+      chartArea.classList.remove('visible');
+      if (window.charts && window.charts[assetIndex]) {
+        window.charts[assetIndex].destroy();
+        window.charts[assetIndex] = null;
       }
-    });
+    } else {
+      // Close any other open charts
+      document.querySelectorAll('.quote.active').forEach((activeQuote) => {
+        if (activeQuote !== quote) {
+          const activeIndex = parseInt(activeQuote.dataset.index);
+          activeQuote.classList.remove('active');
+          document.getElementById(`chart-area-${activeIndex}`).classList.remove('visible');
+          if (window.charts && window.charts[activeIndex]) {
+            window.charts[activeIndex].destroy();
+            window.charts[activeIndex] = null;
+          }
+        }
+      });
+      
+      // Open this chart
+      quote.classList.add('active');
+      chartArea.classList.add('visible');
+      
+      // Initialize charts array if it doesn't exist
+      if (!window.charts) {
+        window.charts = {};
+      }
+      
+      // Render chart
+      window.charts[assetIndex] = renderChart(assetName, asset.color, `chart-${assetIndex}`);
+    }
   });
 }
 
@@ -348,17 +348,27 @@ function renderChart(assetName, color, canvasId) {
   
   // Get historical data for the asset
   const assetData = historicalData[assetName];
-  if (!assetData) return;
+  if (!assetData) return null;
   
   // Prepare data for the chart
   const labels = [];
   const data = [];
+  const yearLabels = [];
   
   // Combine all data from the last 5 years
   assetData.forEach(yearData => {
+    const year = yearData.year;
     yearData.data.forEach((value, monthIndex) => {
-      labels.push(`${monthIndex + 1}/${yearData.year}`);
+      labels.push(`${monthIndex + 1}/${year}`);
       data.push(value);
+      
+      // Mark the beginning of each year
+      if (monthIndex === 0) {
+        yearLabels.push({
+          value: labels.length - 1,
+          year: year
+        });
+      }
     });
   });
   
@@ -405,6 +415,9 @@ function renderChart(assetName, color, canvasId) {
           bodyColor: '#666',
           borderColor: '#ddd',
           borderWidth: 1,
+          padding: 10,
+          boxPadding: 5,
+          cornerRadius: 4,
           titleFont: {
             family: "'Segoe UI', sans-serif",
             size: 14,
@@ -412,27 +425,27 @@ function renderChart(assetName, color, canvasId) {
           },
           bodyFont: {
             family: "'Segoe UI', sans-serif",
-            size: 13
+            size: 12
           },
-          padding: 10,
-          boxPadding: 5,
           callbacks: {
+            title: function(tooltipItems) {
+              const item = tooltipItems[0];
+              const parts = item.label.split('/');
+              const month = parseInt(parts[0]);
+              const year = parseInt(parts[1]);
+              const date = new Date(year, month - 1);
+              return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            },
             label: function(context) {
               let label = context.dataset.label || '';
               if (label) {
                 label += ': ';
               }
               if (context.parsed.y !== null) {
-                if (assetName === "Bitcoin") {
+                if (assetName === 'Bitcoin' || assetName === 'Gold' || assetName === 'Silver') {
                   label += '$' + context.parsed.y.toLocaleString();
-                } else if (assetName === "Gold") {
-                  label += '$' + context.parsed.y.toLocaleString() + '/oz';
-                } else if (assetName === "Silver") {
-                  label += '$' + context.parsed.y.toLocaleString() + '/oz';
-                } else if (assetName === "10-Year Treasury Yield") {
+                } else if (assetName === '10-Year Treasury Yield') {
                   label += context.parsed.y.toFixed(2) + '%';
-                } else if (assetName === "Dollar Index") {
-                  label += context.parsed.y.toFixed(2);
                 } else {
                   label += context.parsed.y.toLocaleString();
                 }
@@ -445,64 +458,47 @@ function renderChart(assetName, color, canvasId) {
       scales: {
         x: {
           grid: {
-            color: (context) => {
-              // Show vertical grid lines for January of each year
-              const label = context.tick.label;
-              if (label && label.split('/')[0] === '1') {
-                return 'rgba(200, 200, 200, 0.8)'; // More visible year gridlines
-              }
-              return 'transparent';
-            },
-            drawBorder: true,
-            drawOnChartArea: true,
-            drawTicks: true,
-            lineWidth: 2 // Thicker year gridlines
+            display: false
           },
           ticks: {
             maxRotation: 0,
-            autoSkip: false, // Don't skip any ticks to ensure all years are shown
-            padding: 10, // Add more padding for better visibility
-            callback: function(value, index, values) {
-              // Show only years
-              const label = this.getLabelForValue(value);
-              if (label) {
-                const parts = label.split('/');
-                if (parts.length === 2) {
-                  // Only show the year part for January (month 1)
-                  if (parts[0] === '1') {
-                    return parts[1]; // Return just the year
-                  }
+            autoSkip: true,
+            maxTicksLimit: 12,
+            callback: function(value, index) {
+              // Only show year labels
+              for (let i = 0; i < yearLabels.length; i++) {
+                if (index === yearLabels[i].value) {
+                  return yearLabels[i].year;
                 }
               }
-              return ''; // Return empty string for all other ticks
+              return '';
             },
             font: {
-              weight: 'bold',
-              size: 16 // Larger font for year labels
+              size: 16,
+              weight: 'bold'
             },
-            color: '#333' // Darker color for better visibility
+            padding: 10
           }
         },
         y: {
           grid: {
-            color: '#f0f0f0',
-            drawBorder: true,
-            drawOnChartArea: true
+            color: '#f0f0f0'
           },
           ticks: {
-            callback: function(value, index, values) {
-              if (assetName === "Bitcoin") {
+            font: {
+              family: "'Segoe UI', sans-serif",
+              size: 12
+            },
+            color: '#666',
+            padding: 10,
+            callback: function(value) {
+              if (assetName === 'Bitcoin' || assetName === 'Gold' || assetName === 'Silver') {
                 return '$' + value.toLocaleString();
-              } else if (assetName === "Gold") {
-                return '$' + value.toLocaleString();
-              } else if (assetName === "Silver") {
-                return '$' + value.toFixed(1);
-              } else if (assetName === "10-Year Treasury Yield") {
+              } else if (assetName === '10-Year Treasury Yield') {
                 return value.toFixed(2) + '%';
-              } else if (assetName === "Dollar Index") {
-                return value.toFixed(1);
+              } else {
+                return value.toLocaleString();
               }
-              return value;
             }
           }
         }
@@ -518,8 +514,14 @@ function renderChart(assetName, color, canvasId) {
       },
       layout: {
         padding: {
-          bottom: 20 // Add more padding at the bottom for year labels
+          top: 20,
+          right: 20,
+          bottom: 20,
+          left: 10
         }
+      },
+      animation: {
+        duration: 1000
       }
     }
   });
@@ -529,27 +531,70 @@ function renderChart(assetName, color, canvasId) {
 
 // Function to render market sentiment
 function renderMarketSentiment() {
-  // Already in HTML, just update values if needed
+  // Fear & Greed Index
+  document.getElementById('fear-greed').innerHTML = `
+    <div class="gauge">
+      <div class="gauge-fill" style="width: 65%;"></div>
+    </div>
+    <div class="gauge-value">65 - Greed</div>
+    <div class="indicator-change">+5% (24h)</div>
+  `;
+  
+  // Volatility
+  document.getElementById('volatility').innerHTML = `
+    <div class="gauge">
+      <div class="gauge-fill" style="width: 42%;"></div>
+    </div>
+    <div class="gauge-value">42% - Moderate</div>
+    <div class="indicator-change negative">-3% (24h)</div>
+  `;
+  
+  // BTC Dominance
+  document.getElementById('btc-dominance').innerHTML = `
+    <div class="gauge">
+      <div class="gauge-fill" style="width: 53%;"></div>
+    </div>
+    <div class="gauge-value">53%</div>
+    <div class="indicator-change">+0.8% (24h)</div>
+  `;
+  
+  // Transaction Volume
+  document.getElementById('transaction-volume').innerHTML = `
+    <div class="gauge">
+      <div class="gauge-fill" style="width: 68%;"></div>
+    </div>
+    <div class="gauge-value">$78.5B - High</div>
+    <div class="indicator-change">+12% (24h)</div>
+  `;
+  
+  // Market Cap
+  document.getElementById('market-cap').innerHTML = `
+    <div class="gauge">
+      <div class="gauge-fill" style="width: 58%;"></div>
+    </div>
+    <div class="gauge-value">$2.0T</div>
+    <div class="indicator-change">+5.8% (24h)</div>
+  `;
+  
+  // Market Liquidity
+  document.getElementById('market-liquidity').innerHTML = `
+    <div class="gauge">
+      <div class="gauge-fill" style="width: 62%;"></div>
+    </div>
+    <div class="gauge-value">Moderate-High</div>
+    <div class="indicator-change">+2.3% (24h)</div>
+  `;
 }
 
 // Function to render global market capitalization
 function renderMarketCap() {
-  const marketCapVisual = document.getElementById('market-cap-treemap');
-  marketCapVisual.innerHTML = '';
+  const marketCapContainer = document.getElementById('market-cap-treemap');
+  marketCapContainer.innerHTML = '';
   
-  // Sort by value (largest to smallest)
+  // Sort by value (descending)
   const sortedData = [...marketCapData].sort((a, b) => b.value - a.value);
   
-  // Calculate total
-  const total = sortedData.reduce((sum, item) => sum + item.value, 0);
-  
-  // Update total in HTML
-  document.getElementById('total-market-cap').textContent = `$${total.toFixed(1)}T`;
-  
-  // Create compact bar visualization
-  const marketCapCompact = document.createElement('div');
-  marketCapCompact.className = 'market-cap-compact';
-  
+  // Create bar visualization
   sortedData.forEach(item => {
     const marketCapItem = document.createElement('div');
     marketCapItem.className = 'market-cap-item';
@@ -586,10 +631,20 @@ function renderMarketCap() {
     marketCapItem.appendChild(marketCapItemHeader);
     marketCapItem.appendChild(marketCapItemBar);
     
-    marketCapCompact.appendChild(marketCapItem);
+    marketCapContainer.appendChild(marketCapItem);
   });
   
-  marketCapVisual.appendChild(marketCapCompact);
+  // Set up sources toggle
+  document.getElementById('sources-toggle').addEventListener('click', function() {
+    const sourcesElement = document.getElementById('market-cap-sources');
+    if (sourcesElement.style.display === 'block') {
+      sourcesElement.style.display = 'none';
+      this.textContent = 'Show sources';
+    } else {
+      sourcesElement.style.display = 'block';
+      this.textContent = 'Hide sources';
+    }
+  });
 }
 
 // Function to render scarcity metrics
@@ -601,44 +656,63 @@ function renderScarcityMetrics() {
     const metricElement = document.createElement('div');
     metricElement.className = 'scarcity-metric';
     
-    let metricContent = `
-      <div class="scarcity-metric-title">${metric.title}</div>
-      <div class="scarcity-metric-value">${metric.value}</div>
-      <div class="scarcity-metric-description">${metric.description}</div>
-    `;
+    const titleElement = document.createElement('div');
+    titleElement.className = 'scarcity-metric-title';
+    titleElement.textContent = metric.title;
     
-    // Add specific visualization for bitcoins mined
-    if (metric.title === "Bitcoins Mined") {
-      metricContent += `
-        <div class="supply-progress">
-          <div class="supply-progress-fill" style="width: ${metric.percentage}%"></div>
-          <div class="supply-progress-text">${metric.percentage.toFixed(2)}% (${metric.remaining} remaining)</div>
-        </div>
-      `;
-    } else if (metric.title === "Next Halving") {
-      // Calculate days remaining until next halving
-      const today = new Date();
-      const daysRemaining = metric.daysRemaining;
-      
-      metricContent += `
-        <div class="days-remaining">${daysRemaining} days remaining</div>
-      `;
-    } else if (metric.comparison) {
-      // Add comparison for other metrics
-      metricContent += `<div class="scarcity-comparison">`;
+    const valueElement = document.createElement('div');
+    valueElement.className = 'scarcity-metric-value';
+    valueElement.textContent = metric.value;
+    
+    const descriptionElement = document.createElement('div');
+    descriptionElement.className = 'scarcity-metric-description';
+    descriptionElement.textContent = metric.description;
+    
+    metricElement.appendChild(titleElement);
+    metricElement.appendChild(valueElement);
+    metricElement.appendChild(descriptionElement);
+    
+    // Add comparison if available
+    if (metric.comparison) {
+      const comparisonElement = document.createElement('div');
+      comparisonElement.className = 'scarcity-comparison';
       
       metric.comparison.forEach(item => {
-        metricContent += `
-          <div class="scarcity-comparison-item ${item.name.toLowerCase()}">
-            ${item.name}: ${item.value}
-          </div>
-        `;
+        const itemElement = document.createElement('div');
+        itemElement.className = `scarcity-comparison-item ${item.name.toLowerCase()}`;
+        itemElement.textContent = `${item.name}: ${item.value}`;
+        comparisonElement.appendChild(itemElement);
       });
       
-      metricContent += `</div>`;
+      metricElement.appendChild(comparisonElement);
     }
     
-    metricElement.innerHTML = metricContent;
+    // Add progress bar for Bitcoins Mined
+    if (metric.title === 'Bitcoins Mined') {
+      const progressElement = document.createElement('div');
+      progressElement.className = 'supply-progress';
+      
+      const progressFill = document.createElement('div');
+      progressFill.className = 'supply-progress-fill';
+      progressFill.style.width = `${metric.percentage}%`;
+      
+      const progressText = document.createElement('div');
+      progressText.className = 'supply-progress-text';
+      progressText.textContent = `${metric.percentage.toFixed(2)}% (${metric.remaining} remaining)`;
+      
+      progressElement.appendChild(progressFill);
+      progressElement.appendChild(progressText);
+      metricElement.appendChild(progressElement);
+    }
+    
+    // Add days remaining for Next Halving
+    if (metric.title === 'Next Halving') {
+      const daysElement = document.createElement('div');
+      daysElement.className = 'days-remaining';
+      daysElement.textContent = `${metric.daysRemaining} days remaining`;
+      metricElement.appendChild(daysElement);
+    }
+    
     scarcityContainer.appendChild(metricElement);
   });
 }
@@ -646,33 +720,48 @@ function renderScarcityMetrics() {
 // Function to render upcoming events
 function renderUpcomingEvents() {
   const eventsContainer = document.getElementById('events-container');
-  eventsContainer.innerHTML = '';
   
-  // Show only the first 4 events
-  const eventsToShow = upcomingEvents.slice(0, 4);
-  
-  // Create events grid
+  // Create grid for events
   const eventsGrid = document.createElement('div');
   eventsGrid.className = 'events-grid';
   
-  eventsToShow.forEach(event => {
-    const eventElement = document.createElement('div');
-    eventElement.className = `event-item ${event.impact}`;
+  // Add events to grid
+  upcomingEvents.forEach(event => {
+    const eventItem = document.createElement('div');
+    eventItem.className = `event-item ${event.impact}`;
     
-    eventElement.innerHTML = `
-      <div class="event-date">
-        ${event.date}
-        <div class="event-impact">
-          <span class="impact-dot"></span>
-          <span class="impact-dot"></span>
-          <span class="impact-dot"></span>
-        </div>
-      </div>
-      <div class="event-title">${event.title}</div>
-      <div class="event-description">${event.description}</div>
-    `;
+    const eventDate = document.createElement('div');
+    eventDate.className = 'event-date';
     
-    eventsGrid.appendChild(eventElement);
+    const dateText = document.createElement('span');
+    dateText.textContent = event.date;
+    
+    const impactIndicator = document.createElement('div');
+    impactIndicator.className = 'event-impact';
+    
+    // Add impact dots
+    for (let i = 0; i < 3; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'impact-dot';
+      impactIndicator.appendChild(dot);
+    }
+    
+    eventDate.appendChild(dateText);
+    eventDate.appendChild(impactIndicator);
+    
+    const eventTitle = document.createElement('div');
+    eventTitle.className = 'event-title';
+    eventTitle.textContent = event.title;
+    
+    const eventDescription = document.createElement('div');
+    eventDescription.className = 'event-description';
+    eventDescription.textContent = event.description;
+    
+    eventItem.appendChild(eventDate);
+    eventItem.appendChild(eventTitle);
+    eventItem.appendChild(eventDescription);
+    
+    eventsGrid.appendChild(eventItem);
   });
   
   eventsContainer.appendChild(eventsGrid);
@@ -680,161 +769,107 @@ function renderUpcomingEvents() {
 
 // Function to fetch and render news
 function fetchAndRenderNews() {
-  const newsContent = document.getElementById('news-content');
+  const newsContainer = document.getElementById('news-content');
   
-  // Simulate news fetch from Cointelegraph (in production, this would be an API call)
-  setTimeout(() => {
-    const mockNews = [
-      {
-        title: "Bitcoin Surpasses $100,000 for the First Time in History",
-        description: "The world's leading cryptocurrency reached a new all-time high driven by strong institutional demand.",
-        source: "Cointelegraph",
-        date: "May 21, 2025",
-        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-      },
-      {
-        title: "Fed Maintains Interest Rate, Signals Possible Cut in 2025",
-        description: "The US Federal Reserve kept its benchmark interest rate unchanged but indicated it may begin cutting rates later this year.",
-        source: "Cointelegraph",
-        date: "May 20, 2025",
-        image: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-      },
-      {
-        title: "Bitcoin Adoption Among Fortune 500 Companies Grows 150% in One Year",
-        description: "Report shows significant increase in the number of large corporations that have added Bitcoin to their balance sheets.",
-        source: "Cointelegraph",
-        date: "May 19, 2025",
-        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-      },
-      {
-        title: "Global Inflation Shows Signs of Slowing After 3 Years of Increases",
-        description: "Economic data from various advanced economies indicate that inflationary pressures are beginning to ease.",
-        source: "Cointelegraph",
-        date: "May 18, 2025",
-        image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-      },
-      {
-        title: "Bitcoin Scarcity: Less Than 1.7 Million Units Still to Be Mined",
-        description: "With over 92% of the total supply already in circulation, experts point to increasing scarcity of the digital asset.",
-        source: "Cointelegraph",
-        date: "May 17, 2025",
-        image: "https://images.unsplash.com/photo-1591994843349-f415893b3a6b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-      },
-      {
-        title: "Swiss Central Bank Adds Bitcoin to Official Reserves",
-        description: "In a historic move, Switzerland becomes the first European country to officially include Bitcoin in its national reserves.",
-        source: "Cointelegraph",
-        date: "May 16, 2025",
-        image: "https://images.unsplash.com/photo-1561414927-6d86591d0c4f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-      }
-    ];
+  // Sample news data (in a real app, this would be fetched from an API)
+  const newsData = [
+    {
+      title: "Bitcoin Surpasses $100,000 for First Time in History",
+      description: "The world's largest cryptocurrency has reached a new all-time high, breaking the psychological barrier of $100,000.",
+      source: "Cointelegraph",
+      date: "May 21, 2025",
+      url: "#"
+    },
+    {
+      title: "Central Banks Accelerate Digital Currency Development",
+      description: "Major central banks are fast-tracking CBDC projects in response to growing cryptocurrency adoption.",
+      source: "Financial Times",
+      date: "May 20, 2025",
+      url: "#"
+    },
+    {
+      title: "Gold Reaches Record High Amid Inflation Concerns",
+      description: "The precious metal continues its upward trajectory as investors seek protection from rising inflation.",
+      source: "Bloomberg",
+      date: "May 19, 2025",
+      url: "#"
+    }
+  ];
+  
+  // Create news grid
+  const newsGrid = document.createElement('div');
+  newsGrid.className = 'news-grid';
+  
+  // Add news items to grid
+  newsData.forEach(news => {
+    const newsItem = document.createElement('div');
+    newsItem.className = 'news-item';
     
-    // Create news grid
-    const newsGrid = document.createElement('div');
-    newsGrid.className = 'news-grid';
+    const newsContent = document.createElement('div');
+    newsContent.className = 'news-content';
     
-    mockNews.forEach(news => {
-      const newsItem = document.createElement('div');
-      newsItem.className = 'news-item';
-      
-      newsItem.innerHTML = `
-        <img src="${news.image}" alt="${news.title}" class="news-image">
-        <div class="news-content">
-          <div class="news-source">${news.source}</div>
-          <div class="news-title">${news.title}</div>
-          <div class="news-description">${news.description}</div>
-          <div class="news-date">${news.date}</div>
-        </div>
-      `;
-      
-      newsGrid.appendChild(newsItem);
-    });
+    const newsSource = document.createElement('div');
+    newsSource.className = 'news-source';
+    newsSource.textContent = news.source;
     
-    newsContent.innerHTML = '';
-    newsContent.appendChild(newsGrid);
-  }, 1000);
+    const newsTitle = document.createElement('div');
+    newsTitle.className = 'news-title';
+    newsTitle.textContent = news.title;
+    
+    const newsDescription = document.createElement('div');
+    newsDescription.className = 'news-description';
+    newsDescription.textContent = news.description;
+    
+    const newsDate = document.createElement('div');
+    newsDate.className = 'news-date';
+    newsDate.textContent = news.date;
+    
+    newsContent.appendChild(newsSource);
+    newsContent.appendChild(newsTitle);
+    newsContent.appendChild(newsDescription);
+    newsContent.appendChild(newsDate);
+    
+    newsItem.appendChild(newsContent);
+    newsGrid.appendChild(newsItem);
+  });
+  
+  newsContainer.innerHTML = '';
+  newsContainer.appendChild(newsGrid);
 }
 
 // Function to render Satoshi quote
 function renderSatoshiQuote() {
   const quoteElement = document.getElementById('satoshi-quote');
-  
-  // Use current date as seed to select a quote
-  // This ensures the quote changes each day but remains the same throughout the day
-  const today = new Date();
-  const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
-  const quoteIndex = seed % satoshiQuotes.length;
-  
-  quoteElement.textContent = satoshiQuotes[quoteIndex];
+  const randomIndex = Math.floor(Math.random() * satoshiQuotes.length);
+  quoteElement.textContent = satoshiQuotes[randomIndex];
 }
 
 // Function to set up sources toggle
 function setupSourcesToggle() {
   const sourcesToggle = document.getElementById('sources-toggle');
-  const marketCapSources = document.getElementById('market-cap-sources');
+  const sourcesElement = document.getElementById('market-cap-sources');
   
   sourcesToggle.addEventListener('click', function() {
-    if (marketCapSources.style.display === 'block') {
-      marketCapSources.style.display = 'none';
-      sourcesToggle.textContent = 'Show sources';
+    if (sourcesElement.style.display === 'block') {
+      sourcesElement.style.display = 'none';
+      this.textContent = 'Show sources';
     } else {
-      marketCapSources.style.display = 'block';
-      sourcesToggle.textContent = 'Hide sources';
+      sourcesElement.style.display = 'block';
+      this.textContent = 'Hide sources';
     }
   });
 }
 
 // Function to set up theme toggle
 function setupThemeToggle() {
-  // Check if theme is already saved
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme === 'dark') {
-    document.body.classList.add('dark-theme');
-  }
-  
-  // Create theme toggle button if it doesn't exist
-  if (!document.getElementById('theme-toggle')) {
-    const themeToggle = document.createElement('button');
-    themeToggle.id = 'theme-toggle';
-    themeToggle.className = 'theme-toggle';
-    themeToggle.innerHTML = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
-    
-    themeToggle.addEventListener('click', function() {
-      document.body.classList.toggle('dark-theme');
-      
-      if (document.body.classList.contains('dark-theme')) {
-        localStorage.setItem('theme', 'dark');
-        themeToggle.innerHTML = '☀️';
-      } else {
-        localStorage.setItem('theme', 'light');
-        themeToggle.innerHTML = '🌙';
-      }
-    });
-    
-    document.body.appendChild(themeToggle);
-  }
+  // This is a placeholder for future theme toggle functionality
 }
 
 // Function to set up periodic updates
 function setupPeriodicUpdates() {
-  // Update every 5 minutes
-  setInterval(() => {
-    // Update asset prices
-    fetchLatestPrices();
-    
-    // Update market sentiment
-    updateMarketSentiment();
-    
-    // Update news
-    fetchAndRenderNews();
-  }, 5 * 60 * 1000);
-}
-
-// Function to update market sentiment
-function updateMarketSentiment() {
-  // In production, this would be an API call to get updated data
-  // Here we're just simulating an update
+  // Update prices every 5 minutes
+  setInterval(fetchLatestPrices, 5 * 60 * 1000);
   
-  // Update values in DOM
-  // ...
+  // Update Satoshi quote every hour
+  setInterval(renderSatoshiQuote, 60 * 60 * 1000);
 }
