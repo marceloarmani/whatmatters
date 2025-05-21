@@ -8,13 +8,13 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Modern and elegant header with geometric pattern - reduced height */
+/* Modern and elegant header with geometric pattern - further reduced height */
 header.compact-header {
   text-align: center;
-  padding: 1.5rem 0 1rem; /* Reduced padding */
+  padding: 1.2rem 0 0.8rem; /* Further reduced padding (approximately 1cm less) */
   background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem; /* Standard spacing after header */
   position: relative;
   overflow: hidden;
   color: #fff;
@@ -47,19 +47,19 @@ header.compact-header {
 
 .header-logo {
   display: inline-block;
-  margin-bottom: 0.3rem; /* Reduced margin */
+  margin-bottom: 0.2rem; /* Further reduced margin */
 }
 
 .header-logo svg {
-  width: 35px; /* Smaller logo */
-  height: 35px; /* Smaller logo */
+  width: 30px; /* Smaller logo */
+  height: 30px; /* Smaller logo */
   fill: #f7931a;
-  margin-bottom: 0.3rem; /* Reduced margin */
+  margin-bottom: 0.2rem; /* Further reduced margin */
 }
 
 header.compact-header h1 {
-  font-size: 2rem; /* Smaller font */
-  margin: 0 0 0.2rem; /* Reduced margin */
+  font-size: 1.8rem; /* Smaller font */
+  margin: 0 0 0.1rem; /* Further reduced margin */
   color: #fff;
   font-weight: 700;
   letter-spacing: 1px;
@@ -67,9 +67,9 @@ header.compact-header h1 {
 }
 
 header.compact-header p {
-  font-size: 0.9rem; /* Smaller font */
+  font-size: 0.85rem; /* Smaller font */
   color: rgba(255,255,255,0.8);
-  margin: 0.3rem auto 0; /* Reduced margin */
+  margin: 0.2rem auto 0; /* Further reduced margin */
   max-width: 800px;
   font-weight: 300;
   letter-spacing: 0.5px;
@@ -82,10 +82,10 @@ header.compact-header p {
 }
 
 .content-layout {
-  margin-top: 1rem;
+  margin-top: 0;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: 2rem; /* Standard spacing between major content blocks */
 }
 
 /* Standard section styling - uniform spacing */
@@ -94,7 +94,7 @@ header.compact-header p {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem; /* Uniform spacing between sections */
+  margin-bottom: 2rem; /* Standard spacing between sections */
   width: 100%;
 }
 
@@ -111,7 +111,7 @@ header.compact-header p {
 
 /* Main indicators with individual charts */
 #main-indicators {
-  margin-bottom: 1.5rem; /* Uniform spacing */
+  margin-bottom: 2rem; /* Standard spacing */
 }
 
 /* Vertical buttons for the 5 indices with reduced width */
@@ -300,7 +300,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem; /* Uniform spacing */
+  margin-bottom: 2rem; /* Standard spacing */
 }
 
 /* Three-column grid for market sentiment */
@@ -358,12 +358,12 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem; /* Uniform spacing */
+  margin-bottom: 2rem; /* Standard spacing */
 }
 
 .calendar-container {
-  max-height: 130px; /* Further reduced height */
-  overflow: hidden;
+  max-height: 130px; /* Reduced height */
+  overflow: visible; /* Ensure content is visible */
 }
 
 .events-list {
@@ -372,6 +372,14 @@ canvas {
   grid-template-rows: 1fr; /* Force single row */
   gap: 0.8rem;
   height: 100%;
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Force 4 columns */
+  grid-template-rows: 1fr; /* Force single row */
+  gap: 0.8rem;
+  width: 100%;
 }
 
 .event-item {
@@ -456,7 +464,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem; /* Uniform spacing */
+  margin-bottom: 2rem; /* Standard spacing */
   overflow: hidden; /* Hide overflow, no scroll */
 }
 
@@ -556,7 +564,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem; /* Uniform spacing */
+  margin-bottom: 2rem; /* Standard spacing */
 }
 
 .scarcity-metrics-grid {
@@ -618,7 +626,7 @@ canvas {
   color: #a0a0a0;
 }
 
-/* Visualization of mined bitcoins */
+/* Visualization of mined bitcoins - improved contrast */
 .supply-progress {
   height: 24px;
   background: #f0f0f0;
@@ -630,9 +638,9 @@ canvas {
 
 .supply-progress-fill {
   height: 100%;
-  background: #f7931a;
+  background: #e67e22; /* Darker orange for better contrast */
   border-radius: 4px;
-  opacity: 0.8; /* Improved visibility */
+  opacity: 1; /* Full opacity for better visibility */
 }
 
 .supply-progress-text {
@@ -642,9 +650,9 @@ canvas {
   transform: translate(-50%, -50%);
   font-size: 0.8rem;
   color: #fff;
-  text-shadow: 0 0 3px rgba(0,0,0,0.7); /* Enhanced text shadow for better visibility */
+  text-shadow: 0 0 4px rgba(0,0,0,0.9); /* Enhanced text shadow for better visibility */
   white-space: nowrap;
-  font-weight: 600; /* Make text bolder */
+  font-weight: 700; /* Make text bolder */
 }
 
 .days-remaining {
@@ -660,7 +668,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem; /* Uniform spacing */
+  margin-bottom: 2rem; /* Standard spacing */
 }
 
 .news-grid {
@@ -727,7 +735,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem; /* Uniform spacing */
+  margin-bottom: 2rem; /* Standard spacing */
   width: 100%;
 }
 
@@ -765,7 +773,7 @@ footer {
   .vertical-sections {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 2rem; /* Standard spacing */
   }
 }
 
@@ -774,7 +782,7 @@ footer {
     grid-template-columns: repeat(2, 1fr);
   }
   
-  .events-list {
+  .events-list, .events-grid {
     grid-template-columns: repeat(2, 1fr);
   }
   
@@ -788,7 +796,7 @@ footer {
     grid-template-columns: repeat(2, 1fr);
   }
   
-  .events-list {
+  .events-list, .events-grid {
     grid-template-columns: repeat(2, 1fr);
   }
   
@@ -814,7 +822,7 @@ footer {
     grid-template-columns: 1fr;
   }
   
-  .events-list {
+  .events-list, .events-grid {
     grid-template-columns: 1fr;
   }
   
