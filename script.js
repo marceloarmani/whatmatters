@@ -153,7 +153,10 @@ const adoptionData = {
     { name: "Marathon Digital", type: "Mining", holdings: 12232 },
     { name: "Riot Blockchain", type: "Mining", holdings: 6952 },
     { name: "Galaxy Digital", type: "Investment", holdings: 16400 },
-    { name: "Coinbase", type: "Exchange", holdings: 4487 }
+    { name: "Coinbase", type: "Exchange", holdings: 4487 },
+    { name: "Hut 8 Mining", type: "Mining", holdings: 5242 },
+    { name: "Grayscale", type: "Investment", holdings: 654000 },
+    { name: "NYDIG", type: "Investment", holdings: 30000 }
   ]
 };
 
@@ -230,8 +233,11 @@ const newsData = [
 
 // Site initialization
 document.addEventListener('DOMContentLoaded', function() {
-  // Fetch latest prices
-  fetchLatestPrices();
+  // Initialize charts array
+  window.charts = {};
+  
+  // Render quotes (asset indicators)
+  renderQuotes();
   
   // Set up click events for indicators
   setupQuoteClickEvents();
@@ -254,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Render Bitcoin distribution
   renderBitcoinDistribution();
   
-  // Fetch and render news
+  // Render news
   renderNews();
   
   // Render Satoshi quote
@@ -263,53 +269,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Set up sources toggle
   setupSourcesToggle();
   
-  // Set up theme toggle
-  setupThemeToggle();
-  
   // Set up periodic updates
   setupPeriodicUpdates();
 });
-
-// Function to fetch latest prices from the data file
-function fetchLatestPrices() {
-  // First render with default values
-  renderQuotes();
-  
-  // Then try to fetch the latest prices
-  fetch('/data/latest_prices.json')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(data => {
-      // Update assets with latest prices
-      assets[0].price = data.bitcoin.formatted_price;
-      assets[0].change = data.bitcoin.formatted_change;
-      
-      assets[1].price = data.gold.formatted_price;
-      assets[1].change = data.gold.formatted_change;
-      
-      assets[2].price = data.silver.formatted_price;
-      assets[2].change = data.silver.formatted_change;
-      
-      assets[3].price = data.treasury.formatted_price;
-      assets[3].change = data.treasury.formatted_change;
-      
-      assets[4].price = data.dollar.formatted_price;
-      assets[4].change = data.dollar.formatted_change;
-      
-      // Re-render quotes with updated prices
-      renderQuotes();
-      
-      console.log("Prices updated from API data:", data.formatted_time);
-    })
-    .catch(error => {
-      console.error('Error fetching latest prices:', error);
-      // Continue with default values
-    });
-}
 
 // Function to render main indicators
 function renderQuotes() {
@@ -358,12 +320,7 @@ function renderQuotes() {
     closeButton.innerHTML = '✕';
     closeButton.addEventListener('click', function(e) {
       e.stopPropagation();
-      quoteElement.classList.remove('active');
-      chartArea.classList.remove('visible');
-      if (window.charts && window.charts[index]) {
-        window.charts[index].destroy();
-        window.charts[index] = null;
-      }
+      toggleChart(index, false);
     });
     
     chartContainer.appendChild(closeButton);
@@ -382,46 +339,50 @@ function setupQuoteClickEvents() {
     const quote = e.target.closest('.quote');
     if (!quote) return;
     
-    const assetName = quote.dataset.asset;
     const assetIndex = parseInt(quote.dataset.index);
-    const asset = assets[assetIndex];
-    const chartArea = document.getElementById(`chart-area-${assetIndex}`);
     
     // Toggle chart visibility
     if (quote.classList.contains('active')) {
-      quote.classList.remove('active');
-      chartArea.classList.remove('visible');
-      if (window.charts && window.charts[assetIndex]) {
-        window.charts[assetIndex].destroy();
-        window.charts[assetIndex] = null;
-      }
+      toggleChart(assetIndex, false);
     } else {
       // Close any other open charts
       document.querySelectorAll('.quote.active').forEach((activeQuote) => {
         if (activeQuote !== quote) {
           const activeIndex = parseInt(activeQuote.dataset.index);
-          activeQuote.classList.remove('active');
-          document.getElementById(`chart-area-${activeIndex}`).classList.remove('visible');
-          if (window.charts && window.charts[activeIndex]) {
-            window.charts[activeIndex].destroy();
-            window.charts[activeIndex] = null;
-          }
+          toggleChart(activeIndex, false);
         }
       });
       
       // Open this chart
-      quote.classList.add('active');
-      chartArea.classList.add('visible');
-      
-      // Initialize charts array if it doesn't exist
-      if (!window.charts) {
-        window.charts = {};
-      }
-      
-      // Render chart
-      window.charts[assetIndex] = renderChart(assetName, asset.color, `chart-${assetIndex}`);
+      toggleChart(assetIndex, true);
     }
   });
+}
+
+// Function to toggle chart visibility
+function toggleChart(assetIndex, show) {
+  const quote = document.querySelector(`.quote[data-index="${assetIndex}"]`);
+  const chartArea = document.getElementById(`chart-area-${assetIndex}`);
+  const asset = assets[assetIndex];
+  
+  if (show) {
+    quote.classList.add('active');
+    chartArea.classList.add('visible');
+    
+    // Render chart if it doesn't exist
+    if (!window.charts[assetIndex]) {
+      window.charts[assetIndex] = renderChart(asset.name, asset.color, `chart-${assetIndex}`);
+    }
+  } else {
+    quote.classList.remove('active');
+    chartArea.classList.remove('visible');
+    
+    // Destroy chart to free resources
+    if (window.charts[assetIndex]) {
+      window.charts[assetIndex].destroy();
+      window.charts[assetIndex] = null;
+    }
+  }
 }
 
 // Function to render chart for an asset
@@ -455,7 +416,7 @@ function renderChart(assetName, color, canvasId) {
   });
   
   // Create the chart
-  const chart = new Chart(ctx, {
+  return new Chart(ctx, {
     type: 'line',
     data: {
       labels: labels,
@@ -618,8 +579,6 @@ function renderChart(assetName, color, canvasId) {
       }
     }
   });
-  
-  return chart;
 }
 
 // Function to render market sentiment
@@ -725,18 +684,6 @@ function renderMarketCap() {
     marketCapItem.appendChild(marketCapItemBar);
     
     marketCapContainer.appendChild(marketCapItem);
-  });
-  
-  // Set up sources toggle
-  document.getElementById('sources-toggle').addEventListener('click', function() {
-    const sourcesElement = document.getElementById('market-cap-sources');
-    if (sourcesElement.style.display === 'block') {
-      sourcesElement.style.display = 'none';
-      this.textContent = 'Show sources';
-    } else {
-      sourcesElement.style.display = 'block';
-      this.textContent = 'Hide sources';
-    }
   });
 }
 
@@ -856,6 +803,7 @@ function renderUpcomingEvents() {
     eventsGrid.appendChild(eventItem);
   });
   
+  eventsContainer.innerHTML = '';
   eventsContainer.appendChild(eventsGrid);
 }
 
@@ -876,7 +824,12 @@ function renderBitcoinAdoption() {
         </div>
         <div>
           <div style="font-weight: bold; margin-bottom: 10px;">Legal</div>
-          <div style="color: #2196F3;">United States, EU, Japan, South Korea, Australia, Canada, Brazil, Argentina, Singapore, Switzerland</div>
+          <div style="color: #2196F3; max-width: 250px;">
+            <div style="margin-bottom: 5px;">North America: United States, Canada</div>
+            <div style="margin-bottom: 5px;">Europe: EU countries, UK, Switzerland</div>
+            <div style="margin-bottom: 5px;">Asia: Japan, Singapore, South Korea</div>
+            <div>South America: Brazil, Argentina</div>
+          </div>
         </div>
         <div>
           <div style="font-weight: bold; margin-bottom: 10px;">Restricted</div>
@@ -889,11 +842,11 @@ function renderBitcoinAdoption() {
       </div>
       <div style="margin-top: 30px;">
         <h3>Major Corporate Holders</h3>
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px;">
-          ${adoptionData.companies.map(company => `
-            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; min-width: 200px;">
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 20px;">
+          ${adoptionData.companies.slice(0, 7).map(company => `
+            <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; min-width: 150px; max-width: 180px;">
               <div style="font-weight: bold;">${company.name}</div>
-              <div style="color: #666; font-size: 0.9rem;">${company.type}</div>
+              <div style="color: #666; font-size: 0.85rem;">${company.type}</div>
               <div style="margin-top: 5px; font-weight: 500;">${company.holdings.toLocaleString()} BTC</div>
             </div>
           `).join('')}
@@ -1001,15 +954,13 @@ function setupSourcesToggle() {
   });
 }
 
-// Function to set up theme toggle
-function setupThemeToggle() {
-  // This is a placeholder for future theme toggle functionality
-}
-
 // Function to set up periodic updates
 function setupPeriodicUpdates() {
   // Update prices every 5 minutes
-  setInterval(fetchLatestPrices, 5 * 60 * 1000);
+  setInterval(function() {
+    // In a real implementation, this would fetch latest prices from an API
+    console.log("Updating prices...");
+  }, 5 * 60 * 1000);
   
   // Update Satoshi quote every hour
   setInterval(renderSatoshiQuote, 60 * 60 * 1000);
