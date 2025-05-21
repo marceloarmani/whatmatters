@@ -759,14 +759,21 @@ canvas {
   color: #999;
 }
 
+/* Horizontal sections layout for Word of Satoshi and Support */
+.horizontal-sections {
+  display: grid;
+  grid-template-columns: 3fr 1fr; /* 75% / 25% split */
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
 /* Word of Satoshi - Standard width */
 #satoshi-quotes {
   background: #fff;
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem; /* Consistent spacing */
-  width: 100%;
+  margin-bottom: 0; /* No bottom margin in horizontal layout */
 }
 
 .quote-container {
@@ -792,37 +799,56 @@ blockquote {
 /* Compact Donation Section */
 .compact-donation {
   display: flex;
-  align-items: center;
-  background: #f8f9fa;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  margin-bottom: 1.5rem;
-  font-size: 0.85rem;
-  border-left: 3px solid #f7931a;
+  flex-direction: column;
+  justify-content: center;
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.compact-donation span {
-  margin-right: 0.5rem;
+.compact-donation-inner {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 6px;
+  border-left: 4px solid #f7931a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.compact-donation-title {
+  font-weight: 500;
+  margin-bottom: 0.8rem;
+  color: #333;
+  font-size: 0.9rem;
 }
 
 .donation-address-text {
   font-family: monospace;
+  font-size: 0.8rem;
   color: #555;
+  background: #fff;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #eee;
+  margin-bottom: 0.8rem;
+  width: 100%;
+  text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 200px;
 }
 
 .copy-button {
-  padding: 0.2rem 0.5rem;
+  padding: 0.4rem 0.8rem;
   background: #f7931a;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.75rem;
-  margin-left: 0.5rem;
+  font-size: 0.8rem;
   transition: all 0.2s ease;
 }
 
@@ -846,10 +872,6 @@ footer {
     grid-template-columns: 1fr;
     gap: 1.5rem; /* Consistent spacing */
   }
-  
-  .donation-address-text {
-    max-width: 400px;
-  }
 }
 
 @media (max-width: 991px) {
@@ -867,13 +889,13 @@ footer {
     grid-template-rows: repeat(3, auto);
   }
   
-  .compact-donation {
-    flex-wrap: wrap;
+  .horizontal-sections {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
   
-  .donation-address-text {
-    margin: 0.3rem 0;
-    max-width: 100%;
+  #satoshi-quotes {
+    margin-bottom: 0;
   }
 }
 
