@@ -53,11 +53,11 @@ const historicalData = {
 // Market sentiment data
 const marketSentimentData = [
   { title: "Fear & Greed Index", value: "65 - Greed", percentage: 65, change: "+5% (24h)" },
-  { title: "Transaction Volume (24h)", value: "$78.5B - High", percentage: 68, change: "+12% (24h)" },
-  { title: "Market Liquidity", value: "Moderate-High", percentage: 62, change: "+2.3% (24h)" },
-  { title: "Network Hash Rate", value: "512 EH/s - All-time High", percentage: 78, change: "+8.7% (24h)" },
-  { title: "Active Addresses (24h)", value: "1.2M - Moderate", percentage: 55, change: "+3.5% (24h)" },
-  { title: "Long/Short Ratio", value: "2.4 - Bullish", percentage: 70, change: "+0.3 (24h)" }
+  { title: "MVRV Ratio", value: "3.2 - Overvalued", percentage: 72, change: "+0.3 (24h)" },
+  { title: "Realized Price", value: "$42,500 - Support", percentage: 58, change: "+1.2% (24h)" },
+  { title: "Stablecoin Supply Ratio", value: "4.8% - Moderate", percentage: 45, change: "-0.2% (24h)" },
+  { title: "Exchange Reserves", value: "2.1M BTC - Low", percentage: 32, change: "-0.8% (24h)" },
+  { title: "Miner Revenue", value: "$28.5M - Healthy", percentage: 63, change: "+4.3% (24h)" }
 ];
 
 // Global market capitalization data
@@ -298,9 +298,10 @@ function renderAssetIndicators() {
   
   quotesContainer.innerHTML = '';
   
-  assets.forEach(asset => {
+  assets.forEach((asset, index) => {
     const assetElement = document.createElement('div');
     assetElement.className = 'quote-wrapper';
+    assetElement.setAttribute('data-index', index);
     
     const changeClass = asset.change.startsWith('+') ? 'positive' : asset.change.startsWith('-') ? 'negative' : '';
     
@@ -323,11 +324,18 @@ function renderAssetIndicators() {
     `;
     
     quotesContainer.appendChild(assetElement);
+  });
+  
+  // Add click events after all elements are added
+  document.querySelectorAll('.quote-wrapper').forEach(wrapper => {
+    const index = wrapper.getAttribute('data-index');
+    const asset = assets[index];
+    const quoteElement = wrapper.querySelector('.quote');
+    const chartArea = wrapper.querySelector('.asset-chart-area');
+    const closeButton = wrapper.querySelector('.chart-close');
+    const canvas = wrapper.querySelector('canvas');
     
     // Add click event to toggle chart visibility
-    const quoteElement = assetElement.querySelector('.quote');
-    const chartArea = assetElement.querySelector('.asset-chart-area');
-    
     quoteElement.addEventListener('click', function() {
       if (chartArea.classList.contains('visible')) {
         chartArea.classList.remove('visible');
@@ -346,12 +354,11 @@ function renderAssetIndicators() {
         quoteElement.classList.add('active');
         
         // Create or update chart
-        createAssetChart(asset, document.getElementById(`chart-${asset.symbol}`));
+        createAssetChart(asset, canvas);
       }
     });
     
     // Add close button functionality
-    const closeButton = assetElement.querySelector('.chart-close');
     closeButton.addEventListener('click', function(e) {
       e.stopPropagation();
       chartArea.classList.remove('visible');
@@ -382,12 +389,17 @@ function createAssetChart(asset, canvas) {
   const ctx = canvas.getContext('2d');
   
   // Destroy existing chart if it exists
-  if (canvas.chart) {
-    canvas.chart.destroy();
+  if (window.charts && window.charts[asset.symbol]) {
+    window.charts[asset.symbol].destroy();
+  }
+  
+  // Initialize charts object if it doesn't exist
+  if (!window.charts) {
+    window.charts = {};
   }
   
   // Create new chart
-  canvas.chart = new Chart(ctx, {
+  window.charts[asset.symbol] = new Chart(ctx, {
     type: 'line',
     data: {
       labels: labels,
