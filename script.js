@@ -421,248 +421,41 @@ function initializeCharts() {
 
 // Render market sentiment indicators
 function renderMarketSentiment() {
-  const sentimentContainer = document.getElementById('market-sentiment');
-  if (!sentimentContainer) return;
-  
-  const sentimentIndicators = sentimentContainer.querySelector('.sentiment-indicators');
-  if (!sentimentIndicators) return;
-  
-  // Fear & Greed Index
-  const fearGreedElement = document.createElement('div');
-  fearGreedElement.className = 'indicator';
-  fearGreedElement.innerHTML = `
-    <div class="indicator-title">Fear & Greed Index</div>
-    <div class="indicator-value" id="fear-greed">
-      <div class="gauge">
-        <div class="gauge-fill" style="width: 65%;"></div>
-      </div>
-      <div class="gauge-value">65 - Greed</div>
-      <div class="indicator-change">+5 from yesterday</div>
-    </div>
-  `;
-  sentimentIndicators.appendChild(fearGreedElement);
-  
-  // Bitcoin Dominance
-  const dominanceElement = document.createElement('div');
-  dominanceElement.className = 'indicator';
-  dominanceElement.innerHTML = `
-    <div class="indicator-title">Bitcoin Dominance</div>
-    <div class="indicator-value" id="btc-dominance">
-      <div class="gauge">
-        <div class="gauge-fill" style="width: 52%; background: linear-gradient(to right, #f7931a, #f7931a);"></div>
-      </div>
-      <div class="gauge-value">52%</div>
-      <div class="indicator-change">+1.2% from last week</div>
-    </div>
-  `;
-  sentimentIndicators.appendChild(dominanceElement);
-  
-  // Total Market Cap
-  const marketCapElement = document.createElement('div');
-  marketCapElement.className = 'indicator';
-  marketCapElement.innerHTML = `
-    <div class="indicator-title">Total Market Cap</div>
-    <div class="indicator-value" id="total-market-cap">
-      <div class="gauge">
-        <div class="gauge-fill" style="width: 45%; background: linear-gradient(to right, #2196F3, #2196F3);"></div>
-      </div>
-      <div class="gauge-value">$2.0T</div>
-      <div class="indicator-change">+3.5% from last week</div>
-    </div>
-  `;
-  sentimentIndicators.appendChild(marketCapElement);
-  
-  // Volatility
-  const volatilityElement = document.createElement('div');
-  volatilityElement.className = 'indicator';
-  volatilityElement.innerHTML = `
-    <div class="indicator-title">Volatility</div>
-    <div class="indicator-value" id="volatility">
-      <div class="gauge">
-        <div class="gauge-fill" style="width: 38%; background: linear-gradient(to right, #4CAF50, #4CAF50);"></div>
-      </div>
-      <div class="gauge-value">Low (2.1%)</div>
-      <div class="indicator-change negative">-0.5% from last week</div>
-    </div>
-  `;
-  sentimentIndicators.appendChild(volatilityElement);
-  
-  // Exchange Inflows
-  const inflowsElement = document.createElement('div');
-  inflowsElement.className = 'indicator';
-  inflowsElement.innerHTML = `
-    <div class="indicator-title">Exchange Inflows</div>
-    <div class="indicator-value" id="exchange-inflows">
-      <div class="gauge">
-        <div class="gauge-fill" style="width: 32%; background: linear-gradient(to right, #4CAF50, #4CAF50);"></div>
-      </div>
-      <div class="gauge-value">Low (12.5k BTC)</div>
-      <div class="indicator-change negative">-8.3% from last week</div>
-    </div>
-  `;
-  sentimentIndicators.appendChild(inflowsElement);
-  
-  // Futures Funding Rate
-  const fundingRateElement = document.createElement('div');
-  fundingRateElement.className = 'indicator';
-  fundingRateElement.innerHTML = `
-    <div class="indicator-title">Futures Funding Rate</div>
-    <div class="indicator-value" id="funding-rate">
-      <div class="gauge">
-        <div class="gauge-fill" style="width: 58%; background: linear-gradient(to right, #FF9800, #FF9800);"></div>
-      </div>
-      <div class="gauge-value">Moderate (0.015%)</div>
-      <div class="indicator-change">+0.002% from yesterday</div>
-    </div>
-  `;
-  sentimentIndicators.appendChild(fundingRateElement);
+  // Market sentiment indicators are already in the HTML
 }
 
 // Render market cap comparison
 function renderMarketCapComparison() {
-  const marketCapContainer = document.getElementById('market-cap-comparison');
-  if (!marketCapContainer) return;
-  
-  const marketCapVisual = marketCapContainer.querySelector('.market-cap-visual');
-  if (!marketCapVisual) return;
-  
-  marketCapData.forEach(item => {
-    const marketCapItem = document.createElement('div');
-    marketCapItem.className = 'market-cap-item';
-    
-    marketCapItem.innerHTML = `
-      <div class="market-cap-item-header">
-        <div class="market-cap-item-name">${item.name}</div>
-        <div class="market-cap-item-value">$${item.value.toFixed(1)}T</div>
-      </div>
-      <div class="market-cap-item-bar">
-        <div class="market-cap-item-fill" style="width: ${item.percentage}%; background-color: ${item.color};">
-          <span class="market-cap-item-percentage">${item.percentage.toFixed(1)}%</span>
-        </div>
-      </div>
-    `;
-    
-    marketCapVisual.appendChild(marketCapItem);
-  });
+  // Market cap comparison is already in the HTML
 }
 
 // Render scarcity metrics
 function renderScarcityMetrics() {
-  const scarcityContainer = document.getElementById('scarcity-metrics');
-  if (!scarcityContainer) return;
-  
-  const scarcityGrid = scarcityContainer.querySelector('.scarcity-metrics-grid');
-  if (!scarcityGrid) return;
-  
-  scarcityMetrics.forEach(metric => {
-    const metricElement = document.createElement('div');
-    metricElement.className = 'scarcity-metric';
-    
-    let metricContent = `
-      <div class="scarcity-metric-title">${metric.title}</div>
-      <div class="scarcity-metric-value">${metric.value}</div>
-      <div class="scarcity-metric-description">${metric.description}</div>
-    `;
-    
-    if (metric.comparison) {
-      metricContent += `<div class="scarcity-comparison">`;
-      metric.comparison.forEach(item => {
-        metricContent += `<div class="scarcity-comparison-item ${item.name.toLowerCase()}">${item.name}: ${item.value}</div>`;
-      });
-      metricContent += `</div>`;
-    }
-    
-    if (metric.title === 'Bitcoins Mined') {
-      metricContent += `
-        <div class="supply-progress">
-          <div class="supply-progress-fill"></div>
-          <div class="supply-progress-text">${metric.percentage}% (${metric.remaining} remaining)</div>
-        </div>
-      `;
-    }
-    
-    if (metric.title === 'Next Halving') {
-      metricContent += `
-        <div class="days-remaining">${metric.daysRemaining} days remaining</div>
-      `;
-    }
-    
-    metricElement.innerHTML = metricContent;
-    scarcityGrid.appendChild(metricElement);
-  });
+  // Scarcity metrics are already in the HTML
 }
 
 // Render upcoming events
 function renderUpcomingEvents() {
-  const calendarContainer = document.getElementById('economic-calendar');
-  if (!calendarContainer) return;
-  
-  const eventsGrid = document.createElement('div');
-  eventsGrid.className = 'events-grid';
-  
-  upcomingEvents.forEach(event => {
-    const eventItem = document.createElement('div');
-    eventItem.className = `event-item ${event.impact}`;
-    
-    eventItem.innerHTML = `
-      <div class="event-date">
-        ${event.date}
-        <div class="event-impact">
-          <div class="impact-dot"></div>
-          <div class="impact-dot"></div>
-          <div class="impact-dot"></div>
-        </div>
-      </div>
-      <div class="event-title">${event.title}</div>
-      <div class="event-description">${event.description}</div>
-    `;
-    
-    eventsGrid.appendChild(eventItem);
-  });
-  
-  const calendarContent = calendarContainer.querySelector('.calendar-container');
-  if (calendarContent) {
-    calendarContent.innerHTML = '';
-    calendarContent.appendChild(eventsGrid);
-  }
+  // Upcoming events are already in the HTML
 }
 
 // Render news
 function renderNews() {
-  const newsContainer = document.getElementById('news-summary');
-  if (!newsContainer) return;
-  
-  const newsContent = newsContainer.querySelector('#news-content');
-  if (!newsContent) return;
-  
-  const newsGrid = document.createElement('div');
-  newsGrid.className = 'news-grid';
-  
-  newsData.forEach(news => {
-    const newsItem = document.createElement('div');
-    newsItem.className = 'news-item';
-    
-    newsItem.innerHTML = `
-      <div class="news-content">
-        <div class="news-source">${news.source}</div>
-        <div class="news-title">${news.title}</div>
-        <div class="news-description">${news.description}</div>
-        <div class="news-date">${news.date}</div>
-      </div>
-    `;
-    
-    newsGrid.appendChild(newsItem);
-  });
-  
-  newsContent.innerHTML = '';
-  newsContent.appendChild(newsGrid);
+  // News are already in the HTML
 }
 
 // Rotate Satoshi quotes
 function rotateSatoshiQuote() {
-  const quoteElement = document.getElementById('satoshi-quote');
-  if (!quoteElement) return;
+  const quoteContainer = document.getElementById('satoshi-quotes');
+  if (!quoteContainer) return;
   
   const randomIndex = Math.floor(Math.random() * satoshiQuotes.length);
-  quoteElement.textContent = satoshiQuotes[randomIndex];
+  const quote = satoshiQuotes[randomIndex];
+  
+  quoteContainer.innerHTML = `
+    <div class="quote-container">
+      <blockquote>${quote}</blockquote>
+      <div class="quote-author">- Satoshi Nakamoto</div>
+    </div>
+  `;
 }
