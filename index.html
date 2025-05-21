@@ -47,26 +47,6 @@
                 </div>
               </div>
               <div class="indicator">
-                <div class="indicator-title">Volatility (30d)</div>
-                <div class="indicator-value" id="volatility">
-                  <div class="gauge">
-                    <div class="gauge-fill" style="width: 42%;"></div>
-                  </div>
-                  <div class="gauge-value">42% - Moderate</div>
-                  <div class="indicator-change negative">-3% (24h)</div>
-                </div>
-              </div>
-              <div class="indicator">
-                <div class="indicator-title">BTC Dominance</div>
-                <div class="indicator-value" id="btc-dominance">
-                  <div class="gauge">
-                    <div class="gauge-fill" style="width: 53%;"></div>
-                  </div>
-                  <div class="gauge-value">53%</div>
-                  <div class="indicator-change">+0.8% (24h)</div>
-                </div>
-              </div>
-              <div class="indicator">
                 <div class="indicator-title">Transaction Volume (24h)</div>
                 <div class="indicator-value" id="transaction-volume">
                   <div class="gauge">
@@ -74,16 +54,6 @@
                   </div>
                   <div class="gauge-value">$78.5B - High</div>
                   <div class="indicator-change">+12% (24h)</div>
-                </div>
-              </div>
-              <div class="indicator">
-                <div class="indicator-title">Total Market Cap</div>
-                <div class="indicator-value" id="market-cap">
-                  <div class="gauge">
-                    <div class="gauge-fill" style="width: 58%;"></div>
-                  </div>
-                  <div class="gauge-value">$2.0T</div>
-                  <div class="indicator-change">+5.8% (24h)</div>
                 </div>
               </div>
               <div class="indicator">
@@ -352,22 +322,22 @@
             </div>
           </div>
         </section>
-        
-        <!-- Word of Satoshi -->
-        <section id="satoshi-quotes" class="standard-section">
-          <h2 class="section-header">Word of Satoshi</h2>
-          <div class="quote-container">
-            <blockquote id="satoshi-quote">
-              "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust."
-            </blockquote>
-            <div class="quote-author">- Satoshi Nakamoto</div>
-          </div>
-        </section>
       </div>
     </div>
   </main>
   <footer>
-    <p>© 2025 Scarcity Panel</p>
+    <div class="footer-content">
+      <div class="footer-logo">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11.5 1L2 6v12l9.5 5 9.5-5V6l-9.5-5zm7.5 16.5l-7.5 3.94-7.5-3.94V6.5l7.5-3.94 7.5 3.94v11z"/>
+          <path d="M8.5 12v4l3 1.5 3-1.5v-4l-3-1.5-3 1.5z"/>
+        </svg>
+      </div>
+      <div class="footer-text">
+        <p>© 2025 Scarcity Panel. All data is for informational purposes only.</p>
+        <p>Bitcoin: <span id="footer-btc-price">$107,016.57</span> | Gold: <span id="footer-gold-price">$3,323.10</span> | Silver: <span id="footer-silver-price">$33.69</span></p>
+      </div>
+    </div>
   </footer>
   <script src="script.js"></script>
 </body>
