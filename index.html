@@ -47,53 +47,53 @@
                 </div>
               </div>
               <div class="indicator">
-                <div class="indicator-title">Transaction Volume (24h)</div>
-                <div class="indicator-value" id="transaction-volume">
+                <div class="indicator-title">MVRV Ratio</div>
+                <div class="indicator-value" id="mvrv-ratio">
                   <div class="gauge">
-                    <div class="gauge-fill" style="width: 68%;"></div>
+                    <div class="gauge-fill" style="width: 72%;"></div>
                   </div>
-                  <div class="gauge-value">$78.5B - High</div>
-                  <div class="indicator-change">+12% (24h)</div>
-                </div>
-              </div>
-              <div class="indicator">
-                <div class="indicator-title">Market Liquidity</div>
-                <div class="indicator-value" id="market-liquidity">
-                  <div class="gauge">
-                    <div class="gauge-fill" style="width: 62%;"></div>
-                  </div>
-                  <div class="gauge-value">Moderate-High</div>
-                  <div class="indicator-change">+2.3% (24h)</div>
-                </div>
-              </div>
-              <div class="indicator">
-                <div class="indicator-title">Network Hash Rate</div>
-                <div class="indicator-value" id="hash-rate">
-                  <div class="gauge">
-                    <div class="gauge-fill" style="width: 78%;"></div>
-                  </div>
-                  <div class="gauge-value">512 EH/s - All-time High</div>
-                  <div class="indicator-change">+8.7% (24h)</div>
-                </div>
-              </div>
-              <div class="indicator">
-                <div class="indicator-title">Active Addresses (24h)</div>
-                <div class="indicator-value" id="active-addresses">
-                  <div class="gauge">
-                    <div class="gauge-fill" style="width: 55%;"></div>
-                  </div>
-                  <div class="gauge-value">1.2M - Moderate</div>
-                  <div class="indicator-change">+3.5% (24h)</div>
-                </div>
-              </div>
-              <div class="indicator">
-                <div class="indicator-title">Long/Short Ratio</div>
-                <div class="indicator-value" id="long-short-ratio">
-                  <div class="gauge">
-                    <div class="gauge-fill" style="width: 70%;"></div>
-                  </div>
-                  <div class="gauge-value">2.4 - Bullish</div>
+                  <div class="gauge-value">3.2 - Overvalued</div>
                   <div class="indicator-change">+0.3 (24h)</div>
+                </div>
+              </div>
+              <div class="indicator">
+                <div class="indicator-title">Realized Price</div>
+                <div class="indicator-value" id="realized-price">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 58%;"></div>
+                  </div>
+                  <div class="gauge-value">$42,500 - Support</div>
+                  <div class="indicator-change">+1.2% (24h)</div>
+                </div>
+              </div>
+              <div class="indicator">
+                <div class="indicator-title">Stablecoin Supply Ratio</div>
+                <div class="indicator-value" id="stablecoin-ratio">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 45%;"></div>
+                  </div>
+                  <div class="gauge-value">4.8% - Moderate</div>
+                  <div class="indicator-change">-0.2% (24h)</div>
+                </div>
+              </div>
+              <div class="indicator">
+                <div class="indicator-title">Exchange Reserves</div>
+                <div class="indicator-value" id="exchange-reserves">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 32%;"></div>
+                  </div>
+                  <div class="gauge-value">2.1M BTC - Low</div>
+                  <div class="indicator-change">-0.8% (24h)</div>
+                </div>
+              </div>
+              <div class="indicator">
+                <div class="indicator-title">Miner Revenue</div>
+                <div class="indicator-value" id="miner-revenue">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 63%;"></div>
+                  </div>
+                  <div class="gauge-value">$28.5M - Healthy</div>
+                  <div class="indicator-change">+4.3% (24h)</div>
                 </div>
               </div>
             </div>
@@ -362,34 +362,17 @@
           </div>
         </section>
         
-        <!-- Donation Section -->
-        <section id="donation" class="standard-section">
-          <h2 class="section-header">Support this project</h2>
-          <div class="donation-container">
-            <p class="donation-text">If you find this resource valuable, consider supporting its development and maintenance with a Bitcoin donation:</p>
-            <div class="donation-address">
-              <div class="donation-qr" id="donation-qr">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh" alt="Bitcoin Donation QR Code">
-              </div>
-              <div class="donation-details">
-                <div class="donation-address-text">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
-                <button class="copy-button" id="copy-address">Copy Address</button>
-              </div>
-            </div>
-            <p class="donation-note">All donations go directly toward hosting costs and continued development of this free resource.</p>
-          </div>
-        </section>
+        <!-- Compact Donation Section -->
+        <div class="compact-donation">
+          <span>Support: </span>
+          <span class="donation-address-text">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</span>
+          <button class="copy-button" id="copy-address">Copy</button>
+        </div>
       </div>
     </div>
   </main>
   <footer>
     <div class="footer-content">
-      <div class="footer-logo">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M11.5 1L2 6v12l9.5 5 9.5-5V6l-9.5-5zm7.5 16.5l-7.5 3.94-7.5-3.94V6.5l7.5-3.94 7.5 3.94v11z"/>
-          <path d="M8.5 12v4l3 1.5 3-1.5v-4l-3-1.5-3 1.5z"/>
-        </svg>
-      </div>
       <div class="footer-text">
         <p>© 2025 Scarcity Panel. All data is for informational purposes only.</p>
         <p>Bitcoin: <span id="footer-btc-price">$107,016.57</span> | Gold: <span id="footer-gold-price">$3,323.10</span> | Silver: <span id="footer-silver-price">$33.69</span></p>
