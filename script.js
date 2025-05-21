@@ -126,6 +126,48 @@ const upcomingEvents = [
   }
 ];
 
+// Bitcoin adoption data
+const adoptionData = {
+  countries: [
+    { name: "El Salvador", status: "Legal tender", adoption: 0.85 },
+    { name: "United States", status: "Legal", adoption: 0.65 },
+    { name: "Germany", status: "Legal", adoption: 0.58 },
+    { name: "Japan", status: "Legal", adoption: 0.62 },
+    { name: "Switzerland", status: "Legal", adoption: 0.72 },
+    { name: "Singapore", status: "Legal", adoption: 0.70 },
+    { name: "United Kingdom", status: "Legal", adoption: 0.55 },
+    { name: "Canada", status: "Legal", adoption: 0.60 },
+    { name: "Australia", status: "Legal", adoption: 0.52 },
+    { name: "South Korea", status: "Legal", adoption: 0.58 },
+    { name: "Brazil", status: "Legal", adoption: 0.45 },
+    { name: "Argentina", status: "Legal", adoption: 0.50 },
+    { name: "Nigeria", status: "Restricted", adoption: 0.40 },
+    { name: "India", status: "Legal", adoption: 0.35 },
+    { name: "Russia", status: "Restricted", adoption: 0.30 },
+    { name: "China", status: "Banned", adoption: 0.15 }
+  ],
+  companies: [
+    { name: "MicroStrategy", type: "Corporate Treasury", holdings: 140000 },
+    { name: "Tesla", type: "Corporate Treasury", holdings: 43200 },
+    { name: "Block", type: "Corporate Treasury", holdings: 8027 },
+    { name: "Marathon Digital", type: "Mining", holdings: 12232 },
+    { name: "Riot Blockchain", type: "Mining", holdings: 6952 },
+    { name: "Galaxy Digital", type: "Investment", holdings: 16400 },
+    { name: "Coinbase", type: "Exchange", holdings: 4487 }
+  ]
+};
+
+// Bitcoin distribution data
+const distributionData = [
+  { category: "Long-term Holders (>1 year)", percentage: 62, color: "#2E7D32" },
+  { category: "Mid-term Holders (3-12 months)", percentage: 22, color: "#1976D2" },
+  { category: "Short-term Holders (<3 months)", percentage: 16, color: "#7B1FA2" },
+  { category: "Exchanges", percentage: 12, color: "#C62828" },
+  { category: "Corporate Treasuries", percentage: 8, color: "#F57F17" },
+  { category: "ETFs and Funds", percentage: 6, color: "#00838F" },
+  { category: "Lost Coins", percentage: 20, color: "#757575" }
+];
+
 // Satoshi Nakamoto quotes
 const satoshiQuotes = [
   "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.",
@@ -140,16 +182,50 @@ const satoshiQuotes = [
   "Bitcoin might make a good currency for purchases on the Internet."
 ];
 
-// Reliable news sources
-const newsSources = [
-  { name: "Bloomberg", url: "https://www.bloomberg.com/" },
-  { name: "Wall Street Journal", url: "https://www.wsj.com/" },
-  { name: "Financial Times", url: "https://www.ft.com/" },
-  { name: "Reuters", url: "https://www.reuters.com/" },
-  { name: "The Economist", url: "https://www.economist.com/" },
-  { name: "Bitcoin Magazine", url: "https://bitcoinmagazine.com/" },
-  { name: "Cointelegraph", url: "https://cointelegraph.com/" },
-  { name: "Jesse Myers", url: "https://www.onceinaspecies.com/" }
+// News data
+const newsData = [
+  {
+    title: "Bitcoin Surpasses $100,000 for First Time in History",
+    description: "The world's largest cryptocurrency has reached a new all-time high, breaking the psychological barrier of $100,000.",
+    source: "Cointelegraph",
+    date: "May 21, 2025",
+    url: "#"
+  },
+  {
+    title: "Central Banks Accelerate Digital Currency Development",
+    description: "Major central banks are fast-tracking CBDC projects in response to growing cryptocurrency adoption.",
+    source: "Financial Times",
+    date: "May 20, 2025",
+    url: "#"
+  },
+  {
+    title: "Gold Reaches Record High Amid Inflation Concerns",
+    description: "The precious metal continues its upward trajectory as investors seek protection from rising inflation.",
+    source: "Bloomberg",
+    date: "May 19, 2025",
+    url: "#"
+  },
+  {
+    title: "Bitcoin Mining Difficulty Hits All-Time High",
+    description: "Network security continues to strengthen as mining difficulty adjusts upward following hashrate increases.",
+    source: "Bitcoin Magazine",
+    date: "May 18, 2025",
+    url: "#"
+  },
+  {
+    title: "Institutional Adoption Accelerates as Pension Funds Enter Crypto",
+    description: "Major pension funds are now allocating portions of their portfolios to Bitcoin and other digital assets.",
+    source: "Reuters",
+    date: "May 17, 2025",
+    url: "#"
+  },
+  {
+    title: "El Salvador's Bitcoin Strategy Shows Long-term Success",
+    description: "The country's Bitcoin reserves have appreciated significantly since adoption as legal tender in 2021.",
+    source: "Cointelegraph",
+    date: "May 16, 2025",
+    url: "#"
+  }
 ];
 
 // Site initialization
@@ -172,8 +248,14 @@ document.addEventListener('DOMContentLoaded', function() {
   // Render upcoming events
   renderUpcomingEvents();
   
+  // Render Bitcoin adoption map
+  renderBitcoinAdoption();
+  
+  // Render Bitcoin distribution
+  renderBitcoinDistribution();
+  
   // Fetch and render news
-  fetchAndRenderNews();
+  renderNews();
   
   // Render Satoshi quote
   renderSatoshiQuote();
@@ -278,9 +360,9 @@ function renderQuotes() {
       e.stopPropagation();
       quoteElement.classList.remove('active');
       chartArea.classList.remove('visible');
-      if (charts[index]) {
-        charts[index].destroy();
-        charts[index] = null;
+      if (window.charts && window.charts[index]) {
+        window.charts[index].destroy();
+        window.charts[index] = null;
       }
     });
     
@@ -458,7 +540,18 @@ function renderChart(assetName, color, canvasId) {
       scales: {
         x: {
           grid: {
-            display: false
+            display: true,
+            drawOnChartArea: true,
+            drawTicks: true,
+            color: function(context) {
+              // Check if this is a year boundary
+              for (let i = 0; i < yearLabels.length; i++) {
+                if (context.index === yearLabels[i].value) {
+                  return 'rgba(200, 200, 200, 0.5)';
+                }
+              }
+              return 'rgba(0, 0, 0, 0)';
+            }
           },
           ticks: {
             maxRotation: 0,
@@ -694,7 +787,6 @@ function renderScarcityMetrics() {
       
       const progressFill = document.createElement('div');
       progressFill.className = 'supply-progress-fill';
-      progressFill.style.width = `${metric.percentage}%`;
       
       const progressText = document.createElement('div');
       progressText.className = 'supply-progress-text';
@@ -767,34 +859,83 @@ function renderUpcomingEvents() {
   eventsContainer.appendChild(eventsGrid);
 }
 
-// Function to fetch and render news
-function fetchAndRenderNews() {
-  const newsContainer = document.getElementById('news-content');
+// Function to render Bitcoin adoption map
+function renderBitcoinAdoption() {
+  const mapContainer = document.getElementById('adoption-map');
   
-  // Sample news data (in a real app, this would be fetched from an API)
-  const newsData = [
-    {
-      title: "Bitcoin Surpasses $100,000 for First Time in History",
-      description: "The world's largest cryptocurrency has reached a new all-time high, breaking the psychological barrier of $100,000.",
-      source: "Cointelegraph",
-      date: "May 21, 2025",
-      url: "#"
-    },
-    {
-      title: "Central Banks Accelerate Digital Currency Development",
-      description: "Major central banks are fast-tracking CBDC projects in response to growing cryptocurrency adoption.",
-      source: "Financial Times",
-      date: "May 20, 2025",
-      url: "#"
-    },
-    {
-      title: "Gold Reaches Record High Amid Inflation Concerns",
-      description: "The precious metal continues its upward trajectory as investors seek protection from rising inflation.",
-      source: "Bloomberg",
-      date: "May 19, 2025",
-      url: "#"
-    }
-  ];
+  // In a real implementation, this would use a mapping library like Leaflet or Google Maps
+  // For this demo, we'll create a simple visualization
+  
+  mapContainer.innerHTML = `
+    <div style="padding: 20px; text-align: center;">
+      <h3>Bitcoin Legal Status Worldwide</h3>
+      <div style="display: flex; justify-content: space-around; margin-top: 20px;">
+        <div>
+          <div style="font-weight: bold; margin-bottom: 10px;">Legal Tender</div>
+          <div style="color: #4CAF50;">El Salvador</div>
+        </div>
+        <div>
+          <div style="font-weight: bold; margin-bottom: 10px;">Legal</div>
+          <div style="color: #2196F3;">United States, EU, Japan, South Korea, Australia, Canada, Brazil, Argentina, Singapore, Switzerland</div>
+        </div>
+        <div>
+          <div style="font-weight: bold; margin-bottom: 10px;">Restricted</div>
+          <div style="color: #FF9800;">Russia, Nigeria, India, Turkey</div>
+        </div>
+        <div>
+          <div style="font-weight: bold; margin-bottom: 10px;">Banned</div>
+          <div style="color: #F44336;">China, Egypt, Algeria, Bolivia</div>
+        </div>
+      </div>
+      <div style="margin-top: 30px;">
+        <h3>Major Corporate Holders</h3>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px;">
+          ${adoptionData.companies.map(company => `
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; min-width: 200px;">
+              <div style="font-weight: bold;">${company.name}</div>
+              <div style="color: #666; font-size: 0.9rem;">${company.type}</div>
+              <div style="margin-top: 5px; font-weight: 500;">${company.holdings.toLocaleString()} BTC</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Function to render Bitcoin distribution
+function renderBitcoinDistribution() {
+  const distributionContainer = document.getElementById('distribution-chart');
+  
+  // In a real implementation, this would use a charting library
+  // For this demo, we'll create a simple visualization
+  
+  distributionContainer.innerHTML = `
+    <div style="padding: 20px; text-align: center;">
+      <h3>Bitcoin Distribution by Holder Type</h3>
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+        ${distributionData.map(item => `
+          <div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+              <div>${item.category}</div>
+              <div>${item.percentage}%</div>
+            </div>
+            <div style="height: 20px; background: #f0f0f0; border-radius: 4px; overflow: hidden;">
+              <div style="height: 100%; width: ${item.percentage}%; background-color: ${item.color};"></div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div style="margin-top: 30px; color: #666; font-size: 0.9rem;">
+        <p>Note: Some categories overlap. For example, a portion of exchange holdings may also be counted in short-term holders.</p>
+      </div>
+    </div>
+  `;
+}
+
+// Function to render news
+function renderNews() {
+  const newsContainer = document.getElementById('news-content');
   
   // Create news grid
   const newsGrid = document.createElement('div');
