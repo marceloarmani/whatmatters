@@ -66,6 +66,36 @@
                   <div class="indicator-change">+2.3% (24h)</div>
                 </div>
               </div>
+              <div class="indicator">
+                <div class="indicator-title">Network Hash Rate</div>
+                <div class="indicator-value" id="hash-rate">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 78%;"></div>
+                  </div>
+                  <div class="gauge-value">512 EH/s - All-time High</div>
+                  <div class="indicator-change">+8.7% (24h)</div>
+                </div>
+              </div>
+              <div class="indicator">
+                <div class="indicator-title">Active Addresses (24h)</div>
+                <div class="indicator-value" id="active-addresses">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 55%;"></div>
+                  </div>
+                  <div class="gauge-value">1.2M - Moderate</div>
+                  <div class="indicator-change">+3.5% (24h)</div>
+                </div>
+              </div>
+              <div class="indicator">
+                <div class="indicator-title">Long/Short Ratio</div>
+                <div class="indicator-value" id="long-short-ratio">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 70%;"></div>
+                  </div>
+                  <div class="gauge-value">2.4 - Bullish</div>
+                  <div class="indicator-change">+0.3 (24h)</div>
+                </div>
+              </div>
             </div>
           </section>
           
@@ -320,6 +350,33 @@
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+        
+        <!-- Word of Satoshi -->
+        <section id="satoshi-quotes" class="standard-section">
+          <h2 class="section-header">Word of Satoshi</h2>
+          <div class="quote-container">
+            <blockquote>The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.</blockquote>
+            <div class="quote-author">- Satoshi Nakamoto</div>
+          </div>
+        </section>
+        
+        <!-- Donation Section -->
+        <section id="donation" class="standard-section">
+          <h2 class="section-header">Support this project</h2>
+          <div class="donation-container">
+            <p class="donation-text">If you find this resource valuable, consider supporting its development and maintenance with a Bitcoin donation:</p>
+            <div class="donation-address">
+              <div class="donation-qr" id="donation-qr">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh" alt="Bitcoin Donation QR Code">
+              </div>
+              <div class="donation-details">
+                <div class="donation-address-text">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
+                <button class="copy-button" id="copy-address">Copy Address</button>
+              </div>
+            </div>
+            <p class="donation-note">All donations go directly toward hosting costs and continued development of this free resource.</p>
           </div>
         </section>
       </div>
