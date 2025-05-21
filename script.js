@@ -50,6 +50,16 @@ const historicalData = {
   ]
 };
 
+// Market sentiment data
+const marketSentimentData = [
+  { title: "Fear & Greed Index", value: "65 - Greed", percentage: 65, change: "+5% (24h)" },
+  { title: "Transaction Volume (24h)", value: "$78.5B - High", percentage: 68, change: "+12% (24h)" },
+  { title: "Market Liquidity", value: "Moderate-High", percentage: 62, change: "+2.3% (24h)" },
+  { title: "Network Hash Rate", value: "512 EH/s - All-time High", percentage: 78, change: "+8.7% (24h)" },
+  { title: "Active Addresses (24h)", value: "1.2M - Moderate", percentage: 55, change: "+3.5% (24h)" },
+  { title: "Long/Short Ratio", value: "2.4 - Bullish", percentage: 70, change: "+0.3 (24h)" }
+];
+
 // Global market capitalization data
 const marketCapData = [
   { name: "Real Estate", value: 326.5, color: "#4CAF50", percentage: 47.3 },
@@ -188,14 +198,14 @@ const newsData = [
 
 // Initialize the page when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-  // Fetch latest prices
-  fetchLatestPrices();
+  // Generate random prices for assets
+  updateAssetPrices();
   
   // Render main asset indicators
   renderAssetIndicators();
   
-  // Initialize charts
-  initializeCharts();
+  // Render market sentiment indicators
+  renderMarketSentiment();
   
   // Render scarcity metrics
   renderScarcityMetrics();
@@ -205,6 +215,9 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Render news
   renderNews();
+  
+  // Render Satoshi quote
+  renderSatoshiQuote();
   
   // Add event listener for sources toggle
   document.getElementById('sources-toggle').addEventListener('click', function() {
@@ -218,29 +231,64 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
+  // Add event listener for copy address button
+  document.getElementById('copy-address').addEventListener('click', function() {
+    const addressText = document.querySelector('.donation-address-text').textContent;
+    navigator.clipboard.writeText(addressText).then(function() {
+      const originalText = document.getElementById('copy-address').textContent;
+      document.getElementById('copy-address').textContent = 'Copied!';
+      setTimeout(function() {
+        document.getElementById('copy-address').textContent = originalText;
+      }, 2000);
+    });
+  });
+  
   // Rotate Satoshi quotes periodically
   setInterval(rotateSatoshiQuote, 30000);
 });
 
-// Fetch latest prices from API
-function fetchLatestPrices() {
-  fetch('/data/prices.json?' + new Date().getTime())
-    .then(response => response.json())
-    .then(data => {
-      // Update assets array with latest prices
-      assets.forEach(asset => {
-        if (data[asset.name.split(' <')[0]]) {
-          asset.price = data[asset.name.split(' <')[0]].price;
-          asset.change = data[asset.name.split(' <')[0]].change;
-        }
-      });
-      
-      // Re-render asset indicators with updated prices
-      renderAssetIndicators();
-    })
-    .catch(error => {
-      console.error('Error fetching latest prices:', error);
-    });
+// Generate random prices for assets
+function updateAssetPrices() {
+  // Bitcoin: Random price between $100,000 and $110,000
+  const btcPrice = Math.floor(100000 + Math.random() * 10000);
+  const btcChange = (Math.random() * 5 - 2.5).toFixed(1); // Random change between -2.5% and +2.5%
+  
+  // Gold: Random price between $3,300 and $3,350
+  const goldPrice = (3300 + Math.random() * 50).toFixed(2);
+  const goldChange = (Math.random() * 2 - 0.5).toFixed(1); // Random change between -0.5% and +1.5%
+  
+  // Silver: Random price between $33 and $34
+  const silverPrice = (33 + Math.random()).toFixed(2);
+  const silverChange = (Math.random() * 3 - 1).toFixed(1); // Random change between -1% and +2%
+  
+  // 10-Year Treasury Yield: Random yield between 4.5% and 4.7%
+  const treasuryYield = (4.5 + Math.random() * 0.2).toFixed(2);
+  const treasuryChange = ((Math.random() * 0.2 - 0.1) * 100).toFixed(2); // Random change between -0.1% and +0.1%
+  
+  // Dollar Index: Random value between 99 and 100
+  const dollarIndex = (99 + Math.random()).toFixed(2);
+  const dollarChange = (Math.random() * 1.2 - 0.8).toFixed(1); // Random change between -0.8% and +0.4%
+  
+  // Update assets array with new prices
+  assets[0].price = `$${btcPrice.toLocaleString()}`;
+  assets[0].change = `${btcChange > 0 ? '+' : ''}${btcChange}%`;
+  
+  assets[1].price = `$${goldPrice}`;
+  assets[1].change = `${goldChange > 0 ? '+' : ''}${goldChange}%`;
+  
+  assets[2].price = `$${silverPrice}`;
+  assets[2].change = `${silverChange > 0 ? '+' : ''}${silverChange}%`;
+  
+  assets[3].price = `${treasuryYield}%`;
+  assets[3].change = `${treasuryChange > 0 ? '+' : ''}${treasuryChange}%`;
+  
+  assets[4].price = `${dollarIndex}`;
+  assets[4].change = `${dollarChange > 0 ? '+' : ''}${dollarChange}%`;
+  
+  // Update footer prices
+  document.getElementById('footer-btc-price').textContent = assets[0].price;
+  document.getElementById('footer-gold-price').textContent = assets[1].price;
+  document.getElementById('footer-silver-price').textContent = assets[2].price;
 }
 
 // Render main asset indicators
@@ -410,23 +458,34 @@ function createAssetChart(asset, canvas) {
   });
 }
 
-// Initialize charts
-function initializeCharts() {
-  // Market sentiment charts
-  renderMarketSentiment();
-  
-  // Market cap comparison
-  renderMarketCapComparison();
-}
-
 // Render market sentiment indicators
 function renderMarketSentiment() {
-  // Market sentiment indicators are already in the HTML
-}
-
-// Render market cap comparison
-function renderMarketCapComparison() {
-  // Market cap comparison is already in the HTML
+  const sentimentContainer = document.querySelector('.sentiment-indicators');
+  if (!sentimentContainer) return;
+  
+  // Clear existing content
+  sentimentContainer.innerHTML = '';
+  
+  // Render each sentiment indicator
+  marketSentimentData.forEach(indicator => {
+    const indicatorElement = document.createElement('div');
+    indicatorElement.className = 'indicator';
+    
+    const changeClass = indicator.change.includes('+') ? 'positive' : indicator.change.includes('-') ? 'negative' : '';
+    
+    indicatorElement.innerHTML = `
+      <div class="indicator-title">${indicator.title}</div>
+      <div class="indicator-value">
+        <div class="gauge">
+          <div class="gauge-fill" style="width: ${indicator.percentage}%;"></div>
+        </div>
+        <div class="gauge-value">${indicator.value}</div>
+        <div class="indicator-change ${changeClass}">${indicator.change}</div>
+      </div>
+    `;
+    
+    sentimentContainer.appendChild(indicatorElement);
+  });
 }
 
 // Render scarcity metrics
@@ -444,6 +503,23 @@ function renderNews() {
   // News are already in the HTML
 }
 
+// Render Satoshi quote
+function renderSatoshiQuote() {
+  const quoteContainer = document.getElementById('satoshi-quotes');
+  if (!quoteContainer) return;
+  
+  const randomIndex = Math.floor(Math.random() * satoshiQuotes.length);
+  const quote = satoshiQuotes[randomIndex];
+  
+  quoteContainer.innerHTML = `
+    <h2 class="section-header">Word of Satoshi</h2>
+    <div class="quote-container">
+      <blockquote>${quote}</blockquote>
+      <div class="quote-author">- Satoshi Nakamoto</div>
+    </div>
+  `;
+}
+
 // Rotate Satoshi quotes
 function rotateSatoshiQuote() {
   const quoteContainer = document.getElementById('satoshi-quotes');
@@ -452,10 +528,17 @@ function rotateSatoshiQuote() {
   const randomIndex = Math.floor(Math.random() * satoshiQuotes.length);
   const quote = satoshiQuotes[randomIndex];
   
-  quoteContainer.innerHTML = `
-    <div class="quote-container">
+  const quoteElement = quoteContainer.querySelector('.quote-container');
+  
+  // Fade out
+  quoteElement.style.opacity = 0;
+  
+  // Update content and fade in after a short delay
+  setTimeout(() => {
+    quoteElement.innerHTML = `
       <blockquote>${quote}</blockquote>
       <div class="quote-author">- Satoshi Nakamoto</div>
-    </div>
-  `;
+    `;
+    quoteElement.style.opacity = 1;
+  }, 500);
 }
