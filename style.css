@@ -85,7 +85,7 @@ header.compact-header p {
   margin-top: 0;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem; /* Reduced spacing between major content blocks */
+  gap: 1.5rem; /* Consistent spacing between major content blocks */
 }
 
 /* Standard section styling - uniform spacing */
@@ -94,7 +94,7 @@ header.compact-header p {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem; /* Reduced spacing between sections */
+  margin-bottom: 1.5rem; /* Consistent spacing between sections */
   width: 100%;
 }
 
@@ -111,7 +111,7 @@ header.compact-header p {
 
 /* Main indicators with individual charts */
 #main-indicators {
-  margin-bottom: 1.5rem; /* Standard spacing */
+  margin-bottom: 1.5rem; /* Consistent spacing */
 }
 
 /* Vertical buttons for the 5 indices with reduced width */
@@ -302,7 +302,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem; /* Standard spacing */
+  margin-bottom: 1.5rem; /* Consistent spacing */
 }
 
 /* Three-column grid for market sentiment */
@@ -360,7 +360,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem; /* Standard spacing */
+  margin-bottom: 1.5rem; /* Consistent spacing */
 }
 
 .calendar-container {
@@ -382,6 +382,8 @@ canvas {
   grid-template-rows: 1fr; /* Force single row */
   gap: 0.8rem;
   width: 100%;
+  padding-bottom: 1rem; /* Added padding to bottom of events grid */
+  border-bottom: 1px solid #f0f0f0; /* Added border to bottom of events grid */
 }
 
 .event-item {
@@ -393,6 +395,7 @@ canvas {
   display: flex;
   flex-direction: column;
   overflow: hidden; /* Hide overflow content */
+  margin-bottom: 0.5rem; /* Added margin to bottom of event items */
 }
 
 .event-item.high {
@@ -466,7 +469,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem; /* Standard spacing */
+  margin-bottom: 1.5rem; /* Consistent spacing */
   overflow: hidden; /* Hide overflow, no scroll */
 }
 
@@ -566,7 +569,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem; /* Standard spacing */
+  margin-bottom: 1.5rem; /* Consistent spacing */
 }
 
 .scarcity-metrics-grid {
@@ -642,7 +645,7 @@ canvas {
   height: 100%;
   background: #f7931a; /* Original Bitcoin orange */
   border-radius: 4px;
-  opacity: 0.8; /* Slightly transparent */
+  opacity: 0.8; /* Slightly transparent for better contrast */
 }
 
 .supply-progress-text {
@@ -650,9 +653,10 @@ canvas {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  font-size: 0.8rem;
-  color: #333; /* Dark text for better readability */
-  font-weight: 600; /* Make text bolder */
+  font-size: 0.9rem; /* Larger font size */
+  color: #000; /* Black text for maximum contrast */
+  font-weight: 700; /* Make text bolder */
+  text-shadow: 0px 0px 3px rgba(255, 255, 255, 0.9); /* White text shadow for better readability */
 }
 
 .days-remaining {
@@ -668,7 +672,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem; /* Standard spacing */
+  margin-bottom: 1.5rem; /* Consistent spacing */
 }
 
 .news-grid {
@@ -735,7 +739,7 @@ canvas {
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem; /* Standard spacing */
+  margin-bottom: 1.5rem; /* Consistent spacing */
   width: 100%;
 }
 
@@ -765,7 +769,7 @@ footer {
   padding: 1rem;
   color: #7f8c8d;
   font-size: 0.8rem;
-  margin-top: 1.5rem; /* Reduced margin */
+  margin-top: 1.5rem; /* Consistent spacing */
 }
 
 /* Responsiveness */
@@ -773,7 +777,7 @@ footer {
   .vertical-sections {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1.5rem; /* Standard spacing */
+    gap: 1.5rem; /* Consistent spacing */
   }
 }
 
