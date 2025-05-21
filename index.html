@@ -37,6 +37,36 @@
             <h2 class="section-header">Market sentiment</h2>
             <div class="sentiment-indicators">
               <div class="indicator">
+                <div class="indicator-title">BTC Dominance</div>
+                <div class="indicator-value" id="btc-dominance">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 52%;"></div>
+                  </div>
+                  <div class="gauge-value">52% - Moderate</div>
+                  <div class="indicator-change">+0.8% (24h)</div>
+                </div>
+              </div>
+              <div class="indicator">
+                <div class="indicator-title">Volatility (30D)</div>
+                <div class="indicator-value" id="volatility">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 38%;"></div>
+                  </div>
+                  <div class="gauge-value">3.8% - Low</div>
+                  <div class="indicator-change">-0.5% (24h)</div>
+                </div>
+              </div>
+              <div class="indicator">
+                <div class="indicator-title">Transaction Volume (24h)</div>
+                <div class="indicator-value" id="transaction-volume">
+                  <div class="gauge">
+                    <div class="gauge-fill" style="width: 68%;"></div>
+                  </div>
+                  <div class="gauge-value">$78.5B - High</div>
+                  <div class="indicator-change">+12% (24h)</div>
+                </div>
+              </div>
+              <div class="indicator">
                 <div class="indicator-title">Fear & Greed Index</div>
                 <div class="indicator-value" id="fear-greed">
                   <div class="gauge">
@@ -47,53 +77,23 @@
                 </div>
               </div>
               <div class="indicator">
-                <div class="indicator-title">MVRV Ratio</div>
-                <div class="indicator-value" id="mvrv-ratio">
+                <div class="indicator-title">Total Market Cap</div>
+                <div class="indicator-value" id="total-market-cap-indicator">
                   <div class="gauge">
-                    <div class="gauge-fill" style="width: 72%;"></div>
+                    <div class="gauge-fill" style="width: 75%;"></div>
                   </div>
-                  <div class="gauge-value">3.2 - Overvalued</div>
-                  <div class="indicator-change">+0.3 (24h)</div>
+                  <div class="gauge-value">$2.85T - All-time High</div>
+                  <div class="indicator-change">+2.3% (24h)</div>
                 </div>
               </div>
               <div class="indicator">
-                <div class="indicator-title">Realized Price</div>
-                <div class="indicator-value" id="realized-price">
+                <div class="indicator-title">Open Interest</div>
+                <div class="indicator-value" id="open-interest">
                   <div class="gauge">
                     <div class="gauge-fill" style="width: 58%;"></div>
                   </div>
-                  <div class="gauge-value">$42,500 - Support</div>
-                  <div class="indicator-change">+1.2% (24h)</div>
-                </div>
-              </div>
-              <div class="indicator">
-                <div class="indicator-title">Stablecoin Supply Ratio</div>
-                <div class="indicator-value" id="stablecoin-ratio">
-                  <div class="gauge">
-                    <div class="gauge-fill" style="width: 45%;"></div>
-                  </div>
-                  <div class="gauge-value">4.8% - Moderate</div>
-                  <div class="indicator-change">-0.2% (24h)</div>
-                </div>
-              </div>
-              <div class="indicator">
-                <div class="indicator-title">Exchange Reserves</div>
-                <div class="indicator-value" id="exchange-reserves">
-                  <div class="gauge">
-                    <div class="gauge-fill" style="width: 32%;"></div>
-                  </div>
-                  <div class="gauge-value">2.1M BTC - Low</div>
-                  <div class="indicator-change">-0.8% (24h)</div>
-                </div>
-              </div>
-              <div class="indicator">
-                <div class="indicator-title">Miner Revenue</div>
-                <div class="indicator-value" id="miner-revenue">
-                  <div class="gauge">
-                    <div class="gauge-fill" style="width: 63%;"></div>
-                  </div>
-                  <div class="gauge-value">$28.5M - Healthy</div>
-                  <div class="indicator-change">+4.3% (24h)</div>
+                  <div class="gauge-value">$32.7B - Moderate</div>
+                  <div class="indicator-change">+3.1% (24h)</div>
                 </div>
               </div>
             </div>
@@ -353,20 +353,23 @@
           </div>
         </section>
         
-        <!-- Word of Satoshi -->
-        <section id="satoshi-quotes" class="standard-section">
-          <h2 class="section-header">Word of Satoshi</h2>
-          <div class="quote-container">
-            <blockquote>The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.</blockquote>
-            <div class="quote-author">- Satoshi Nakamoto</div>
+        <!-- Word of Satoshi and Support side by side -->
+        <div class="horizontal-sections">
+          <!-- Word of Satoshi -->
+          <section id="satoshi-quotes" class="standard-section">
+            <h2 class="section-header">Word of Satoshi</h2>
+            <div class="quote-container">
+              <blockquote>The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.</blockquote>
+              <div class="quote-author">- Satoshi Nakamoto</div>
+            </div>
+          </section>
+          
+          <!-- Compact Donation Section -->
+          <div class="compact-donation">
+            <span>Support: </span>
+            <span class="donation-address-text">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</span>
+            <button class="copy-button" id="copy-address">Copy</button>
           </div>
-        </section>
-        
-        <!-- Compact Donation Section -->
-        <div class="compact-donation">
-          <span>Support: </span>
-          <span class="donation-address-text">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</span>
-          <button class="copy-button" id="copy-address">Copy</button>
         </div>
       </div>
     </div>
