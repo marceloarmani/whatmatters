@@ -730,7 +730,7 @@ blockquote {
   color: #666;
 }
 
-/* Support Section */
+/* Support Section - Ajustado com margem inferior e linha laranja reduzida */
 #support {
   background: #fff;
   padding: 1.2rem;
@@ -743,12 +743,12 @@ blockquote {
   background: #f8f9fa;
   border-radius: 6px;
   padding: 1rem;
-  border-left: 2px solid #f7931a; /* Further reduced border width */
-  height: calc(100% - 3rem); /* Adjusted height to show more bottom margin */
+  border-left: 1px solid #f7931a; /* Reduzido para 1px */
+  height: calc(100% - 4rem); /* Aumentado para mostrar mais margem inferior */
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin-bottom: 1rem; /* Increased bottom margin */
+  margin-bottom: 2rem; /* Aumentado para 2rem */
 }
 
 .donation-address {
