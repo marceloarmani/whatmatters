@@ -19,52 +19,122 @@ const quotes = [
 // Função para renderizar os indicadores principais
 function renderQuotes() {
   const quotesContainer = document.getElementById('quotes');
+  if (!quotesContainer) return;
   
-  assets.forEach(asset => {
-    const quoteWrapper = document.createElement('div');
-    quoteWrapper.className = 'quote-wrapper';
+  // Limpar o container antes de adicionar novos elementos
+  quotesContainer.innerHTML = '';
+  
+  // Buscar preços atualizados antes de renderizar
+  fetchLatestPrices().then(updatedAssets => {
+    const assetsToRender = updatedAssets || assets;
     
-    const quote = document.createElement('div');
-    quote.className = 'quote';
+    assetsToRender.forEach(asset => {
+      const quoteWrapper = document.createElement('div');
+      quoteWrapper.className = 'quote-wrapper';
+      
+      const quote = document.createElement('div');
+      quote.className = 'quote';
+      
+      const quoteLeft = document.createElement('div');
+      quoteLeft.className = 'quote-left';
+      
+      const nameStrong = document.createElement('strong');
+      nameStrong.textContent = asset.name;
+      
+      let tooltip = '';
+      if (asset.name === "10-Year Treasury Yield") {
+        tooltip = `<span class="index-tooltip">?<span class="tooltip-text">The yield on the U.S. 10-year Treasury note, a key benchmark for interest rates.</span></span>`;
+      } else if (asset.name === "Dollar Index") {
+        tooltip = `<span class="index-tooltip">?<span class="tooltip-text">Measures the value of the U.S. dollar relative to a basket of foreign currencies.</span></span>`;
+      } else if (asset.name === "S&P 500") {
+        tooltip = `<span class="index-tooltip">?<span class="tooltip-text">Stock market index tracking the performance of 500 large companies listed on U.S. exchanges.</span></span>`;
+      }
+      
+      quoteLeft.appendChild(nameStrong);
+      quoteLeft.innerHTML += tooltip;
+      
+      const quoteRight = document.createElement('div');
+      quoteRight.className = 'quote-right';
+      
+      const quotePrice = document.createElement('span');
+      quotePrice.className = 'quote-price';
+      quotePrice.textContent = asset.price;
+      
+      const quoteChange = document.createElement('span');
+      quoteChange.className = `quote-change ${asset.positive ? 'positive' : 'negative'}`;
+      quoteChange.textContent = asset.change;
+      
+      quoteRight.appendChild(quotePrice);
+      quoteRight.appendChild(document.createElement('br'));
+      quoteRight.appendChild(quoteChange);
+      
+      quote.appendChild(quoteLeft);
+      quote.appendChild(quoteRight);
+      quoteWrapper.appendChild(quote);
+      quotesContainer.appendChild(quoteWrapper);
+    });
     
-    const quoteLeft = document.createElement('div');
-    quoteLeft.className = 'quote-left';
+    // Atualizar também os preços no rodapé
+    updateFooterPrices(assetsToRender);
+  });
+}
+
+// Função para buscar preços atualizados de uma API
+async function fetchLatestPrices() {
+  try {
+    // Tentar buscar o preço do Bitcoin da API CoinGecko
+    const btcResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
     
-    const nameStrong = document.createElement('strong');
-    nameStrong.textContent = asset.name;
-    
-    let tooltip = '';
-    if (asset.name === "10-Year Treasury Yield") {
-      tooltip = `<span class="index-tooltip">?<span class="tooltip-text">The yield on the U.S. 10-year Treasury note, a key benchmark for interest rates.</span></span>`;
-    } else if (asset.name === "Dollar Index") {
-      tooltip = `<span class="index-tooltip">?<span class="tooltip-text">Measures the value of the U.S. dollar relative to a basket of foreign currencies.</span></span>`;
-    } else if (asset.name === "S&P 500") {
-      tooltip = `<span class="index-tooltip">?<span class="tooltip-text">Stock market index tracking the performance of 500 large companies listed on U.S. exchanges.</span></span>`;
+    if (btcResponse.ok) {
+      const btcData = await btcResponse.json();
+      
+      if (btcData && btcData.bitcoin) {
+        const btcPrice = btcData.bitcoin.usd;
+        const btcChange = btcData.bitcoin.usd_24h_change;
+        
+        // Formatar o preço com separador de milhar no padrão americano
+        const formattedPrice = btcPrice.toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+        
+        // Formatar a variação percentual
+        const formattedChange = btcChange >= 0 ? 
+          `+${btcChange.toFixed(1)}%` : 
+          `${btcChange.toFixed(1)}%`;
+        
+        // Atualizar o array de assets com o novo preço do Bitcoin
+        const updatedAssets = [...assets];
+        updatedAssets[0] = {
+          name: "Bitcoin",
+          price: formattedPrice,
+          change: formattedChange,
+          positive: btcChange >= 0
+        };
+        
+        return updatedAssets;
+      }
     }
     
-    quoteLeft.appendChild(nameStrong);
-    quoteLeft.innerHTML += tooltip;
-    
-    const quoteRight = document.createElement('div');
-    quoteRight.className = 'quote-right';
-    
-    const quotePrice = document.createElement('span');
-    quotePrice.className = 'quote-price';
-    quotePrice.textContent = asset.price;
-    
-    const quoteChange = document.createElement('span');
-    quoteChange.className = `quote-change ${asset.positive ? 'positive' : 'negative'}`;
-    quoteChange.textContent = asset.change;
-    
-    quoteRight.appendChild(quotePrice);
-    quoteRight.appendChild(document.createElement('br'));
-    quoteRight.appendChild(quoteChange);
-    
-    quote.appendChild(quoteLeft);
-    quote.appendChild(quoteRight);
-    quoteWrapper.appendChild(quote);
-    quotesContainer.appendChild(quoteWrapper);
-  });
+    // Se falhar, retornar o array original
+    return assets;
+  } catch (error) {
+    console.error('Erro ao buscar preços atualizados:', error);
+    return assets; // Retornar o array original em caso de erro
+  }
+}
+
+// Função para atualizar os preços no rodapé
+function updateFooterPrices(updatedAssets) {
+  const footerBtcPrice = document.getElementById('footer-btc-price');
+  const footerGoldPrice = document.getElementById('footer-gold-price');
+  const footerSilverPrice = document.getElementById('footer-silver-price');
+  
+  if (footerBtcPrice) footerBtcPrice.textContent = updatedAssets[0].price;
+  if (footerGoldPrice) footerGoldPrice.textContent = updatedAssets[1].price;
+  if (footerSilverPrice) footerSilverPrice.textContent = updatedAssets[2].price;
 }
 
 // Função para atualizar o valor de Bitcoins Mined
@@ -110,6 +180,23 @@ async function updateBitcoinsMined() {
     }
   } catch (error) {
     console.error('Erro ao buscar dados de Bitcoins minerados:', error);
+  }
+}
+
+// Função para calcular dinamicamente os dias restantes para o próximo halving
+function updateDaysToHalving() {
+  // Data estimada do próximo halving (abril de 2028)
+  const nextHalvingDate = new Date('2028-04-15T00:00:00Z');
+  const currentDate = new Date();
+  
+  // Calcular a diferença em dias
+  const differenceInTime = nextHalvingDate.getTime() - currentDate.getTime();
+  const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+  
+  // Atualizar o texto na página
+  const daysRemainingElement = document.querySelector('.days-remaining');
+  if (daysRemainingElement) {
+    daysRemainingElement.textContent = `${differenceInDays.toLocaleString('en-US')} days remaining`;
   }
 }
 
@@ -193,6 +280,7 @@ function setupSourcesToggle() {
 document.addEventListener('DOMContentLoaded', () => {
   renderQuotes();
   updateBitcoinsMined();
+  updateDaysToHalving();
   updateBitcoinMarketCap();
   rotateSatoshiQuotes();
   setupCopyButton();
