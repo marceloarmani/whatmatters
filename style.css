@@ -81,11 +81,10 @@ header.compact-header p {
   padding: 0 1rem;
 }
 
+/* Removido o grid layout para garantir que todas as seções fiquem uma abaixo da outra */
 .content-layout {
   margin-top: 0;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem; /* Consistent spacing between major content blocks */
+  display: block; /* Alterado de grid para block para garantir layout vertical */
 }
 
 /* Standard section styling - uniform spacing */
@@ -114,7 +113,7 @@ header.compact-header p {
   margin-bottom: 1.5rem; /* Consistent spacing */
 }
 
-/* Vertical buttons for the 5 indices with reduced width */
+/* Vertical buttons for the indices with reduced width */
 #quotes.vertical-quotes {
   display: flex;
   flex-direction: column;
@@ -809,21 +808,9 @@ footer {
 }
 
 /* Responsiveness */
-@media (min-width: 992px) {
-  .vertical-sections {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-  
-  .content-layout {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-}
-
 @media (max-width: 991px) {
-  .content-layout {
-    grid-template-columns: 1fr 1fr;
+  .sentiment-indicators {
+    grid-template-columns: repeat(2, 1fr);
   }
   
   .news-grid {
@@ -832,12 +819,8 @@ footer {
 }
 
 @media (max-width: 767px) {
-  .content-layout {
-    grid-template-columns: 1fr;
-  }
-  
   .sentiment-indicators {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
   
   .events-grid {
@@ -856,7 +839,6 @@ footer {
 }
 
 @media (max-width: 575px) {
-  .sentiment-indicators,
   .news-grid,
   .events-grid {
     grid-template-columns: 1fr;
