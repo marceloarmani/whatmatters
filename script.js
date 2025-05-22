@@ -3,7 +3,8 @@ const assets = [
   { name: "Gold", symbol: "XAU", price: "$3,323.10", change: "+1.2%", color: "#d4af37", api: "metals" },
   { name: "Silver", symbol: "XAG", price: "$33.69", change: "+1.5%", color: "#c0c0c0", api: "metals" },
   { name: "10-Year Treasury Yield <span class='index-tooltip'>ⓘ<span class='tooltip-text'>Reveals the cost of government debt financing and signals market expectations for inflation. Rising yields expose the unsustainable nature of endless deficit spending and currency debasement.</span></span>", symbol: "10Y", price: "4.60%", change: "+0.12%", color: "#6a5acd", api: "treasury" },
-  { name: "Dollar Index <span class='index-tooltip'>ⓘ<span class='tooltip-text'>Measures the strength of the US dollar against a basket of major foreign currencies. Declining values reflect the erosion of purchasing power through monetary expansion.</span></span>", symbol: "DXY", price: "99.55", change: "-0.6%", color: "#20b2aa", api: "forex" }
+  { name: "Dollar Index <span class='index-tooltip'>ⓘ<span class='tooltip-text'>Measures the strength of the US dollar against a basket of major foreign currencies. Declining values reflect the erosion of purchasing power through monetary expansion.</span></span>", symbol: "DXY", price: "99.55", change: "-0.6%", color: "#20b2aa", api: "forex" },
+  { name: "S&P 500 <span class='index-tooltip'>ⓘ<span class='tooltip-text'>Benchmark index of 500 large US companies, often used as a barometer for the overall US stock market performance.</span></span>", symbol: "SPX", price: "5,218.24", change: "+0.3%", color: "#3d85c6", api: "stocks" }
 ];
 
 // Market sentiment data
@@ -12,7 +13,7 @@ const marketSentimentData = [
   { title: "Volatility (30D)", value: "3.8% - Low", percentage: 38, change: "-0.5% (24h)" },
   { title: "Transaction Volume (24h)", value: "$78.5B - High", percentage: 68, change: "+12% (24h)" },
   { title: "Fear & Greed Index", value: "65 - Greed", percentage: 65, change: "+5% (24h)" },
-  { title: "Bitcoin Market Cap", value: "$1.3T - All-time High", percentage: 75, change: "+2.3% (24h)" },
+  { title: "Bitcoin Market Cap", value: "$2.3T - All-time High", percentage: 75, change: "+2.3% (24h)" },
   { title: "Network Hash Rate", value: "512 EH/s - Record High", percentage: 72, change: "+5.2% (7d)" }
 ];
 
@@ -24,7 +25,7 @@ const marketCapData = [
   { name: "Money", value: 102.9, color: "#FF9800", percentage: 14.9 },
   { name: "Gold", value: 12.5, color: "#d4af37", percentage: 1.8 },
   { name: "Art & Collectibles", value: 7.8, color: "#E91E63", percentage: 1.1 },
-  { name: "Bitcoin", value: 1.3, color: "#f7931a", percentage: 0.2 }
+  { name: "Bitcoin", value: 2.3, color: "#f7931a", percentage: 0.3 }
 ];
 
 // Scarcity metrics data
@@ -106,13 +107,14 @@ const satoshiQuotes = [
   "Bitcoin might make a good currency for purchases on the Internet."
 ];
 
-// News data
+// News data with timestamps
 const newsData = [
   {
     title: "Bitcoin Surpasses $100,000 for First Time in History",
     description: "The world's largest cryptocurrency has reached a new all-time high, breaking the psychological barrier of $100,000.",
     source: "Bitcoin Magazine",
     date: "May 21, 2025",
+    time: "14:32 UTC",
     url: "https://bitcoinmagazine.com/"
   },
   {
@@ -120,6 +122,7 @@ const newsData = [
     description: "Major central banks are fast-tracking CBDC projects in response to growing cryptocurrency adoption.",
     source: "Blockworks",
     date: "May 20, 2025",
+    time: "09:15 UTC",
     url: "https://blockworks.co/"
   },
   {
@@ -127,6 +130,7 @@ const newsData = [
     description: "The precious metal continues its upward trajectory as investors seek protection from rising inflation.",
     source: "The Bitcoin Times",
     date: "May 19, 2025",
+    time: "16:45 UTC",
     url: "https://bitcointimes.news/"
   },
   {
@@ -134,6 +138,7 @@ const newsData = [
     description: "Network security continues to strengthen as mining difficulty adjusts upward following hashrate increases.",
     source: "Bitcoin Magazine",
     date: "May 18, 2025",
+    time: "11:20 UTC",
     url: "https://bitcoinmagazine.com/"
   },
   {
@@ -141,6 +146,7 @@ const newsData = [
     description: "Major pension funds are now allocating portions of their portfolios to Bitcoin and other digital assets.",
     source: "Satoshi's Journal",
     date: "May 17, 2025",
+    time: "13:05 UTC",
     url: "https://satoshisjournal.com/"
   },
   {
@@ -148,6 +154,7 @@ const newsData = [
     description: "The country's Bitcoin reserves have appreciated significantly since adoption as legal tender in 2021.",
     source: "Bitcoinist",
     date: "May 16, 2025",
+    time: "08:30 UTC",
     url: "https://bitcoinist.com/"
   }
 ];
@@ -156,7 +163,7 @@ const newsData = [
 async function fetchRealTimePrices() {
   try {
     // Bitcoin price from CoinGecko
-    const btcResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+    const btcResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_market_cap=true');
     const btcData = await btcResponse.json();
     if (btcData && btcData.bitcoin && btcData.bitcoin.usd) {
       const btcPrice = btcData.bitcoin.usd;
@@ -169,6 +176,33 @@ async function fetchRealTimePrices() {
       // Update footer price
       const footerBtcPrice = document.getElementById('footer-btc-price');
       if (footerBtcPrice) footerBtcPrice.textContent = assets[0].price;
+      
+      // Update Bitcoin Market Cap in Market Sentiment
+      if (btcData.bitcoin.usd_market_cap) {
+        const marketCapInTrillions = (btcData.bitcoin.usd_market_cap / 1000000000000).toFixed(1);
+        const marketCapFormatted = `$${marketCapInTrillions}T`;
+        
+        // Update in Market Sentiment section
+        const btcMarketCapIndex = marketSentimentData.findIndex(item => item.title === "Bitcoin Market Cap");
+        if (btcMarketCapIndex !== -1) {
+          marketSentimentData[btcMarketCapIndex].value = `${marketCapFormatted} - All-time High`;
+        }
+        
+        // Update in Global Market Capitalization section
+        const btcGlobalCapIndex = marketCapData.findIndex(item => item.name === "Bitcoin");
+        if (btcGlobalCapIndex !== -1) {
+          marketCapData[btcGlobalCapIndex].value = parseFloat(marketCapInTrillions);
+          // Recalculate percentages
+          const totalMarketCap = marketCapData.reduce((sum, item) => sum + item.value, 0);
+          marketCapData.forEach(item => {
+            item.percentage = ((item.value / totalMarketCap) * 100).toFixed(1);
+          });
+        }
+        
+        // Re-render market sentiment and global market cap sections
+        renderMarketSentiment();
+        renderGlobalMarketCap();
+      }
     }
     
     // Gold price (simplified for demo)
@@ -203,6 +237,12 @@ async function fetchRealTimePrices() {
     const dollarChange = (Math.random() * 1.2 - 0.8).toFixed(1);
     assets[4].change = `${dollarChange > 0 ? '+' : ''}${dollarChange}%`;
     
+    // S&P 500 (simplified for demo)
+    const spPrice = (5200 + Math.random() * 50).toFixed(2);
+    assets[5].price = `${Number(spPrice).toLocaleString('en-US')}`;
+    const spChange = (Math.random() * 1.5 - 0.5).toFixed(1);
+    assets[5].change = `${spChange > 0 ? '+' : ''}${spChange}%`;
+    
     // Re-render the indicators with updated data
     renderAssetIndicators();
     
@@ -213,16 +253,67 @@ async function fetchRealTimePrices() {
   }
 }
 
+// Fetch Bitcoin supply data
+async function fetchBitcoinSupply() {
+  try {
+    // Try to get Bitcoin supply from Blockchain.info API
+    const response = await fetch('https://blockchain.info/q/totalbc');
+    if (response.ok) {
+      const totalSupply = await response.text();
+      if (totalSupply && !isNaN(totalSupply)) {
+        // Convert satoshis to BTC and format
+        const supplyInBTC = (parseInt(totalSupply) / 100000000).toFixed(0);
+        const formattedSupply = parseInt(supplyInBTC).toLocaleString('en-US');
+        
+        // Calculate percentage mined and remaining
+        const totalPossible = 21000000;
+        const percentageMined = ((supplyInBTC / totalPossible) * 100).toFixed(2);
+        const remaining = (totalPossible - supplyInBTC).toLocaleString('en-US');
+        
+        // Update scarcity metrics data
+        const bitcoinMinedIndex = scarcityMetrics.findIndex(metric => metric.title === "Bitcoins Mined");
+        if (bitcoinMinedIndex !== -1) {
+          scarcityMetrics[bitcoinMinedIndex].value = formattedSupply;
+          scarcityMetrics[bitcoinMinedIndex].percentage = parseFloat(percentageMined);
+          scarcityMetrics[bitcoinMinedIndex].remaining = remaining;
+          
+          // Update DOM elements
+          const valueElement = document.querySelector('.scarcity-metric:nth-child(3) .scarcity-metric-value');
+          const progressTextElement = document.querySelector('.scarcity-metric:nth-child(3) .supply-progress-text');
+          const progressFillElement = document.querySelector('.scarcity-metric:nth-child(3) .supply-progress-fill');
+          
+          if (valueElement) valueElement.textContent = formattedSupply;
+          if (progressTextElement) progressTextElement.textContent = `${percentageMined}% (${remaining} remaining)`;
+          if (progressFillElement) {
+            progressFillElement.style.width = `${percentageMined}%`;
+          }
+        }
+      }
+    } else {
+      throw new Error('Failed to fetch Bitcoin supply');
+    }
+  } catch (error) {
+    console.error('Error fetching Bitcoin supply:', error);
+    // Fallback to static data if API fails
+  }
+}
+
 // Initialize the page when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
   // Fetch real-time prices on page load
   fetchRealTimePrices();
+  
+  // Fetch Bitcoin supply data
+  fetchBitcoinSupply();
   
   // Render main asset indicators
   renderAssetIndicators();
   
   // Render market sentiment indicators
   renderMarketSentiment();
+  
+  // Render global market cap
+  renderGlobalMarketCap();
   
   // Render scarcity metrics
   renderScarcityMetrics();
@@ -286,6 +377,10 @@ function updateAssetPrices() {
   const dollarIndex = (99 + Math.random()).toFixed(2);
   const dollarChange = (Math.random() * 1.2 - 0.8).toFixed(1); // Random change between -0.8% and +0.4%
   
+  // S&P 500: Random value between 5200 and 5250
+  const spPrice = (5200 + Math.random() * 50).toFixed(2);
+  const spChange = (Math.random() * 1.5 - 0.5).toFixed(1); // Random change between -0.5% and +1.0%
+  
   // Update assets array with new prices
   assets[0].price = `$${btcPrice.toLocaleString('en-US')}`;
   assets[0].change = `${btcChange > 0 ? '+' : ''}${btcChange}%`;
@@ -301,6 +396,9 @@ function updateAssetPrices() {
   
   assets[4].price = `${dollarIndex}`;
   assets[4].change = `${dollarChange > 0 ? '+' : ''}${dollarChange}%`;
+  
+  assets[5].price = `${Number(spPrice).toLocaleString('en-US')}`;
+  assets[5].change = `${spChange > 0 ? '+' : ''}${spChange}%`;
   
   // Update footer prices
   const footerBtcPrice = document.getElementById('footer-btc-price');
@@ -371,6 +469,40 @@ function renderMarketSentiment() {
   });
 }
 
+// Render global market capitalization
+function renderGlobalMarketCap() {
+  const marketCapContainer = document.getElementById('market-cap-treemap');
+  const totalMarketCapElement = document.getElementById('total-market-cap');
+  
+  if (!marketCapContainer || !totalMarketCapElement) return;
+  
+  // Calculate total market cap
+  const totalMarketCap = marketCapData.reduce((sum, item) => sum + item.value, 0);
+  totalMarketCapElement.textContent = `$${totalMarketCap.toLocaleString('en-US')}T`;
+  
+  // Clear existing content
+  marketCapContainer.innerHTML = '';
+  
+  // Render each market cap item
+  marketCapData.forEach(item => {
+    const marketCapElement = document.createElement('div');
+    marketCapElement.className = 'market-cap-item';
+    
+    marketCapElement.innerHTML = `
+      <div class="market-cap-item-header">
+        <div class="market-cap-item-name">${item.name}</div>
+        <div class="market-cap-item-value">$${item.value.toLocaleString('en-US')}T</div>
+      </div>
+      <div class="market-cap-item-bar">
+        <div class="market-cap-item-fill" style="width: ${item.percentage}%; background-color: ${item.color};"></div>
+        <div class="market-cap-item-percentage">${item.percentage}%</div>
+      </div>
+    `;
+    
+    marketCapContainer.appendChild(marketCapElement);
+  });
+}
+
 // Render scarcity metrics
 function renderScarcityMetrics() {
   // Scarcity metrics are already in the HTML
@@ -383,7 +515,30 @@ function renderUpcomingEvents() {
 
 // Render news
 function renderNews() {
-  // News are already in the HTML with clickable links
+  const newsContainer = document.querySelector('.news-grid');
+  if (!newsContainer) return;
+  
+  // Clear existing content
+  newsContainer.innerHTML = '';
+  
+  // Render each news item
+  newsData.forEach(news => {
+    const newsElement = document.createElement('a');
+    newsElement.href = news.url;
+    newsElement.target = "_blank";
+    newsElement.className = 'news-item';
+    
+    newsElement.innerHTML = `
+      <div class="news-content">
+        <div class="news-source">${news.source}</div>
+        <div class="news-title">${news.title}</div>
+        <div class="news-description">${news.description}</div>
+        <div class="news-date">${news.date} ${news.time}</div>
+      </div>
+    `;
+    
+    newsContainer.appendChild(newsElement);
+  });
 }
 
 // Render Satoshi quote
