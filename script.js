@@ -56,8 +56,8 @@ const marketSentimentData = [
   { title: "Volatility (30D)", value: "3.8% - Low", percentage: 38, change: "-0.5% (24h)" },
   { title: "Transaction Volume (24h)", value: "$78.5B - High", percentage: 68, change: "+12% (24h)" },
   { title: "Fear & Greed Index", value: "65 - Greed", percentage: 65, change: "+5% (24h)" },
-  { title: "Total Market Cap", value: "$2.85T - All-time High", percentage: 75, change: "+2.3% (24h)" },
-  { title: "Open Interest", value: "$32.7B - Moderate", percentage: 58, change: "+3.1% (24h)" }
+  { title: "Total Market Cap", value: "$690.7T - Global Assets", percentage: 75, change: "+2.3% (24h)" },
+  { title: "MVRV Ratio", value: "3.2 - Overvalued", percentage: 72, change: "+0.3 (24h)" }
 ];
 
 // Global market capitalization data
@@ -155,21 +155,21 @@ const newsData = [
   {
     title: "Bitcoin Surpasses $100,000 for First Time in History",
     description: "The world's largest cryptocurrency has reached a new all-time high, breaking the psychological barrier of $100,000.",
-    source: "Cointelegraph",
+    source: "Bitcoin Magazine",
     date: "May 21, 2025",
     url: "#"
   },
   {
     title: "Central Banks Accelerate Digital Currency Development",
     description: "Major central banks are fast-tracking CBDC projects in response to growing cryptocurrency adoption.",
-    source: "Financial Times",
+    source: "Blockworks",
     date: "May 20, 2025",
     url: "#"
   },
   {
     title: "Gold Reaches Record High Amid Inflation Concerns",
     description: "The precious metal continues its upward trajectory as investors seek protection from rising inflation.",
-    source: "Bloomberg",
+    source: "The Bitcoin Times",
     date: "May 19, 2025",
     url: "#"
   },
@@ -183,14 +183,14 @@ const newsData = [
   {
     title: "Institutional Adoption Accelerates as Pension Funds Enter Crypto",
     description: "Major pension funds are now allocating portions of their portfolios to Bitcoin and other digital assets.",
-    source: "Reuters",
+    source: "Satoshi's Journal",
     date: "May 17, 2025",
     url: "#"
   },
   {
     title: "El Salvador's Bitcoin Strategy Shows Long-term Success",
     description: "The country's Bitcoin reserves have appreciated significantly since adoption as legal tender in 2021.",
-    source: "Cointelegraph",
+    source: "Bitcoinist",
     date: "May 16, 2025",
     url: "#"
   }
@@ -199,10 +199,71 @@ const newsData = [
 // Global variable to store chart instances
 let chartInstances = {};
 
+// Fetch real-time price data from APIs
+async function fetchRealTimePrices() {
+  try {
+    // Bitcoin price from CoinGecko
+    const btcResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+    const btcData = await btcResponse.json();
+    if (btcData && btcData.bitcoin && btcData.bitcoin.usd) {
+      const btcPrice = btcData.bitcoin.usd;
+      assets[0].price = `$${btcPrice.toLocaleString()}`;
+      
+      // Calculate change (simplified for demo)
+      const randomChange = (Math.random() * 5 - 2.5).toFixed(1);
+      assets[0].change = `${randomChange > 0 ? '+' : ''}${randomChange}%`;
+      
+      // Update footer price
+      const footerBtcPrice = document.getElementById('footer-btc-price');
+      if (footerBtcPrice) footerBtcPrice.textContent = assets[0].price;
+    }
+    
+    // Gold price (simplified for demo)
+    const goldPrice = (3300 + Math.random() * 50).toFixed(2);
+    assets[1].price = `$${goldPrice}`;
+    const goldChange = (Math.random() * 2 - 0.5).toFixed(1);
+    assets[1].change = `${goldChange > 0 ? '+' : ''}${goldChange}%`;
+    
+    // Update footer price
+    const footerGoldPrice = document.getElementById('footer-gold-price');
+    if (footerGoldPrice) footerGoldPrice.textContent = assets[1].price;
+    
+    // Silver price (simplified for demo)
+    const silverPrice = (33 + Math.random()).toFixed(2);
+    assets[2].price = `$${silverPrice}`;
+    const silverChange = (Math.random() * 3 - 1).toFixed(1);
+    assets[2].change = `${silverChange > 0 ? '+' : ''}${silverChange}%`;
+    
+    // Update footer price
+    const footerSilverPrice = document.getElementById('footer-silver-price');
+    if (footerSilverPrice) footerSilverPrice.textContent = assets[2].price;
+    
+    // 10-Year Treasury Yield (simplified for demo)
+    const treasuryYield = (4.5 + Math.random() * 0.2).toFixed(2);
+    assets[3].price = `${treasuryYield}%`;
+    const treasuryChange = ((Math.random() * 0.2 - 0.1) * 100).toFixed(2);
+    assets[3].change = `${treasuryChange > 0 ? '+' : ''}${treasuryChange}%`;
+    
+    // Dollar Index (simplified for demo)
+    const dollarIndex = (99 + Math.random()).toFixed(2);
+    assets[4].price = `${dollarIndex}`;
+    const dollarChange = (Math.random() * 1.2 - 0.8).toFixed(1);
+    assets[4].change = `${dollarChange > 0 ? '+' : ''}${dollarChange}%`;
+    
+    // Re-render the indicators with updated data
+    renderAssetIndicators();
+    
+  } catch (error) {
+    console.error('Error fetching real-time prices:', error);
+    // Fallback to random price generation if API fails
+    updateAssetPrices();
+  }
+}
+
 // Initialize the page when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-  // Generate random prices for assets
-  updateAssetPrices();
+  // Fetch real-time prices on page load
+  fetchRealTimePrices();
   
   // Render main asset indicators
   renderAssetIndicators();
@@ -250,7 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
   setInterval(rotateSatoshiQuote, 30000);
 });
 
-// Generate random prices for assets
+// Generate random prices for assets (fallback if API fails)
 function updateAssetPrices() {
   // Bitcoin: Random price between $100,000 and $110,000
   const btcPrice = Math.floor(100000 + Math.random() * 10000);
@@ -371,6 +432,13 @@ function renderAssetIndicators() {
       chartArea.classList.remove('visible');
       quoteElement.classList.remove('active');
     });
+    
+    // Automatically click the first asset to show its chart
+    if (index === '0') {
+      setTimeout(() => {
+        quoteElement.click();
+      }, 500);
+    }
   });
 }
 
