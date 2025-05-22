@@ -6,58 +6,14 @@ const assets = [
   { name: "Dollar Index <span class='index-tooltip'>ⓘ<span class='tooltip-text'>Measures the strength of the US dollar against a basket of major foreign currencies. Declining values reflect the erosion of purchasing power through monetary expansion.</span></span>", symbol: "DXY", price: "99.55", change: "-0.6%", color: "#20b2aa", api: "forex" }
 ];
 
-// Historical data for charts (5 years)
-const historicalData = {
-  "Bitcoin": [
-    { year: 2020, data: [7200, 8300, 9450, 8700, 9800, 9200, 11300, 11800, 10500, 13800, 17500, 29000] },
-    { year: 2021, data: [33000, 45000, 58000, 56000, 37000, 35000, 42000, 47000, 43000, 61000, 58000, 46000] },
-    { year: 2022, data: [38000, 44000, 40000, 39000, 31000, 20000, 23000, 24000, 19000, 20500, 17000, 16500] },
-    { year: 2023, data: [16800, 23500, 28000, 30000, 27000, 30500, 29800, 28000, 26500, 34000, 37000, 42000] },
-    { year: 2024, data: [45000, 52000, 61000, 64000, 59000, 62000, 65000, 67000, 66000, 68000, 67500, 68900] },
-    { year: 2025, data: [66500, 78200, 89500, 95100, 107016] }
-  ],
-  "Gold": [
-    { year: 2020, data: [1520, 1585, 1620, 1680, 1730, 1780, 1960, 1920, 1880, 1900, 1860, 1895] },
-    { year: 2021, data: [1850, 1810, 1730, 1770, 1900, 1780, 1810, 1815, 1760, 1780, 1820, 1805] },
-    { year: 2022, data: [1800, 1870, 1920, 1880, 1840, 1810, 1760, 1770, 1670, 1650, 1750, 1820] },
-    { year: 2023, data: [1910, 1830, 1970, 1990, 1960, 1920, 1970, 2010, 1920, 1980, 2040, 2060] },
-    { year: 2024, data: [2050, 2120, 2180, 2220, 2260, 2290, 2310, 2330, 2400, 2480, 2550, 2625] },
-    { year: 2025, data: [2680, 2810, 2940, 3180, 3323] }
-  ],
-  "Silver": [
-    { year: 2020, data: [17.8, 18.5, 14.6, 15.7, 17.9, 18.2, 24.5, 27.4, 24.2, 24.1, 23.8, 26.3] },
-    { year: 2021, data: [27.0, 26.7, 25.0, 26.1, 27.4, 26.0, 25.5, 24.0, 22.5, 23.9, 23.1, 22.5] },
-    { year: 2022, data: [22.4, 24.3, 24.9, 23.0, 21.6, 20.3, 19.2, 19.5, 18.8, 19.5, 21.5, 23.9] },
-    { year: 2023, data: [24.1, 21.7, 24.2, 25.0, 23.5, 22.8, 24.5, 24.8, 23.0, 22.7, 24.5, 24.3] },
-    { year: 2024, data: [23.8, 25.6, 26.9, 27.5, 28.2, 28.9, 29.3, 29.8, 30.2, 30.5, 31.0, 31.8] },
-    { year: 2025, data: [30.9, 31.2, 32.5, 33.1, 33.69] }
-  ],
-  "10-Year Treasury Yield": [
-    { year: 2020, data: [1.88, 1.50, 0.70, 0.66, 0.65, 0.68, 0.55, 0.72, 0.68, 0.85, 0.84, 0.93] },
-    { year: 2021, data: [1.07, 1.44, 1.74, 1.65, 1.58, 1.45, 1.24, 1.30, 1.52, 1.55, 1.44, 1.51] },
-    { year: 2022, data: [1.78, 1.83, 2.32, 2.89, 2.84, 3.01, 2.65, 3.19, 3.83, 4.05, 3.68, 3.88] },
-    { year: 2023, data: [3.51, 3.92, 3.47, 3.45, 3.64, 3.84, 3.96, 4.10, 4.57, 4.89, 4.47, 3.88] },
-    { year: 2024, data: [4.05, 4.25, 4.35, 4.50, 4.60, 4.55, 4.48, 4.42, 4.38, 4.35, 4.30, 4.28] },
-    { year: 2025, data: [4.30, 4.32, 4.35, 4.48, 4.60] }
-  ],
-  "Dollar Index": [
-    { year: 2020, data: [97.3, 98.1, 99.0, 99.5, 98.3, 97.4, 93.3, 92.1, 93.9, 94.0, 92.3, 89.9] },
-    { year: 2021, data: [90.5, 90.9, 93.2, 91.3, 90.0, 92.4, 92.1, 92.5, 94.2, 94.1, 95.9, 95.7] },
-    { year: 2022, data: [96.5, 96.7, 98.3, 102.9, 101.8, 104.7, 106.1, 108.7, 112.1, 111.5, 106.7, 103.5] },
-    { year: 2023, data: [102.1, 104.4, 102.5, 101.9, 104.2, 102.6, 101.9, 104.1, 106.1, 106.6, 103.4, 101.9] },
-    { year: 2024, data: [103.4, 104.1, 104.5, 105.2, 104.8, 104.3, 103.9, 103.7, 103.5, 103.3, 103.2, 103.1] },
-    { year: 2025, data: [103.6, 103.5, 102.3, 101.8, 99.55] }
-  ]
-};
-
 // Market sentiment data
 const marketSentimentData = [
   { title: "BTC Dominance", value: "52% - Moderate", percentage: 52, change: "+0.8% (24h)" },
   { title: "Volatility (30D)", value: "3.8% - Low", percentage: 38, change: "-0.5% (24h)" },
   { title: "Transaction Volume (24h)", value: "$78.5B - High", percentage: 68, change: "+12% (24h)" },
   { title: "Fear & Greed Index", value: "65 - Greed", percentage: 65, change: "+5% (24h)" },
-  { title: "Total Market Cap", value: "$690.7T - Global Assets", percentage: 75, change: "+2.3% (24h)" },
-  { title: "MVRV Ratio", value: "3.2 - Overvalued", percentage: 72, change: "+0.3 (24h)" }
+  { title: "Bitcoin Market Cap", value: "$2.0T - All-time High", percentage: 75, change: "+2.3% (24h)" },
+  { title: "Network Hash Rate", value: "512 EH/s - Record High", percentage: 72, change: "+5.2% (7d)" }
 ];
 
 // Global market capitalization data
@@ -195,9 +151,6 @@ const newsData = [
     url: "#"
   }
 ];
-
-// Global variable to store chart instances
-let chartInstances = {};
 
 // Fetch real-time price data from APIs
 async function fetchRealTimePrices() {
@@ -359,7 +312,7 @@ function updateAssetPrices() {
   if (footerSilverPrice) footerSilverPrice.textContent = assets[2].price;
 }
 
-// Render main asset indicators
+// Render main asset indicators (simplified without charts)
 function renderAssetIndicators() {
   const quotesContainer = document.getElementById('quotes');
   if (!quotesContainer) return;
@@ -369,7 +322,6 @@ function renderAssetIndicators() {
   assets.forEach((asset, index) => {
     const assetElement = document.createElement('div');
     assetElement.className = 'quote-wrapper';
-    assetElement.setAttribute('data-index', index);
     
     const changeClass = asset.change.startsWith('+') ? 'positive' : asset.change.startsWith('-') ? 'negative' : '';
     
@@ -383,208 +335,9 @@ function renderAssetIndicators() {
           <span class="quote-change ${changeClass}">${asset.change}</span>
         </div>
       </div>
-      <div class="asset-chart-area" id="chart-area-${asset.symbol}">
-        <div class="chart-container">
-          <button class="chart-close">×</button>
-          <canvas id="chart-${asset.symbol}"></canvas>
-        </div>
-      </div>
     `;
     
     quotesContainer.appendChild(assetElement);
-  });
-  
-  // Add click events after all elements are added
-  document.querySelectorAll('.quote-wrapper').forEach(wrapper => {
-    const index = wrapper.getAttribute('data-index');
-    const asset = assets[index];
-    const quoteElement = wrapper.querySelector('.quote');
-    const chartArea = wrapper.querySelector('.asset-chart-area');
-    const closeButton = wrapper.querySelector('.chart-close');
-    const canvas = wrapper.querySelector('canvas');
-    
-    // Add click event to toggle chart visibility
-    quoteElement.addEventListener('click', function() {
-      if (chartArea.classList.contains('visible')) {
-        chartArea.classList.remove('visible');
-        quoteElement.classList.remove('active');
-      } else {
-        // Hide all other charts first
-        document.querySelectorAll('.asset-chart-area').forEach(area => {
-          area.classList.remove('visible');
-        });
-        document.querySelectorAll('.quote').forEach(q => {
-          q.classList.remove('active');
-        });
-        
-        // Show this chart
-        chartArea.classList.add('visible');
-        quoteElement.classList.add('active');
-        
-        // Create or update chart
-        createAssetChart(asset, canvas);
-      }
-    });
-    
-    // Add close button functionality
-    closeButton.addEventListener('click', function(e) {
-      e.stopPropagation();
-      chartArea.classList.remove('visible');
-      quoteElement.classList.remove('active');
-    });
-    
-    // Automatically click the first asset to show its chart
-    if (index === '0') {
-      setTimeout(() => {
-        quoteElement.click();
-      }, 500);
-    }
-  });
-}
-
-// Create chart for an asset
-function createAssetChart(asset, canvas) {
-  const assetName = asset.name.split(' <')[0]; // Remove tooltip part if present
-  const data = historicalData[assetName];
-  
-  if (!data) {
-    console.error(`No historical data found for ${assetName}`);
-    return;
-  }
-  
-  // Prepare labels and datasets
-  const labels = [];
-  const values = [];
-  
-  // Flatten the data structure for Chart.js
-  data.forEach(yearData => {
-    const year = yearData.year;
-    yearData.data.forEach((value, monthIndex) => {
-      labels.push(`${year}-${monthIndex + 1}`);
-      values.push(value);
-    });
-  });
-  
-  // Destroy existing chart if it exists
-  if (chartInstances[asset.symbol]) {
-    chartInstances[asset.symbol].destroy();
-  }
-  
-  // Get the canvas context
-  const ctx = canvas.getContext('2d');
-  
-  // Create new chart
-  chartInstances[asset.symbol] = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: assetName,
-        data: values,
-        borderColor: asset.color,
-        backgroundColor: `${asset.color}20`,
-        borderWidth: 2,
-        fill: true,
-        tension: 0.1
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
-          labels: {
-            color: '#333',
-            font: {
-              size: 14,
-              weight: 'bold'
-            }
-          }
-        },
-        tooltip: {
-          mode: 'index',
-          intersect: false,
-          callbacks: {
-            title: function(tooltipItems) {
-              const label = tooltipItems[0].label.split('-');
-              const year = label[0];
-              const month = new Date(0, parseInt(label[1]) - 1).toLocaleString('default', { month: 'long' });
-              return `${month} ${year}`;
-            },
-            label: function(context) {
-              let label = context.dataset.label || '';
-              if (label) {
-                label += ': ';
-              }
-              if (context.parsed.y !== null) {
-                if (assetName === "Bitcoin" || assetName === "Gold" || assetName === "Silver") {
-                  label += '$' + context.parsed.y.toLocaleString();
-                } else if (assetName === "10-Year Treasury Yield") {
-                  label += context.parsed.y.toFixed(2) + '%';
-                } else {
-                  label += context.parsed.y.toFixed(2);
-                }
-              }
-              return label;
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          grid: {
-            display: true,
-            color: 'rgba(0, 0, 0, 0.05)'
-          },
-          ticks: {
-            callback: function(value, index, values) {
-              const label = this.getLabelForValue(value).split('-');
-              // Only show year labels for January (month 1)
-              if (label[1] === '1') {
-                return label[0];
-              }
-              return '';
-            },
-            font: {
-              size: 12,
-              weight: 'bold'
-            },
-            color: '#666'
-          }
-        },
-        y: {
-          grid: {
-            display: true,
-            color: 'rgba(0, 0, 0, 0.05)'
-          },
-          ticks: {
-            font: {
-              size: 12
-            },
-            color: '#666',
-            callback: function(value, index, values) {
-              if (assetName === "Bitcoin" || assetName === "Gold" || assetName === "Silver") {
-                return '$' + value.toLocaleString();
-              } else if (assetName === "10-Year Treasury Yield") {
-                return value.toFixed(2) + '%';
-              } else {
-                return value.toFixed(2);
-              }
-            }
-          }
-        }
-      },
-      interaction: {
-        mode: 'nearest',
-        axis: 'x',
-        intersect: false
-      },
-      animation: {
-        duration: 1000
-      }
-    }
   });
 }
 
