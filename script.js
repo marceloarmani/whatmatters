@@ -12,7 +12,7 @@ const marketSentimentData = [
   { title: "Volatility (30D)", value: "3.8% - Low", percentage: 38, change: "-0.5% (24h)" },
   { title: "Transaction Volume (24h)", value: "$78.5B - High", percentage: 68, change: "+12% (24h)" },
   { title: "Fear & Greed Index", value: "65 - Greed", percentage: 65, change: "+5% (24h)" },
-  { title: "Bitcoin Market Cap", value: "$2.0T - All-time High", percentage: 75, change: "+2.3% (24h)" },
+  { title: "Bitcoin Market Cap", value: "$1.3T - All-time High", percentage: 75, change: "+2.3% (24h)" },
   { title: "Network Hash Rate", value: "512 EH/s - Record High", percentage: 72, change: "+5.2% (7d)" }
 ];
 
@@ -24,7 +24,7 @@ const marketCapData = [
   { name: "Money", value: 102.9, color: "#FF9800", percentage: 14.9 },
   { name: "Gold", value: 12.5, color: "#d4af37", percentage: 1.8 },
   { name: "Art & Collectibles", value: 7.8, color: "#E91E63", percentage: 1.1 },
-  { name: "Bitcoin", value: 2.0, color: "#f7931a", percentage: 0.3 }
+  { name: "Bitcoin", value: 1.3, color: "#f7931a", percentage: 0.2 }
 ];
 
 // Scarcity metrics data
@@ -160,7 +160,7 @@ async function fetchRealTimePrices() {
     const btcData = await btcResponse.json();
     if (btcData && btcData.bitcoin && btcData.bitcoin.usd) {
       const btcPrice = btcData.bitcoin.usd;
-      assets[0].price = `$${btcPrice.toLocaleString()}`;
+      assets[0].price = `$${btcPrice.toLocaleString('en-US')}`;
       
       // Calculate change (simplified for demo)
       const randomChange = (Math.random() * 5 - 2.5).toFixed(1);
@@ -173,7 +173,7 @@ async function fetchRealTimePrices() {
     
     // Gold price (simplified for demo)
     const goldPrice = (3300 + Math.random() * 50).toFixed(2);
-    assets[1].price = `$${Number(goldPrice).toLocaleString()}`;
+    assets[1].price = `$${Number(goldPrice).toLocaleString('en-US')}`;
     const goldChange = (Math.random() * 2 - 0.5).toFixed(1);
     assets[1].change = `${goldChange > 0 ? '+' : ''}${goldChange}%`;
     
@@ -183,7 +183,7 @@ async function fetchRealTimePrices() {
     
     // Silver price (simplified for demo)
     const silverPrice = (33 + Math.random()).toFixed(2);
-    assets[2].price = `$${silverPrice}`;
+    assets[2].price = `$${Number(silverPrice).toLocaleString('en-US')}`;
     const silverChange = (Math.random() * 3 - 1).toFixed(1);
     assets[2].change = `${silverChange > 0 ? '+' : ''}${silverChange}%`;
     
@@ -287,13 +287,13 @@ function updateAssetPrices() {
   const dollarChange = (Math.random() * 1.2 - 0.8).toFixed(1); // Random change between -0.8% and +0.4%
   
   // Update assets array with new prices
-  assets[0].price = `$${btcPrice.toLocaleString()}`;
+  assets[0].price = `$${btcPrice.toLocaleString('en-US')}`;
   assets[0].change = `${btcChange > 0 ? '+' : ''}${btcChange}%`;
   
-  assets[1].price = `$${Number(goldPrice).toLocaleString()}`;
+  assets[1].price = `$${Number(goldPrice).toLocaleString('en-US')}`;
   assets[1].change = `${goldChange > 0 ? '+' : ''}${goldChange}%`;
   
-  assets[2].price = `$${silverPrice}`;
+  assets[2].price = `$${Number(silverPrice).toLocaleString('en-US')}`;
   assets[2].change = `${silverChange > 0 ? '+' : ''}${silverChange}%`;
   
   assets[3].price = `${treasuryYield}%`;
