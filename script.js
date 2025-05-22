@@ -43,11 +43,11 @@ function renderQuotes() {
       
       let tooltip = '';
       if (asset.name === "10-Year Treasury Yield") {
-        tooltip = `<span class="index-tooltip">?<span class="tooltip-text">The yield on the U.S. 10-year Treasury note, a key benchmark for interest rates.</span></span>`;
+        tooltip = `<span class="index-tooltip">The yield on the U.S. 10-year Treasury note, a key benchmark for interest rates.</span>`;
       } else if (asset.name === "Dollar Index") {
-        tooltip = `<span class="index-tooltip">?<span class="tooltip-text">Measures the value of the U.S. dollar relative to a basket of foreign currencies.</span></span>`;
+        tooltip = `<span class="index-tooltip">Measures the value of the U.S. dollar relative to a basket of foreign currencies.</span>`;
       } else if (asset.name === "S&P 500") {
-        tooltip = `<span class="index-tooltip">?<span class="tooltip-text">Stock market index tracking the performance of 500 large companies listed on U.S. exchanges.</span></span>`;
+        tooltip = `<span class="index-tooltip">Stock market index tracking the performance of 500 large companies listed on U.S. exchanges.</span>`;
       }
       
       quoteLeft.appendChild(nameStrong);
@@ -140,7 +140,7 @@ function updateFooterPrices(updatedAssets) {
 // Função para atualizar o valor de Bitcoins Mined
 async function updateBitcoinsMined() {
   try {
-    // Buscar dados da API blockchain.info
+    // Buscar dados da API blockchain.info para total de bitcoins
     const response = await fetch('https://blockchain.info/q/totalbc');
     if (response.ok) {
       const totalSatoshis = await response.text();
@@ -193,10 +193,27 @@ function updateDaysToHalving() {
   const differenceInTime = nextHalvingDate.getTime() - currentDate.getTime();
   const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
   
+  // Formatar com separador de milhar no padrão americano
+  const formattedDays = differenceInDays.toLocaleString('en-US');
+  
   // Atualizar o texto na página
-  const daysRemainingElement = document.querySelector('.days-remaining');
+  const daysRemainingElement = document.getElementById('days-remaining');
   if (daysRemainingElement) {
-    daysRemainingElement.textContent = `${differenceInDays.toLocaleString('en-US')} days remaining`;
+    daysRemainingElement.textContent = `${formattedDays} days remaining`;
+  }
+  
+  // Armazenar a data da última atualização no localStorage
+  localStorage.setItem('lastHalvingUpdateDate', currentDate.toISOString().split('T')[0]);
+}
+
+// Função para verificar se a contagem de dias para o halving precisa ser atualizada
+function checkHalvingDaysUpdate() {
+  const lastUpdateDate = localStorage.getItem('lastHalvingUpdateDate');
+  const currentDate = new Date().toISOString().split('T')[0];
+  
+  // Se não houver data de última atualização ou se for um dia diferente, atualizar
+  if (!lastUpdateDate || lastUpdateDate !== currentDate) {
+    updateDaysToHalving();
   }
 }
 
@@ -280,7 +297,7 @@ function setupSourcesToggle() {
 document.addEventListener('DOMContentLoaded', () => {
   renderQuotes();
   updateBitcoinsMined();
-  updateDaysToHalving();
+  checkHalvingDaysUpdate();
   updateBitcoinMarketCap();
   rotateSatoshiQuotes();
   setupCopyButton();
