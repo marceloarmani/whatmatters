@@ -201,50 +201,14 @@ header.compact-header p {
   border-left-color: #4682b4; /* S&P 500 */
 }
 
-/* Discrete explanation for indices */
+/* Discrete explanation for indices - modificado para remover o símbolo ? */
 .index-tooltip {
   position: relative;
   display: inline-block;
   margin-left: 5px;
   font-size: 0.8rem;
   color: #7f8c8d;
-  cursor: help;
-}
-
-.index-tooltip .tooltip-text {
-  visibility: hidden;
-  width: 220px;
-  background-color: #fff;
-  color: #555;
-  text-align: center;
-  border-radius: 6px;
-  padding: 8px;
-  position: absolute;
-  z-index: 1;
-  bottom: 125%;
-  left: 50%;
-  margin-left: -110px;
-  opacity: 0;
-  transition: opacity 0.3s;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  font-size: 0.75rem;
-  line-height: 1.4;
-}
-
-.index-tooltip .tooltip-text::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #fff transparent transparent transparent;
-}
-
-.index-tooltip:hover .tooltip-text {
-  visibility: visible;
-  opacity: 1;
+  font-style: italic;
 }
 
 /* Market Sentiment */
@@ -744,11 +708,11 @@ blockquote {
   border-radius: 6px;
   padding: 1rem;
   border-left: 1px solid #f7931a; /* Reduzido para 1px */
-  height: calc(100% - 4rem); /* Aumentado para mostrar mais margem inferior */
+  height: calc(100% - 6rem); /* Aumentado para mostrar mais margem inferior */
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin-bottom: 2rem; /* Aumentado para 2rem */
+  margin-bottom: 3rem; /* Aumentado para 3rem para garantir margem branca inferior */
 }
 
 .donation-address {
