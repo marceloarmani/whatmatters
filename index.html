@@ -18,7 +18,7 @@
         </svg>
       </div>
       <h1>Scarcity Panel</h1>
-      <p>Navigating the scarcity horizon in an ocean of monetary abundance</p>
+      <p>Navegando no horizonte da escassez digital em um oceano de abundância monetária</p>
     </div>
     <div class="header-accent"></div>
   </header>
@@ -82,18 +82,18 @@
                   <div class="gauge">
                     <div class="gauge-fill" style="width: 75%;"></div>
                   </div>
-                  <div class="gauge-value">$2.85T - All-time High</div>
+                  <div class="gauge-value">$690.7T - Global Assets</div>
                   <div class="indicator-change">+2.3% (24h)</div>
                 </div>
               </div>
               <div class="indicator">
-                <div class="indicator-title">Open Interest</div>
-                <div class="indicator-value" id="open-interest">
+                <div class="indicator-title">MVRV Ratio</div>
+                <div class="indicator-value" id="mvrv-ratio">
                   <div class="gauge">
-                    <div class="gauge-fill" style="width: 58%;"></div>
+                    <div class="gauge-fill" style="width: 72%;"></div>
                   </div>
-                  <div class="gauge-value">$32.7B - Moderate</div>
-                  <div class="indicator-change">+3.1% (24h)</div>
+                  <div class="gauge-value">3.2 - Overvalued</div>
+                  <div class="indicator-change">+0.3 (24h)</div>
                 </div>
               </div>
             </div>
@@ -303,7 +303,7 @@
             <div class="news-grid">
               <div class="news-item">
                 <div class="news-content">
-                  <div class="news-source">Cointelegraph</div>
+                  <div class="news-source">Bitcoin Magazine</div>
                   <div class="news-title">Bitcoin Surpasses $100,000 for First Time in History</div>
                   <div class="news-description">The world's largest cryptocurrency has reached a new all-time high, breaking the psychological barrier of $100,000.</div>
                   <div class="news-date">May 21, 2025</div>
@@ -311,7 +311,7 @@
               </div>
               <div class="news-item">
                 <div class="news-content">
-                  <div class="news-source">Financial Times</div>
+                  <div class="news-source">Blockworks</div>
                   <div class="news-title">Central Banks Accelerate Digital Currency Development</div>
                   <div class="news-description">Major central banks are fast-tracking CBDC projects in response to growing cryptocurrency adoption.</div>
                   <div class="news-date">May 20, 2025</div>
@@ -319,7 +319,7 @@
               </div>
               <div class="news-item">
                 <div class="news-content">
-                  <div class="news-source">Bloomberg</div>
+                  <div class="news-source">The Bitcoin Times</div>
                   <div class="news-title">Gold Reaches Record High Amid Inflation Concerns</div>
                   <div class="news-description">The precious metal continues its upward trajectory as investors seek protection from rising inflation.</div>
                   <div class="news-date">May 19, 2025</div>
@@ -335,7 +335,7 @@
               </div>
               <div class="news-item">
                 <div class="news-content">
-                  <div class="news-source">Reuters</div>
+                  <div class="news-source">Satoshi's Journal</div>
                   <div class="news-title">Institutional Adoption Accelerates as Pension Funds Enter Crypto</div>
                   <div class="news-description">Major pension funds are now allocating portions of their portfolios to Bitcoin and other digital assets.</div>
                   <div class="news-date">May 17, 2025</div>
@@ -343,7 +343,7 @@
               </div>
               <div class="news-item">
                 <div class="news-content">
-                  <div class="news-source">Cointelegraph</div>
+                  <div class="news-source">Bitcoinist</div>
                   <div class="news-title">El Salvador's Bitcoin Strategy Shows Long-term Success</div>
                   <div class="news-description">The country's Bitcoin reserves have appreciated significantly since adoption as legal tender in 2021.</div>
                   <div class="news-date">May 16, 2025</div>
@@ -364,12 +364,35 @@
             </div>
           </section>
           
-          <!-- Compact Donation Section -->
-          <div class="compact-donation">
-            <span>Support: </span>
-            <span class="donation-address-text">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</span>
-            <button class="copy-button" id="copy-address">Copy</button>
-          </div>
+          <!-- Creative Donation Section -->
+          <section class="standard-section bitcoin-donation">
+            <h2 class="section-header">Support the Revolution</h2>
+            <div class="donation-container">
+              <div class="qr-code" id="donation-qr">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="qr-svg">
+                  <path d="M30,30 L30,40 L40,40 L40,30 Z" fill="#f7931a"/>
+                  <path d="M50,30 L50,40 L60,40 L60,30 Z" fill="#f7931a"/>
+                  <path d="M70,30 L70,40 L80,40 L80,30 Z" fill="#f7931a"/>
+                  <path d="M30,50 L30,60 L40,60 L40,50 Z" fill="#f7931a"/>
+                  <path d="M50,50 L50,60 L60,60 L60,50 Z" fill="#f7931a"/>
+                  <path d="M70,50 L70,60 L80,60 L80,50 Z" fill="#f7931a"/>
+                  <path d="M30,70 L30,80 L40,80 L40,70 Z" fill="#f7931a"/>
+                  <path d="M50,70 L50,80 L60,80 L60,70 Z" fill="#f7931a"/>
+                  <path d="M70,70 L70,80 L80,80 L80,70 Z" fill="#f7931a"/>
+                </svg>
+              </div>
+              <div class="donation-info">
+                <div class="donation-address">
+                  <span class="donation-address-text">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</span>
+                  <button class="copy-button" id="copy-address">
+                    <span class="button-icon">⎘</span>
+                    <span class="button-text">Copy</span>
+                  </button>
+                </div>
+                <div class="donation-message">Apoie a transparência financeira</div>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </div>
