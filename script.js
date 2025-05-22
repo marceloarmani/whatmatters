@@ -113,42 +113,42 @@ const newsData = [
     description: "The world's largest cryptocurrency has reached a new all-time high, breaking the psychological barrier of $100,000.",
     source: "Bitcoin Magazine",
     date: "May 21, 2025",
-    url: "#"
+    url: "https://bitcoinmagazine.com/"
   },
   {
     title: "Central Banks Accelerate Digital Currency Development",
     description: "Major central banks are fast-tracking CBDC projects in response to growing cryptocurrency adoption.",
     source: "Blockworks",
     date: "May 20, 2025",
-    url: "#"
+    url: "https://blockworks.co/"
   },
   {
     title: "Gold Reaches Record High Amid Inflation Concerns",
     description: "The precious metal continues its upward trajectory as investors seek protection from rising inflation.",
     source: "The Bitcoin Times",
     date: "May 19, 2025",
-    url: "#"
+    url: "https://bitcointimes.news/"
   },
   {
     title: "Bitcoin Mining Difficulty Hits All-Time High",
     description: "Network security continues to strengthen as mining difficulty adjusts upward following hashrate increases.",
     source: "Bitcoin Magazine",
     date: "May 18, 2025",
-    url: "#"
+    url: "https://bitcoinmagazine.com/"
   },
   {
     title: "Institutional Adoption Accelerates as Pension Funds Enter Crypto",
     description: "Major pension funds are now allocating portions of their portfolios to Bitcoin and other digital assets.",
     source: "Satoshi's Journal",
     date: "May 17, 2025",
-    url: "#"
+    url: "https://satoshisjournal.com/"
   },
   {
     title: "El Salvador's Bitcoin Strategy Shows Long-term Success",
     description: "The country's Bitcoin reserves have appreciated significantly since adoption as legal tender in 2021.",
     source: "Bitcoinist",
     date: "May 16, 2025",
-    url: "#"
+    url: "https://bitcoinist.com/"
   }
 ];
 
@@ -173,7 +173,7 @@ async function fetchRealTimePrices() {
     
     // Gold price (simplified for demo)
     const goldPrice = (3300 + Math.random() * 50).toFixed(2);
-    assets[1].price = `$${goldPrice}`;
+    assets[1].price = `$${Number(goldPrice).toLocaleString()}`;
     const goldChange = (Math.random() * 2 - 0.5).toFixed(1);
     assets[1].change = `${goldChange > 0 ? '+' : ''}${goldChange}%`;
     
@@ -290,7 +290,7 @@ function updateAssetPrices() {
   assets[0].price = `$${btcPrice.toLocaleString()}`;
   assets[0].change = `${btcChange > 0 ? '+' : ''}${btcChange}%`;
   
-  assets[1].price = `$${goldPrice}`;
+  assets[1].price = `$${Number(goldPrice).toLocaleString()}`;
   assets[1].change = `${goldChange > 0 ? '+' : ''}${goldChange}%`;
   
   assets[2].price = `$${silverPrice}`;
@@ -383,7 +383,7 @@ function renderUpcomingEvents() {
 
 // Render news
 function renderNews() {
-  // News are already in the HTML
+  // News are already in the HTML with clickable links
 }
 
 // Render Satoshi quote
