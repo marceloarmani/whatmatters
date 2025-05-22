@@ -24,7 +24,7 @@
   </header>
   <main>
     <div class="main-layout">
-      <!-- Main indicators (one per row with individual charts) -->
+      <!-- Main indicators (simplified without charts) -->
       <section id="main-indicators" class="standard-section">
         <div id="quotes" class="vertical-quotes"></div>
       </section>
@@ -77,23 +77,23 @@
                 </div>
               </div>
               <div class="indicator">
-                <div class="indicator-title">Total Market Cap</div>
-                <div class="indicator-value" id="total-market-cap-indicator">
+                <div class="indicator-title">Bitcoin Market Cap</div>
+                <div class="indicator-value" id="bitcoin-market-cap">
                   <div class="gauge">
                     <div class="gauge-fill" style="width: 75%;"></div>
                   </div>
-                  <div class="gauge-value">$690.7T - Global Assets</div>
+                  <div class="gauge-value">$2.0T - All-time High</div>
                   <div class="indicator-change">+2.3% (24h)</div>
                 </div>
               </div>
               <div class="indicator">
-                <div class="indicator-title">MVRV Ratio</div>
-                <div class="indicator-value" id="mvrv-ratio">
+                <div class="indicator-title">Network Hash Rate</div>
+                <div class="indicator-value" id="network-hash-rate">
                   <div class="gauge">
                     <div class="gauge-fill" style="width: 72%;"></div>
                   </div>
-                  <div class="gauge-value">3.2 - Overvalued</div>
-                  <div class="indicator-change">+0.3 (24h)</div>
+                  <div class="gauge-value">512 EH/s - Record High</div>
+                  <div class="indicator-change">+5.2% (7d)</div>
                 </div>
               </div>
             </div>
@@ -364,32 +364,14 @@
             </div>
           </section>
           
-          <!-- Creative Donation Section -->
-          <section class="standard-section bitcoin-donation">
-            <h2 class="section-header">Support the Revolution</h2>
-            <div class="donation-container">
-              <div class="qr-code" id="donation-qr">
-                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="qr-svg">
-                  <path d="M30,30 L30,40 L40,40 L40,30 Z" fill="#f7931a"/>
-                  <path d="M50,30 L50,40 L60,40 L60,30 Z" fill="#f7931a"/>
-                  <path d="M70,30 L70,40 L80,40 L80,30 Z" fill="#f7931a"/>
-                  <path d="M30,50 L30,60 L40,60 L40,50 Z" fill="#f7931a"/>
-                  <path d="M50,50 L50,60 L60,60 L60,50 Z" fill="#f7931a"/>
-                  <path d="M70,50 L70,60 L80,60 L80,50 Z" fill="#f7931a"/>
-                  <path d="M30,70 L30,80 L40,80 L40,70 Z" fill="#f7931a"/>
-                  <path d="M50,70 L50,80 L60,80 L60,70 Z" fill="#f7931a"/>
-                  <path d="M70,70 L70,80 L80,80 L80,70 Z" fill="#f7931a"/>
-                </svg>
-              </div>
-              <div class="donation-info">
-                <div class="donation-address">
-                  <span class="donation-address-text">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</span>
-                  <button class="copy-button" id="copy-address">
-                    <span class="button-icon">⎘</span>
-                    <span class="button-text">Copy</span>
-                  </button>
-                </div>
-                <div class="donation-message">Apoie a transparência financeira</div>
+          <!-- Simplified Support Section -->
+          <section class="standard-section simple-support">
+            <h2 class="section-header">Support</h2>
+            <div class="simple-donation">
+              <div class="donation-address">
+                <span class="donation-label">Bitcoin:</span>
+                <span class="donation-address-text">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</span>
+                <button class="copy-button" id="copy-address">Copy</button>
               </div>
             </div>
           </section>
