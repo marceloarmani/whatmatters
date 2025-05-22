@@ -796,45 +796,79 @@ blockquote {
   color: #666;
 }
 
-/* Compact Donation Section */
-.compact-donation {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+/* Creative Donation Section */
+.bitcoin-donation {
   background: #fff;
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 0; /* No bottom margin in horizontal layout */
 }
 
-.compact-donation-inner {
-  background: #f8f9fa;
-  padding: 1rem;
+.donation-container {
+  background: linear-gradient(135deg, #f8f9fa 0%, #f0f0f0 100%);
   border-radius: 6px;
-  border-left: 4px solid #f7931a;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  position: relative;
+  overflow: hidden;
   height: 100%;
 }
 
-.compact-donation-title {
-  font-weight: 500;
+.donation-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50,50 m-45,0 a45,45 0 1,0 90,0 a45,45 0 1,0 -90,0' fill='none' stroke='%23f7931a' stroke-width='0.5' stroke-opacity='0.1'/%3E%3C/svg%3E");
+  background-size: 50px 50px;
+  opacity: 0.5;
+  z-index: 0;
+}
+
+.qr-code {
+  width: 100px;
+  height: 100px;
+  background: #fff;
+  border-radius: 6px;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 1;
+}
+
+.qr-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.donation-info {
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.donation-address {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 0.8rem;
-  color: #333;
-  font-size: 0.9rem;
 }
 
 .donation-address-text {
   font-family: monospace;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #555;
   background: #fff;
   padding: 0.5rem;
   border-radius: 4px;
   border: 1px solid #eee;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.5rem;
   width: 100%;
   text-align: center;
   overflow: hidden;
@@ -850,10 +884,24 @@ blockquote {
   cursor: pointer;
   font-size: 0.8rem;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .copy-button:hover {
   background: #e67e00;
+}
+
+.button-icon {
+  font-size: 1rem;
+}
+
+.donation-message {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
 }
 
 /* Footer */
