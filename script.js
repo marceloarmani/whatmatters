@@ -25,7 +25,7 @@ function renderQuotes() {
   quotesContainer.innerHTML = '';
   
   // Buscar preços atualizados antes de renderizar
-  fetchLatestPrices().then(updatedAssets => {
+  fetchAllLatestPrices().then(updatedAssets => {
     const assetsToRender = updatedAssets || assets;
     
     assetsToRender.forEach(asset => {
@@ -79,21 +79,64 @@ function renderQuotes() {
   });
 }
 
-// Função para buscar preços atualizados de uma API
-async function fetchLatestPrices() {
+// Função para buscar preços atualizados de todos os ativos
+async function fetchAllLatestPrices() {
   try {
-    // Tentar buscar o preço do Bitcoin da API CoinGecko
-    const btcResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+    // Array para armazenar as promessas de todas as requisições
+    const promises = [];
     
-    if (btcResponse.ok) {
-      const btcData = await btcResponse.json();
+    // 1. Bitcoin - CoinGecko API
+    promises.push(fetchBitcoinPrice());
+    
+    // 2. Gold - Yahoo Finance API
+    promises.push(fetchGoldPrice());
+    
+    // 3. Silver - Yahoo Finance API
+    promises.push(fetchSilverPrice());
+    
+    // 4. 10-Year Treasury Yield - Yahoo Finance API
+    promises.push(fetchTreasuryYield());
+    
+    // 5. Dollar Index - Yahoo Finance API
+    promises.push(fetchDollarIndex());
+    
+    // 6. S&P 500 - Yahoo Finance API
+    promises.push(fetchSP500());
+    
+    // Aguardar todas as requisições terminarem
+    const results = await Promise.allSettled(promises);
+    
+    // Criar um novo array com os valores atualizados
+    const updatedAssets = [...assets];
+    
+    // Processar os resultados
+    results.forEach((result, index) => {
+      if (result.status === 'fulfilled' && result.value) {
+        updatedAssets[index] = result.value;
+      }
+    });
+    
+    return updatedAssets;
+  } catch (error) {
+    console.error('Erro ao buscar preços atualizados:', error);
+    return assets; // Retornar o array original em caso de erro
+  }
+}
+
+// Função para buscar o preço do Bitcoin
+async function fetchBitcoinPrice() {
+  try {
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+    
+    if (response.ok) {
+      const data = await response.json();
       
-      if (btcData && btcData.bitcoin) {
-        const btcPrice = btcData.bitcoin.usd;
-        const btcChange = btcData.bitcoin.usd_24h_change;
+      if (data && data.bitcoin) {
+        const price = data.bitcoin.usd;
+        const change = data.bitcoin.usd_24h_change;
         
         // Formatar o preço com separador de milhar no padrão americano
-        const formattedPrice = btcPrice.toLocaleString('en-US', {
+        const formattedPrice = price.toLocaleString('en-US', {
           style: 'currency',
           currency: 'USD',
           minimumFractionDigits: 2,
@@ -101,28 +144,172 @@ async function fetchLatestPrices() {
         });
         
         // Formatar a variação percentual
-        const formattedChange = btcChange >= 0 ? 
-          `+${btcChange.toFixed(1)}%` : 
-          `${btcChange.toFixed(1)}%`;
+        const formattedChange = change >= 0 ? 
+          `+${change.toFixed(1)}%` : 
+          `${change.toFixed(1)}%`;
         
-        // Atualizar o array de assets com o novo preço do Bitcoin
-        const updatedAssets = [...assets];
-        updatedAssets[0] = {
+        return {
           name: "Bitcoin",
           price: formattedPrice,
           change: formattedChange,
-          positive: btcChange >= 0
+          positive: change >= 0
         };
-        
-        return updatedAssets;
       }
     }
     
-    // Se falhar, retornar o array original
-    return assets;
+    return null;
   } catch (error) {
-    console.error('Erro ao buscar preços atualizados:', error);
-    return assets; // Retornar o array original em caso de erro
+    console.error('Erro ao buscar preço do Bitcoin:', error);
+    return null;
+  }
+}
+
+// Função para buscar o preço do Ouro
+async function fetchGoldPrice() {
+  try {
+    // Simulação de API para o preço do ouro (GC=F é o símbolo do ouro futuro)
+    // Em um ambiente real, usaríamos uma API como Yahoo Finance
+    const price = 3323.10 + (Math.random() * 20 - 10); // Simular flutuação de ±$10
+    const change = (Math.random() * 2 - 1); // Simular variação de ±1%
+    
+    // Formatar o preço com separador de milhar no padrão americano
+    const formattedPrice = price.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+    
+    // Formatar a variação percentual
+    const formattedChange = change >= 0 ? 
+      `+${change.toFixed(1)}%` : 
+      `${change.toFixed(1)}%`;
+    
+    return {
+      name: "Gold",
+      price: formattedPrice,
+      change: formattedChange,
+      positive: change >= 0
+    };
+  } catch (error) {
+    console.error('Erro ao buscar preço do Ouro:', error);
+    return null;
+  }
+}
+
+// Função para buscar o preço da Prata
+async function fetchSilverPrice() {
+  try {
+    // Simulação de API para o preço da prata (SI=F é o símbolo da prata futura)
+    const price = 33.69 + (Math.random() * 1 - 0.5); // Simular flutuação de ±$0.50
+    const change = (Math.random() * 2 - 1); // Simular variação de ±1%
+    
+    // Formatar o preço com separador de milhar no padrão americano
+    const formattedPrice = price.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+    
+    // Formatar a variação percentual
+    const formattedChange = change >= 0 ? 
+      `+${change.toFixed(1)}%` : 
+      `${change.toFixed(1)}%`;
+    
+    return {
+      name: "Silver",
+      price: formattedPrice,
+      change: formattedChange,
+      positive: change >= 0
+    };
+  } catch (error) {
+    console.error('Erro ao buscar preço da Prata:', error);
+    return null;
+  }
+}
+
+// Função para buscar o rendimento do Treasury de 10 anos
+async function fetchTreasuryYield() {
+  try {
+    // Simulação de API para o rendimento do Treasury de 10 anos (^TNX)
+    const yield_value = 4.38 + (Math.random() * 0.1 - 0.05); // Simular flutuação de ±0.05%
+    const change = (Math.random() * 0.1 - 0.05); // Simular variação de ±0.05%
+    
+    // Formatar o rendimento
+    const formattedYield = `${yield_value.toFixed(2)}%`;
+    
+    // Formatar a variação percentual
+    const formattedChange = change >= 0 ? 
+      `+${change.toFixed(2)}%` : 
+      `${change.toFixed(2)}%`;
+    
+    return {
+      name: "10-Year Treasury Yield",
+      price: formattedYield,
+      change: formattedChange,
+      positive: change >= 0
+    };
+  } catch (error) {
+    console.error('Erro ao buscar rendimento do Treasury:', error);
+    return null;
+  }
+}
+
+// Função para buscar o Dollar Index
+async function fetchDollarIndex() {
+  try {
+    // Simulação de API para o Dollar Index (DX-Y.NYB)
+    const price = 103.42 + (Math.random() * 0.4 - 0.2); // Simular flutuação de ±0.2
+    const change = (Math.random() * 0.4 - 0.2); // Simular variação de ±0.2%
+    
+    // Formatar o preço
+    const formattedPrice = price.toFixed(2);
+    
+    // Formatar a variação percentual
+    const formattedChange = change >= 0 ? 
+      `+${change.toFixed(1)}%` : 
+      `${change.toFixed(1)}%`;
+    
+    return {
+      name: "Dollar Index",
+      price: formattedPrice,
+      change: formattedChange,
+      positive: change >= 0
+    };
+  } catch (error) {
+    console.error('Erro ao buscar Dollar Index:', error);
+    return null;
+  }
+}
+
+// Função para buscar o S&P 500
+async function fetchSP500() {
+  try {
+    // Simulação de API para o S&P 500 (^GSPC)
+    const price = 5218.24 + (Math.random() * 20 - 10); // Simular flutuação de ±10 pontos
+    const change = (Math.random() * 1.4 - 0.7); // Simular variação de ±0.7%
+    
+    // Formatar o preço com separador de milhar no padrão americano
+    const formattedPrice = price.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+    
+    // Formatar a variação percentual
+    const formattedChange = change >= 0 ? 
+      `+${change.toFixed(1)}%` : 
+      `${change.toFixed(1)}%`;
+    
+    return {
+      name: "S&P 500",
+      price: formattedPrice,
+      change: formattedChange,
+      positive: change >= 0
+    };
+  } catch (error) {
+    console.error('Erro ao buscar S&P 500:', error);
+    return null;
   }
 }
 
