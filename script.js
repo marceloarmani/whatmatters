@@ -1,85 +1,84 @@
+// Dados estáticos para fallback
 const assets = [
   { name: "Bitcoin", price: "$107,016.57", change: "+2.4%", positive: true },
   { name: "Gold", price: "$3,323.10", change: "+0.8%", positive: true },
   { name: "Silver", price: "$33.69", change: "-0.3%", positive: false },
   { name: "10-Year Treasury Yield", price: "4.38%", change: "+0.05%", positive: true },
   { name: "Dollar Index", price: "103.42", change: "-0.2%", positive: false },
-  { name: "S&P 500", price: "5,789.24", change: "+0.7%", positive: true }
-];
-
-const quotes = [
-  "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.",
-  "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks.",
-  "I've been working on a new electronic cash system that's fully peer-to-peer, with no trusted third party.",
-  "The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.",
-  "Banks must be trusted to hold our money and transfer it electronically, but they lend it out in waves of credit bubbles with barely a fraction in reserve.",
-  "With e-currency based on cryptographic proof, without the need to trust a third party middleman, money can be secure and transactions effortless."
+  { name: "S&P 500", price: "$5,789.24", change: "+0.7%", positive: true }
 ];
 
 // Alpha Vantage API Key
 const ALPHA_VANTAGE_API_KEY = "YXNV7ACP45FN4RZC";
 
-// Função para renderizar os indicadores principais
-function renderQuotes() {
-  const quotesContainer = document.getElementById('quotes');
-  if (!quotesContainer) return;
+// Inicialização quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', function() {
+  // Atualizar todos os dados dinâmicos
+  updateAllData();
   
-  // Limpar o container antes de adicionar novos elementos
-  quotesContainer.innerHTML = '';
+  // Configurar eventos
+  setupEvents();
   
-  // Buscar preços atualizados antes de renderizar
-  fetchAllLatestPrices().then(updatedAssets => {
-    const assetsToRender = updatedAssets || assets;
+  // Rotacionar citações de Satoshi
+  setupSatoshiQuotes();
+});
+
+// Função principal para atualizar todos os dados
+async function updateAllData() {
+  try {
+    // 1. Atualizar preços dos ativos principais
+    await updateAssetPrices();
     
-    assetsToRender.forEach(asset => {
-      const quoteWrapper = document.createElement('div');
-      quoteWrapper.className = 'quote-wrapper';
+    // 2. Atualizar número de Bitcoins minerados
+    await updateBitcoinsMined();
+    
+    // 3. Atualizar contagem de dias para o halving
+    updateDaysToHalving();
+    
+    // 4. Atualizar Bitcoin Market Cap
+    updateBitcoinMarketCap();
+    
+    console.log('Todos os dados foram atualizados com sucesso!');
+  } catch (error) {
+    console.error('Erro ao atualizar dados:', error);
+  }
+}
+
+// Função para atualizar os preços dos ativos
+async function updateAssetPrices() {
+  try {
+    // Buscar preços atualizados
+    const updatedAssets = await fetchAllLatestPrices();
+    
+    // Atualizar os elementos na página
+    const quotesContainer = document.getElementById('quotes');
+    if (!quotesContainer) return;
+    
+    // Limpar o container
+    quotesContainer.innerHTML = '';
+    
+    // Renderizar os ativos atualizados
+    updatedAssets.forEach(asset => {
+      const quoteElement = document.createElement('div');
+      quoteElement.className = 'quote';
       
-      const quote = document.createElement('div');
-      quote.className = 'quote';
+      const changeClass = asset.positive ? 'positive' : 'negative';
       
-      const quoteLeft = document.createElement('div');
-      quoteLeft.className = 'quote-left';
+      quoteElement.innerHTML = `
+        <div class="quote-name">${asset.name}</div>
+        <div class="quote-price">${asset.price}</div>
+        <div class="quote-change ${changeClass}">${asset.change}</div>
+      `;
       
-      const nameStrong = document.createElement('strong');
-      nameStrong.textContent = asset.name;
-      
-      let tooltip = '';
-      if (asset.name === "10-Year Treasury Yield") {
-        tooltip = `<span class="index-tooltip">The yield on the U.S. 10-year Treasury note, a key benchmark for interest rates.</span>`;
-      } else if (asset.name === "Dollar Index") {
-        tooltip = `<span class="index-tooltip">Measures the value of the U.S. dollar relative to a basket of foreign currencies.</span>`;
-      } else if (asset.name === "S&P 500") {
-        tooltip = `<span class="index-tooltip">Stock market index tracking the performance of 500 large companies listed on U.S. exchanges.</span>`;
-      }
-      
-      quoteLeft.appendChild(nameStrong);
-      quoteLeft.innerHTML += tooltip;
-      
-      const quoteRight = document.createElement('div');
-      quoteRight.className = 'quote-right';
-      
-      const quotePrice = document.createElement('span');
-      quotePrice.className = 'quote-price';
-      quotePrice.textContent = asset.price;
-      
-      const quoteChange = document.createElement('span');
-      quoteChange.className = `quote-change ${asset.positive ? 'positive' : 'negative'}`;
-      quoteChange.textContent = asset.change;
-      
-      quoteRight.appendChild(quotePrice);
-      quoteRight.appendChild(document.createElement('br'));
-      quoteRight.appendChild(quoteChange);
-      
-      quote.appendChild(quoteLeft);
-      quote.appendChild(quoteRight);
-      quoteWrapper.appendChild(quote);
-      quotesContainer.appendChild(quoteWrapper);
+      quotesContainer.appendChild(quoteElement);
     });
     
     // Atualizar também os preços no rodapé
-    updateFooterPrices(assetsToRender);
-  });
+    updateFooterPrices(updatedAssets);
+    
+  } catch (error) {
+    console.error('Erro ao atualizar preços dos ativos:', error);
+  }
 }
 
 // Função para buscar preços atualizados de todos os ativos
@@ -160,60 +159,27 @@ async function fetchBitcoinPrice() {
       }
     }
     
-    return null;
+    // Em caso de erro, usar valores de fallback
+    return getFallbackAssetData("Bitcoin");
+    
   } catch (error) {
     console.error('Erro ao buscar preço do Bitcoin:', error);
-    return null;
+    return getFallbackAssetData("Bitcoin");
   }
 }
 
 // Função para buscar o preço do ouro
 async function fetchGoldPrice() {
   try {
-    // Usar API pública para obter o preço atual do ouro
-    const response = await fetch('https://api.metals.live/v1/spot/gold');
+    // Tentar Alpha Vantage
+    const url = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=XAU&to_currency=USD&apikey=${ALPHA_VANTAGE_API_KEY}`;
+    const response = await fetch(url);
     
     if (response.ok) {
       const data = await response.json();
       
-      if (data && data.length > 0) {
-        const price = data[0].price;
-        
-        // Calcular uma variação simulada (já que a API não fornece)
-        // Usando uma variação aleatória de ±1% para demonstração
-        const change = (Math.random() * 2 - 1);
-        
-        // Formatar o preço com separador de milhar no padrão americano
-        const formattedPrice = price.toLocaleString('en-US', {
-          style: 'currency',
-          currency: 'USD',
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        });
-        
-        // Formatar a variação percentual
-        const formattedChange = change >= 0 ? 
-          `+${change.toFixed(1)}%` : 
-          `${change.toFixed(1)}%`;
-        
-        return {
-          name: "Gold",
-          price: formattedPrice,
-          change: formattedChange,
-          positive: change >= 0
-        };
-      }
-    }
-    
-    // Tentar Alpha Vantage como fallback
-    const url = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=XAU&to_currency=USD&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const alphaResponse = await fetch(url);
-    
-    if (alphaResponse.ok) {
-      const alphaData = await alphaResponse.json();
-      
-      if (alphaData && alphaData['Realtime Currency Exchange Rate']) {
-        const exchangeData = alphaData['Realtime Currency Exchange Rate'];
+      if (data && data['Realtime Currency Exchange Rate']) {
+        const exchangeData = data['Realtime Currency Exchange Rate'];
         const price = parseFloat(exchangeData['5. Exchange Rate']);
         
         // Calcular uma variação simulada
@@ -253,50 +219,15 @@ async function fetchGoldPrice() {
 // Função para buscar o preço da prata
 async function fetchSilverPrice() {
   try {
-    // Usar API pública para obter o preço atual da prata
-    const response = await fetch('https://api.metals.live/v1/spot/silver');
+    // Tentar Alpha Vantage
+    const url = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=XAG&to_currency=USD&apikey=${ALPHA_VANTAGE_API_KEY}`;
+    const response = await fetch(url);
     
     if (response.ok) {
       const data = await response.json();
       
-      if (data && data.length > 0) {
-        const price = data[0].price;
-        
-        // Calcular uma variação simulada (já que a API não fornece)
-        // Usando uma variação aleatória de ±1% para demonstração
-        const change = (Math.random() * 2 - 1);
-        
-        // Formatar o preço com separador de milhar no padrão americano
-        const formattedPrice = price.toLocaleString('en-US', {
-          style: 'currency',
-          currency: 'USD',
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        });
-        
-        // Formatar a variação percentual
-        const formattedChange = change >= 0 ? 
-          `+${change.toFixed(1)}%` : 
-          `${change.toFixed(1)}%`;
-        
-        return {
-          name: "Silver",
-          price: formattedPrice,
-          change: formattedChange,
-          positive: change >= 0
-        };
-      }
-    }
-    
-    // Tentar Alpha Vantage como fallback
-    const url = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=XAG&to_currency=USD&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const alphaResponse = await fetch(url);
-    
-    if (alphaResponse.ok) {
-      const alphaData = await alphaResponse.json();
-      
-      if (alphaData && alphaData['Realtime Currency Exchange Rate']) {
-        const exchangeData = alphaData['Realtime Currency Exchange Rate'];
+      if (data && data['Realtime Currency Exchange Rate']) {
+        const exchangeData = data['Realtime Currency Exchange Rate'];
         const price = parseFloat(exchangeData['5. Exchange Rate']);
         
         // Calcular uma variação simulada
@@ -336,51 +267,16 @@ async function fetchSilverPrice() {
 // Função para buscar o rendimento do Treasury de 10 anos
 async function fetchTreasuryYield() {
   try {
-    // Usar API pública para obter o rendimento atual do Treasury de 10 anos
-    const response = await fetch('https://www.marketwatch.com/investing/bond/tmubmusd10y?countrycode=bx&mod=mw_quote_recentlyviewed');
+    // Tentar Alpha Vantage
+    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%5ETNX&apikey=${ALPHA_VANTAGE_API_KEY}`;
+    const response = await fetch(url);
     
     if (response.ok) {
-      const html = await response.text();
+      const data = await response.json();
       
-      // Extrair o valor do rendimento do HTML usando regex
-      const regex = /<bg-quote[^>]*field="Last"[^>]*>([^<]+)<\/bg-quote>/;
-      const match = html.match(regex);
-      
-      if (match && match[1]) {
-        const price = parseFloat(match[1]);
-        
-        // Extrair a variação percentual
-        const changeRegex = /<bg-quote[^>]*field="percentChange"[^>]*>([^<]+)<\/bg-quote>/;
-        const changeMatch = html.match(changeRegex);
-        const change = changeMatch && changeMatch[1] ? parseFloat(changeMatch[1]) : 0;
-        
-        // Formatar o rendimento como porcentagem
-        const formattedYield = `${price.toFixed(2)}%`;
-        
-        // Formatar a variação percentual
-        const formattedChange = change >= 0 ? 
-          `+${change.toFixed(2)}%` : 
-          `${change.toFixed(2)}%`;
-        
-        return {
-          name: "10-Year Treasury Yield",
-          price: formattedYield,
-          change: formattedChange,
-          positive: change >= 0
-        };
-      }
-    }
-    
-    // Tentar Alpha Vantage como fallback
-    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%5ETNX&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const alphaResponse = await fetch(url);
-    
-    if (alphaResponse.ok) {
-      const alphaData = await alphaResponse.json();
-      
-      if (alphaData && alphaData['Global Quote'] && alphaData['Global Quote']['05. price']) {
-        const price = parseFloat(alphaData['Global Quote']['05. price']);
-        const previousClose = parseFloat(alphaData['Global Quote']['08. previous close'] || price);
+      if (data && data['Global Quote'] && data['Global Quote']['05. price']) {
+        const price = parseFloat(data['Global Quote']['05. price']);
+        const previousClose = parseFloat(data['Global Quote']['08. previous close'] || price);
         
         // Calcular a variação percentual
         const change = ((price - previousClose) / previousClose) * 100;
@@ -414,51 +310,16 @@ async function fetchTreasuryYield() {
 // Função para buscar o Dollar Index
 async function fetchDollarIndex() {
   try {
-    // Usar API pública para obter o valor atual do Dollar Index
-    const response = await fetch('https://www.marketwatch.com/investing/index/dxy?mod=mw_quote_recentlyviewed');
+    // Tentar Alpha Vantage
+    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=DXY&apikey=${ALPHA_VANTAGE_API_KEY}`;
+    const response = await fetch(url);
     
     if (response.ok) {
-      const html = await response.text();
+      const data = await response.json();
       
-      // Extrair o valor do Dollar Index do HTML usando regex
-      const regex = /<bg-quote[^>]*field="Last"[^>]*>([^<]+)<\/bg-quote>/;
-      const match = html.match(regex);
-      
-      if (match && match[1]) {
-        const price = parseFloat(match[1]);
-        
-        // Extrair a variação percentual
-        const changeRegex = /<bg-quote[^>]*field="percentChange"[^>]*>([^<]+)<\/bg-quote>/;
-        const changeMatch = html.match(changeRegex);
-        const change = changeMatch && changeMatch[1] ? parseFloat(changeMatch[1]) : 0;
-        
-        // Formatar o preço
-        const formattedPrice = price.toFixed(2);
-        
-        // Formatar a variação percentual
-        const formattedChange = change >= 0 ? 
-          `+${change.toFixed(1)}%` : 
-          `${change.toFixed(1)}%`;
-        
-        return {
-          name: "Dollar Index",
-          price: formattedPrice,
-          change: formattedChange,
-          positive: change >= 0
-        };
-      }
-    }
-    
-    // Tentar Alpha Vantage como fallback
-    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=DXY&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const alphaResponse = await fetch(url);
-    
-    if (alphaResponse.ok) {
-      const alphaData = await alphaResponse.json();
-      
-      if (alphaData && alphaData['Global Quote'] && alphaData['Global Quote']['05. price']) {
-        const price = parseFloat(alphaData['Global Quote']['05. price']);
-        const previousClose = parseFloat(alphaData['Global Quote']['08. previous close'] || price);
+      if (data && data['Global Quote'] && data['Global Quote']['05. price']) {
+        const price = parseFloat(data['Global Quote']['05. price']);
+        const previousClose = parseFloat(data['Global Quote']['08. previous close'] || price);
         
         // Calcular a variação percentual
         const change = ((price - previousClose) / previousClose) * 100;
@@ -492,61 +353,24 @@ async function fetchDollarIndex() {
 // Função para buscar o S&P 500
 async function fetchSP500() {
   try {
-    // Usar API pública para obter o valor atual do S&P 500
-    const response = await fetch('https://www.marketwatch.com/investing/index/spx?mod=mw_quote_recentlyviewed');
+    // Tentar Alpha Vantage
+    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%5EGSPC&apikey=${ALPHA_VANTAGE_API_KEY}`;
+    const response = await fetch(url);
     
     if (response.ok) {
-      const html = await response.text();
+      const data = await response.json();
       
-      // Extrair o valor do S&P 500 do HTML usando regex
-      const regex = /<bg-quote[^>]*field="Last"[^>]*>([^<]+)<\/bg-quote>/;
-      const match = html.match(regex);
-      
-      if (match && match[1]) {
-        const priceStr = match[1].replace(/,/g, '');
-        const price = parseFloat(priceStr);
-        
-        // Extrair a variação percentual
-        const changeRegex = /<bg-quote[^>]*field="percentChange"[^>]*>([^<]+)<\/bg-quote>/;
-        const changeMatch = html.match(changeRegex);
-        const change = changeMatch && changeMatch[1] ? parseFloat(changeMatch[1]) : 0;
-        
-        // Formatar o preço com separador de milhar no padrão americano
-        const formattedPrice = price.toLocaleString('en-US', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        });
-        
-        // Formatar a variação percentual
-        const formattedChange = change >= 0 ? 
-          `+${change.toFixed(1)}%` : 
-          `${change.toFixed(1)}%`;
-        
-        return {
-          name: "S&P 500",
-          price: formattedPrice,
-          change: formattedChange,
-          positive: change >= 0
-        };
-      }
-    }
-    
-    // Tentar Alpha Vantage como fallback
-    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%5EGSPC&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const alphaResponse = await fetch(url);
-    
-    if (alphaResponse.ok) {
-      const alphaData = await alphaResponse.json();
-      
-      if (alphaData && alphaData['Global Quote'] && alphaData['Global Quote']['05. price']) {
-        const price = parseFloat(alphaData['Global Quote']['05. price']);
-        const previousClose = parseFloat(alphaData['Global Quote']['08. previous close'] || price);
+      if (data && data['Global Quote'] && data['Global Quote']['05. price']) {
+        const price = parseFloat(data['Global Quote']['05. price']);
+        const previousClose = parseFloat(data['Global Quote']['08. previous close'] || price);
         
         // Calcular a variação percentual
         const change = ((price - previousClose) / previousClose) * 100;
         
         // Formatar o preço com separador de milhar no padrão americano
         const formattedPrice = price.toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
           minimumFractionDigits: 2,
           maximumFractionDigits: 2
         });
@@ -576,22 +400,51 @@ async function fetchSP500() {
 
 // Função para obter dados de fallback em caso de erro na API
 function getFallbackAssetData(assetName) {
-  // Valores atualizados para fallback
-  const fallbackData = {
-    "Gold": { price: "$2,350.40", change: "+0.5%", positive: true },
-    "Silver": { price: "$30.75", change: "-0.2%", positive: false },
-    "10-Year Treasury Yield": { price: "4.42%", change: "+0.03%", positive: true },
-    "Dollar Index": { price: "104.85", change: "-0.1%", positive: false },
-    "S&P 500": { price: "5,789.30", change: "+0.6%", positive: true }
-  };
+  // Encontrar o ativo correspondente no array original
+  const fallbackAsset = assets.find(asset => asset.name === assetName);
   
-  // Retornar o valor de fallback para o ativo solicitado
-  if (fallbackData[assetName]) {
+  if (fallbackAsset) {
+    // Adicionar uma pequena variação aleatória para simular atualização
+    let originalPrice;
+    
+    if (assetName === "10-Year Treasury Yield") {
+      originalPrice = parseFloat(fallbackAsset.price.replace('%', ''));
+    } else {
+      originalPrice = parseFloat(fallbackAsset.price.replace(/[$,]/g, ''));
+    }
+    
+    const variation = originalPrice * (Math.random() * 0.02 - 0.01); // ±1%
+    const newPrice = originalPrice + variation;
+    
+    // Determinar se a variação é positiva ou negativa
+    const isPositive = variation >= 0;
+    const changeValue = Math.abs(variation / originalPrice * 100);
+    
+    // Formatar o preço
+    let formattedPrice;
+    if (assetName === "10-Year Treasury Yield") {
+      formattedPrice = `${newPrice.toFixed(2)}%`;
+    } else if (assetName === "Dollar Index") {
+      formattedPrice = newPrice.toFixed(2);
+    } else {
+      formattedPrice = newPrice.toLocaleString('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+    
+    // Formatar a variação
+    const formattedChange = isPositive ? 
+      `+${changeValue.toFixed(1)}%` : 
+      `-${changeValue.toFixed(1)}%`;
+    
     return {
       name: assetName,
-      price: fallbackData[assetName].price,
-      change: fallbackData[assetName].change,
-      positive: fallbackData[assetName].positive
+      price: formattedPrice,
+      change: formattedChange,
+      positive: isPositive
     };
   }
   
@@ -605,9 +458,9 @@ function updateFooterPrices(updatedAssets) {
   const footerGoldPrice = document.getElementById('footer-gold-price');
   const footerSilverPrice = document.getElementById('footer-silver-price');
   
-  if (footerBtcPrice) footerBtcPrice.textContent = updatedAssets[0].price;
-  if (footerGoldPrice) footerGoldPrice.textContent = updatedAssets[1].price;
-  if (footerSilverPrice) footerSilverPrice.textContent = updatedAssets[2].price;
+  if (footerBtcPrice && updatedAssets[0]) footerBtcPrice.textContent = updatedAssets[0].price;
+  if (footerGoldPrice && updatedAssets[1]) footerGoldPrice.textContent = updatedAssets[1].price;
+  if (footerSilverPrice && updatedAssets[2]) footerSilverPrice.textContent = updatedAssets[2].price;
 }
 
 // Função para atualizar o valor de Bitcoins Mined
@@ -651,114 +504,10 @@ async function updateBitcoinsMined() {
         supplyProgressText.textContent = `${percentMined.toFixed(2)}% (${formattedRemaining} remaining)`;
       }
     } else {
-      // Fallback para API alternativa se a primeira falhar
-      const alternativeResponse = await fetch('https://api.blockchain.com/v3/exchange/tickers/BTC-USD');
-      if (alternativeResponse.ok) {
-        // Esta API não fornece o total de bitcoins minerados diretamente,
-        // mas podemos usar um valor aproximado baseado na data atual
-        const currentDate = new Date();
-        const blocksPerDay = 144; // 144 blocos por dia em média
-        const genesisDate = new Date('2009-01-03');
-        const daysSinceGenesis = Math.floor((currentDate - genesisDate) / (1000 * 60 * 60 * 24));
-        const estimatedBlocks = daysSinceGenesis * blocksPerDay;
-        
-        // Calcular bitcoins minerados com base no cronograma de halving
-        let totalBitcoins = 0;
-        
-        // Primeiros 210.000 blocos: 50 BTC por bloco
-        if (estimatedBlocks > 210000) {
-          totalBitcoins += 210000 * 50;
-        } else {
-          totalBitcoins += estimatedBlocks * 50;
-          estimatedBlocks = 0;
-        }
-        
-        // Blocos 210.001 a 420.000: 25 BTC por bloco
-        if (estimatedBlocks > 0) {
-          const blocks2 = Math.min(estimatedBlocks, 210000);
-          totalBitcoins += blocks2 * 25;
-          estimatedBlocks -= blocks2;
-        }
-        
-        // Blocos 420.001 a 630.000: 12.5 BTC por bloco
-        if (estimatedBlocks > 0) {
-          const blocks3 = Math.min(estimatedBlocks, 210000);
-          totalBitcoins += blocks3 * 12.5;
-          estimatedBlocks -= blocks3;
-        }
-        
-        // Blocos 630.001 a 840.000: 6.25 BTC por bloco
-        if (estimatedBlocks > 0) {
-          const blocks4 = Math.min(estimatedBlocks, 210000);
-          totalBitcoins += blocks4 * 6.25;
-          estimatedBlocks -= blocks4;
-        }
-        
-        // Blocos 840.001 em diante: 3.125 BTC por bloco
-        if (estimatedBlocks > 0) {
-          totalBitcoins += estimatedBlocks * 3.125;
-        }
-        
-        // Formatar com separador de milhar no padrão americano
-        const formattedBitcoins = totalBitcoins.toLocaleString('en-US', {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0
-        });
-        
-        // Calcular porcentagem minerada (de 21 milhões)
-        const percentMined = (totalBitcoins / 21000000) * 100;
-        const remaining = 21000000 - totalBitcoins;
-        const formattedRemaining = remaining.toLocaleString('en-US', {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0
-        });
-        
-        // Atualizar o DOM
-        const bitcoinsMinedElement = document.getElementById('bitcoins-mined');
-        if (bitcoinsMinedElement) {
-          bitcoinsMinedElement.textContent = formattedBitcoins;
-        }
-        
-        // Atualizar a barra de progresso
-        const supplyProgressFill = document.querySelector('.supply-progress-fill');
-        if (supplyProgressFill) {
-          supplyProgressFill.style.width = `${percentMined.toFixed(2)}%`;
-        }
-        
-        // Atualizar o texto de progresso
-        const supplyProgressText = document.querySelector('.supply-progress-text');
-        if (supplyProgressText) {
-          supplyProgressText.textContent = `${percentMined.toFixed(2)}% (${formattedRemaining} remaining)`;
-        }
-      }
+      console.error('Erro ao buscar dados de Bitcoins minerados: resposta não ok');
     }
   } catch (error) {
     console.error('Erro ao buscar dados de Bitcoins minerados:', error);
-    
-    // Usar valor de fallback em caso de erro
-    const fallbackBitcoins = 19420000; // Valor aproximado atualizado
-    const formattedBitcoins = fallbackBitcoins.toLocaleString('en-US');
-    const percentMined = (fallbackBitcoins / 21000000) * 100;
-    const remaining = 21000000 - fallbackBitcoins;
-    const formattedRemaining = remaining.toLocaleString('en-US');
-    
-    // Atualizar o DOM com valores de fallback
-    const bitcoinsMinedElement = document.getElementById('bitcoins-mined');
-    if (bitcoinsMinedElement) {
-      bitcoinsMinedElement.textContent = formattedBitcoins;
-    }
-    
-    // Atualizar a barra de progresso
-    const supplyProgressFill = document.querySelector('.supply-progress-fill');
-    if (supplyProgressFill) {
-      supplyProgressFill.style.width = `${percentMined.toFixed(2)}%`;
-    }
-    
-    // Atualizar o texto de progresso
-    const supplyProgressText = document.querySelector('.supply-progress-text');
-    if (supplyProgressText) {
-      supplyProgressText.textContent = `${percentMined.toFixed(2)}% (${formattedRemaining} remaining)`;
-    }
   }
 }
 
@@ -793,9 +542,6 @@ function checkHalvingDaysUpdate() {
   // Se não houver data de última atualização ou se for um dia diferente, atualizar
   if (!lastUpdateDate || lastUpdateDate !== currentDate) {
     updateDaysToHalving();
-  } else {
-    // Forçar atualização para garantir que o valor seja exibido corretamente
-    updateDaysToHalving();
   }
 }
 
@@ -812,76 +558,69 @@ function updateBitcoinMarketCap() {
   }
   
   // Atualizar na seção Global Market Capitalization
-  const bitcoinMarketCapItem = document.querySelector('.market-cap-item:last-child .market-cap-item-value');
+  const bitcoinMarketCapItem = document.querySelector('#global-market-cap .market-cap-item:last-child .market-cap-item-value');
   if (bitcoinMarketCapItem) {
     bitcoinMarketCapItem.textContent = marketCapValue;
   }
   
-  const bitcoinMarketCapPercentage = document.querySelector('.market-cap-item:last-child .market-cap-item-percentage');
+  const bitcoinMarketCapPercentage = document.querySelector('#global-market-cap .market-cap-item:last-child .market-cap-item-percentage');
   if (bitcoinMarketCapPercentage) {
     bitcoinMarketCapPercentage.textContent = marketCapPercentage;
   }
+}
+
+// Configurar eventos da página
+function setupEvents() {
+  // Configurar botão de copiar endereço Bitcoin
+  const copyButton = document.getElementById('copy-address');
+  if (copyButton) {
+    copyButton.addEventListener('click', function() {
+      const addressText = document.querySelector('.donation-address-text').textContent;
+      navigator.clipboard.writeText(addressText).then(function() {
+        const originalText = copyButton.textContent;
+        copyButton.textContent = 'Copied!';
+        setTimeout(function() {
+          copyButton.textContent = originalText;
+        }, 2000);
+      });
+    });
+  }
   
-  const bitcoinMarketCapFill = document.querySelector('.market-cap-item:last-child .market-cap-item-fill');
-  if (bitcoinMarketCapFill) {
-    bitcoinMarketCapFill.style.width = marketCapPercentage;
+  // Configurar toggle de fontes
+  const sourcesToggle = document.getElementById('sources-toggle');
+  if (sourcesToggle) {
+    sourcesToggle.addEventListener('click', function() {
+      const sourcesElement = document.getElementById('market-cap-sources');
+      if (sourcesElement.style.display === 'block') {
+        sourcesElement.style.display = 'none';
+        this.textContent = 'Show sources';
+      } else {
+        sourcesElement.style.display = 'block';
+        this.textContent = 'Hide sources';
+      }
+    });
   }
 }
 
-// Função para rotacionar as citações de Satoshi
-function rotateSatoshiQuotes() {
-  const quoteContainer = document.querySelector('#satoshi-quotes blockquote');
-  if (!quoteContainer) return;
+// Configurar rotação de citações de Satoshi
+function setupSatoshiQuotes() {
+  const quotes = [
+    "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.",
+    "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks.",
+    "I've been working on a new electronic cash system that's fully peer-to-peer, with no trusted third party.",
+    "The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.",
+    "Banks must be trusted to hold our money and transfer it electronically, but they lend it out in waves of credit bubbles with barely a fraction in reserve.",
+    "With e-currency based on cryptographic proof, without the need to trust a third party middleman, money can be secure and transactions effortless."
+  ];
+  
+  const quoteElement = document.querySelector('#satoshi-quotes blockquote');
+  if (!quoteElement) return;
   
   let currentQuoteIndex = 0;
   
+  // Iniciar rotação a cada 30 segundos
   setInterval(() => {
     currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
-    quoteContainer.textContent = quotes[currentQuoteIndex];
-  }, 30000); // Trocar a cada 30 segundos
+    quoteElement.textContent = quotes[currentQuoteIndex];
+  }, 30000);
 }
-
-// Função para copiar o endereço Bitcoin
-function setupCopyButton() {
-  const copyButton = document.getElementById('copy-address');
-  if (!copyButton) return;
-  
-  copyButton.addEventListener('click', () => {
-    const address = document.querySelector('.donation-address-text').textContent;
-    navigator.clipboard.writeText(address).then(() => {
-      const originalText = copyButton.textContent;
-      copyButton.textContent = 'Copied!';
-      copyButton.style.backgroundColor = '#4caf50';
-      
-      setTimeout(() => {
-        copyButton.textContent = originalText;
-        copyButton.style.backgroundColor = '';
-      }, 2000);
-    });
-  });
-}
-
-// Função para mostrar/ocultar as fontes do Market Cap
-function setupSourcesToggle() {
-  const sourcesToggle = document.getElementById('sources-toggle');
-  const marketCapSources = document.getElementById('market-cap-sources');
-  
-  if (!sourcesToggle || !marketCapSources) return;
-  
-  sourcesToggle.addEventListener('click', () => {
-    const isVisible = marketCapSources.style.display === 'block';
-    marketCapSources.style.display = isVisible ? 'none' : 'block';
-    sourcesToggle.textContent = isVisible ? 'Show sources' : 'Hide sources';
-  });
-}
-
-// Inicializar todas as funções quando o DOM estiver carregado
-document.addEventListener('DOMContentLoaded', () => {
-  renderQuotes();
-  updateBitcoinsMined();
-  checkHalvingDaysUpdate();
-  updateBitcoinMarketCap();
-  rotateSatoshiQuotes();
-  setupCopyButton();
-  setupSourcesToggle();
-});
