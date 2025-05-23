@@ -1,390 +1,269 @@
-<link rel="icon">
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scarcity Panel</title>
+  <title>What Matters</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="icon" href="https://raw.githubusercontent.com/marceloarmani/whatmatters/main/favicon.ico" type="image/x-icon">
 </head>
 <body>
-  <header class="compact-header">
-    <div class="header-pattern"></div>
-    <div class="header-content">
-      <div class="header-logo">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M11.5 1L2 6v12l9.5 5 9.5-5V6l-9.5-5zm7.5 16.5l-7.5 3.94-7.5-3.94V6.5l7.5-3.94 7.5 3.94v11z"/>
-          <path d="M8.5 12v4l3 1.5 3-1.5v-4l-3-1.5-3 1.5z"/>
-        </svg>
-      </div>
-      <h1>Scarcity Panel</h1>
-      <p>Navigating the scarcity horizon in a sea of monetary abundance</p>
-    </div>
-    <div class="header-accent"></div>
+  <header>
+    <h1>What Matters</h1>
+    <p>Navigating the scarcity horizon in a sea of monetary abundance</p>
   </header>
+
   <main>
-    <div class="main-layout">
-      <!-- Main indicators (simplified without charts) -->
-      <section id="main-indicators" class="standard-section">
-        <div id="quotes" class="vertical-quotes"></div>
-      </section>
-      
-      <!-- Market Sentiment -->
-      <section id="market-sentiment" class="standard-section">
-        <h2 class="section-header">Market sentiment</h2>
-        <div class="sentiment-indicators">
-          <div class="indicator">
-            <div class="indicator-title">BTC Dominance</div>
-            <div class="indicator-value" id="btc-dominance">
-              <div class="gauge">
-                <div class="gauge-fill" style="width: 52%;"></div>
-              </div>
-              <div class="gauge-value">52% - Moderate</div>
-              <div class="indicator-change">+0.8% (24h)</div>
-            </div>
-          </div>
-          <div class="indicator">
-            <div class="indicator-title">Volatility (30D)</div>
-            <div class="indicator-value" id="volatility">
-              <div class="gauge">
-                <div class="gauge-fill" style="width: 38%;"></div>
-              </div>
-              <div class="gauge-value">3.8% - Low</div>
-              <div class="indicator-change">-0.5% (24h)</div>
-            </div>
-          </div>
-          <div class="indicator">
-            <div class="indicator-title">Transaction Volume (24h)</div>
-            <div class="indicator-value" id="transaction-volume">
-              <div class="gauge">
-                <div class="gauge-fill" style="width: 68%;"></div>
-              </div>
-              <div class="gauge-value">$78.5B - High</div>
-              <div class="indicator-change">+12% (24h)</div>
-            </div>
-          </div>
-          <div class="indicator">
-            <div class="indicator-title">Fear & Greed Index</div>
-            <div class="indicator-value" id="fear-greed">
-              <div class="gauge">
-                <div class="gauge-fill" style="width: 65%;"></div>
-              </div>
-              <div class="gauge-value">65 - Greed</div>
-              <div class="indicator-change">+5% (24h)</div>
-            </div>
-          </div>
-          <div class="indicator">
-            <div class="indicator-title">Bitcoin Market Cap</div>
-            <div class="indicator-value" id="bitcoin-market-cap">
-              <div class="gauge">
-                <div class="gauge-fill" style="width: 75%;"></div>
-              </div>
-              <div class="gauge-value">$2.3T - All-time High</div>
-              <div class="indicator-change">+2.3% (24h)</div>
-            </div>
-          </div>
-          <div class="indicator">
-            <div class="indicator-title">Network Hash Rate</div>
-            <div class="indicator-value" id="network-hash-rate">
-              <div class="gauge">
-                <div class="gauge-fill" style="width: 72%;"></div>
-              </div>
-              <div class="gauge-value">512 EH/s - Record High</div>
-              <div class="indicator-change">+5.2% (7d)</div>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      <!-- Upcoming Events (4 columns in a single row) -->
-      <section id="economic-calendar" class="standard-section">
-        <h2 class="section-header">Upcoming events</h2>
-        <div class="calendar-container">
-          <div id="events-container">
-            <!-- Events will be inserted via JavaScript -->
-            <div class="events-grid">
-              <div class="event-item high">
-                <div class="event-date">
-                  <span>May 25, 2025</span>
-                  <div class="event-impact">
-                    <div class="impact-dot"></div>
-                    <div class="impact-dot"></div>
-                    <div class="impact-dot"></div>
-                  </div>
-                </div>
-                <div class="event-title">FOMC Meeting</div>
-                <div class="event-description">Federal Reserve interest rate decision</div>
-              </div>
-              <div class="event-item high">
-                <div class="event-date">
-                  <span>June 02, 2025</span>
-                  <div class="event-impact">
-                    <div class="impact-dot"></div>
-                    <div class="impact-dot"></div>
-                    <div class="impact-dot"></div>
-                  </div>
-                </div>
-                <div class="event-title">US Inflation Report</div>
-                <div class="event-description">Consumer Price Index (CPI) release</div>
-              </div>
-              <div class="event-item medium">
-                <div class="event-date">
-                  <span>June 10, 2025</span>
-                  <div class="event-impact">
-                    <div class="impact-dot"></div>
-                    <div class="impact-dot"></div>
-                    <div class="impact-dot"></div>
-                  </div>
-                </div>
-                <div class="event-title">Bitcoin 2025 Conference</div>
-                <div class="event-description">Largest annual Bitcoin event in Miami</div>
-              </div>
-              <div class="event-item medium">
-                <div class="event-date">
-                  <span>June 15, 2025</span>
-                  <div class="event-impact">
-                    <div class="impact-dot"></div>
-                    <div class="impact-dot"></div>
-                    <div class="impact-dot"></div>
-                  </div>
-                </div>
-                <div class="event-title">US Employment Report</div>
-                <div class="event-description">US labor market data</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      <!-- Scarcity Metrics -->
-      <section id="scarcity-metrics" class="standard-section">
-        <h2 class="section-header">Scarcity metrics</h2>
-        <div class="scarcity-container">
-          <div class="scarcity-metrics-grid">
-            <!-- Scarcity metrics will be inserted via JavaScript -->
-            <div class="scarcity-metric">
-              <div class="scarcity-metric-title">Stock-to-Flow</div>
-              <div class="scarcity-metric-value">56</div>
-              <div class="scarcity-metric-description">Ratio between existing stock and annual production</div>
-              <div class="scarcity-comparison">
-                <div class="scarcity-comparison-item bitcoin">Bitcoin: 56</div>
-                <div class="scarcity-comparison-item gold">Gold: 62</div>
-                <div class="scarcity-comparison-item silver">Silver: 22</div>
-              </div>
-            </div>
-            <div class="scarcity-metric">
-              <div class="scarcity-metric-title">Annual Inflation</div>
-              <div class="scarcity-metric-value">1.74%</div>
-              <div class="scarcity-metric-description">Annual issuance rate relative to total supply</div>
-              <div class="scarcity-comparison">
-                <div class="scarcity-comparison-item bitcoin">Bitcoin: 1.74%</div>
-                <div class="scarcity-comparison-item gold">Gold: 1.60%</div>
-                <div class="scarcity-comparison-item silver">Silver: 4.50%</div>
-              </div>
-            </div>
-            <div class="scarcity-metric">
-              <div class="scarcity-metric-title">Bitcoins Mined</div>
-              <div class="scarcity-metric-value" id="bitcoins-mined">19,368,750</div>
-              <div class="scarcity-metric-description">Amount of bitcoins already mined out of 21 million total</div>
-              <div class="supply-progress">
-                <div class="supply-progress-fill" style="width: 92.23%;"></div>
-                <div class="supply-progress-text">92.23% (1,631,250 remaining)</div>
-              </div>
-            </div>
-            <div class="scarcity-metric">
-              <div class="scarcity-metric-title">Next Halving</div>
-              <div class="scarcity-metric-value">April 2028</div>
-              <div class="scarcity-metric-description">Event that cuts mining reward in half</div>
-              <div class="days-remaining" id="days-remaining">1056 days remaining</div>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      <!-- Global Market Capitalization -->
-      <section id="market-cap-comparison" class="standard-section">
-        <div class="section-header-with-total">
-          <h2>Global market capitalization</h2>
-          <div class="market-cap-total">Total Capitalization: <span id="total-market-cap">$690.7T</span></div>
-        </div>
-        <div class="market-cap-container">
-          <div class="market-cap-visual" id="market-cap-treemap">
-            <!-- Bar visualization will be inserted via JavaScript -->
-            <div class="market-cap-item">
-              <div class="market-cap-item-header">
-                <div class="market-cap-item-name">Real Estate</div>
-                <div class="market-cap-item-value">$326.5T</div>
-              </div>
-              <div class="market-cap-item-bar">
-                <div class="market-cap-item-fill" style="width: 47.3%; background-color: #4CAF50;"></div>
-                <div class="market-cap-item-percentage">47.3%</div>
-              </div>
-            </div>
-            <div class="market-cap-item">
-              <div class="market-cap-item-header">
-                <div class="market-cap-item-name">Bonds</div>
-                <div class="market-cap-item-value">$133.0T</div>
-              </div>
-              <div class="market-cap-item-bar">
-                <div class="market-cap-item-fill" style="width: 19.3%; background-color: #2196F3;"></div>
-                <div class="market-cap-item-percentage">19.3%</div>
-              </div>
-            </div>
-            <div class="market-cap-item">
-              <div class="market-cap-item-header">
-                <div class="market-cap-item-name">Equities</div>
-                <div class="market-cap-item-value">$106.0T</div>
-              </div>
-              <div class="market-cap-item-bar">
-                <div class="market-cap-item-fill" style="width: 15.3%; background-color: #9C27B0;"></div>
-                <div class="market-cap-item-percentage">15.3%</div>
-              </div>
-            </div>
-            <div class="market-cap-item">
-              <div class="market-cap-item-header">
-                <div class="market-cap-item-name">Money</div>
-                <div class="market-cap-item-value">$102.9T</div>
-              </div>
-              <div class="market-cap-item-bar">
-                <div class="market-cap-item-fill" style="width: 14.9%; background-color: #FF9800;"></div>
-                <div class="market-cap-item-percentage">14.9%</div>
-              </div>
-            </div>
-            <div class="market-cap-item">
-              <div class="market-cap-item-header">
-                <div class="market-cap-item-name">Gold</div>
-                <div class="market-cap-item-value">$12.5T</div>
-              </div>
-              <div class="market-cap-item-bar">
-                <div class="market-cap-item-fill" style="width: 1.8%; background-color: #d4af37;"></div>
-                <div class="market-cap-item-percentage">1.8%</div>
-              </div>
-            </div>
-            <div class="market-cap-item">
-              <div class="market-cap-item-header">
-                <div class="market-cap-item-name">Art & Collectibles</div>
-                <div class="market-cap-item-value">$7.8T</div>
-              </div>
-              <div class="market-cap-item-bar">
-                <div class="market-cap-item-fill" style="width: 1.1%; background-color: #E91E63;"></div>
-                <div class="market-cap-item-percentage">1.1%</div>
-              </div>
-            </div>
-            <div class="market-cap-item">
-              <div class="market-cap-item-header">
-                <div class="market-cap-item-name">Bitcoin</div>
-                <div class="market-cap-item-value">$2.3T</div>
-              </div>
-              <div class="market-cap-item-bar">
-                <div class="market-cap-item-fill" style="width: 0.3%; background-color: #f7931a;"></div>
-                <div class="market-cap-item-percentage">0.3%</div>
-              </div>
-            </div>
-          </div>
-          <button id="sources-toggle" class="sources-button">Show sources</button>
-          <div class="market-cap-sources" id="market-cap-sources">
-            <p>Sources: Visual Capitalist, Bank for International Settlements (BIS), McKinsey Global Institute, World Gold Council, <a href="https://www.onceinaspecies.com/" target="_blank">Jesse Myers (onceinaspecies.com)</a></p>
-          </div>
-        </div>
-      </section>
-      
-      <!-- Latest News -->
-      <section id="news-summary" class="standard-section">
-        <h2 class="section-header">Latest news</h2>
-        <div id="news-content">
-          <!-- News will be inserted via JavaScript -->
-          <div class="news-grid">
-            <a href="https://bitcoinmagazine.com/" target="_blank" class="news-item">
-              <div class="news-content">
-                <div class="news-source">Bitcoin Magazine</div>
-                <div class="news-title">Bitcoin Surpasses $100,000 for First Time in History</div>
-                <div class="news-description">The world's largest cryptocurrency has reached a new all-time high, breaking the psychological barrier of $100,000.</div>
-                <div class="news-date">May 21, 2025 14:32 UTC</div>
-              </div>
-            </a>
-            <a href="https://blockworks.co/" target="_blank" class="news-item">
-              <div class="news-content">
-                <div class="news-source">Blockworks</div>
-                <div class="news-title">Central Banks Accelerate Digital Currency Development</div>
-                <div class="news-description">Major central banks are fast-tracking CBDC projects in response to growing cryptocurrency adoption.</div>
-                <div class="news-date">May 20, 2025 09:15 UTC</div>
-              </div>
-            </a>
-            <a href="https://bitcointimes.news/" target="_blank" class="news-item">
-              <div class="news-content">
-                <div class="news-source">The Bitcoin Times</div>
-                <div class="news-title">Gold Reaches Record High Amid Inflation Concerns</div>
-                <div class="news-description">The precious metal continues its upward trajectory as investors seek protection from rising inflation.</div>
-                <div class="news-date">May 19, 2025 16:45 UTC</div>
-              </div>
-            </a>
-            <a href="https://bitcoinmagazine.com/" target="_blank" class="news-item">
-              <div class="news-content">
-                <div class="news-source">Bitcoin Magazine</div>
-                <div class="news-title">Bitcoin Mining Difficulty Hits All-Time High</div>
-                <div class="news-description">Network security continues to strengthen as mining difficulty adjusts upward following hashrate increases.</div>
-                <div class="news-date">May 18, 2025 11:20 UTC</div>
-              </div>
-            </a>
-            <a href="https://satoshisjournal.com/" target="_blank" class="news-item">
-              <div class="news-content">
-                <div class="news-source">Satoshi's Journal</div>
-                <div class="news-title">Institutional Adoption Accelerates as Pension Funds Enter Crypto</div>
-                <div class="news-description">Major pension funds are now allocating portions of their portfolios to Bitcoin and other digital assets.</div>
-                <div class="news-date">May 17, 2025 13:05 UTC</div>
-              </div>
-            </a>
-            <a href="https://bitcoinist.com/" target="_blank" class="news-item">
-              <div class="news-content">
-                <div class="news-source">Bitcoinist</div>
-                <div class="news-title">El Salvador's Bitcoin Strategy Shows Long-term Success</div>
-                <div class="news-description">The country's Bitcoin reserves have appreciated significantly since adoption as legal tender in 2021.</div>
-                <div class="news-date">May 16, 2025 08:30 UTC</div>
-              </div>
-            </a>
-          </div>
-        </div>
-      </section>
-      
-      <!-- Word of Satoshi and Support side by side -->
-      <div class="horizontal-sections">
-        <section id="satoshi-quotes" class="standard-section">
-          <h2 class="section-header">Word of Satoshi</h2>
-          <div class="quote-container">
-            <blockquote>The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.</blockquote>
-            <div class="quote-author">- Satoshi Nakamoto</div>
-          </div>
-        </section>
-        
-        <section id="support" class="standard-section">
-          <h2 class="section-header">Support this project</h2>
-          <div class="donation-container">
-            <div class="donation-address">
-              <div class="donation-address-text">17nMXp6jmDH9AWaMZcwWgYAG4vYe7Uo2m7</div>
-              <button id="copy-address" class="copy-button">Copy Address</button>
-            </div>
-          </div>
-        </section>
+    <section id="quotes-section">
+      <div id="quotes" class="quotes-container">
+        <!-- Quotes will be dynamically inserted here -->
       </div>
+    </section>
+
+    <section id="market-sentiment">
+      <h2>Market sentiment</h2>
+      <div class="gauge-container">
+        <div class="gauge" id="fear-greed">
+          <div class="gauge-title">Fear & Greed Index</div>
+          <div class="gauge-value">75 - Greed</div>
+          <div class="gauge-bar">
+            <div class="gauge-fill" style="width: 75%;"></div>
+          </div>
+        </div>
+        <div class="gauge" id="btc-dominance">
+          <div class="gauge-title">BTC Dominance</div>
+          <div class="gauge-value">52.4% - Rising</div>
+          <div class="gauge-bar">
+            <div class="gauge-fill" style="width: 52.4%;"></div>
+          </div>
+        </div>
+        <div class="gauge" id="volatility">
+          <div class="gauge-title">Volatility (30D)</div>
+          <div class="gauge-value">2.8% - Low</div>
+          <div class="gauge-bar">
+            <div class="gauge-fill" style="width: 28%;"></div>
+          </div>
+        </div>
+        <div class="gauge" id="transaction-volume">
+          <div class="gauge-title">Transaction Volume (24h)</div>
+          <div class="gauge-value">$42.5B - High</div>
+          <div class="gauge-bar">
+            <div class="gauge-fill" style="width: 72%;"></div>
+          </div>
+        </div>
+        <div class="gauge" id="bitcoin-market-cap">
+          <div class="gauge-title">Bitcoin Market Cap</div>
+          <div class="gauge-value">$2.3T - All-time High</div>
+          <div class="gauge-bar">
+            <div class="gauge-fill" style="width: 85%;"></div>
+          </div>
+        </div>
+        <div class="gauge" id="network-hash-rate">
+          <div class="gauge-title">Network Hash Rate</div>
+          <div class="gauge-value">512 EH/s - Rising</div>
+          <div class="gauge-bar">
+            <div class="gauge-fill" style="width: 78%;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="upcoming-events">
+      <h2>Upcoming events</h2>
+      <div class="events-container">
+        <div class="event">
+          <div class="event-date">Jun 15</div>
+          <div class="event-details">
+            <div class="event-title">Bitcoin Conference 2025</div>
+            <div class="event-description">Annual gathering of Bitcoin developers, investors, and enthusiasts in Miami.</div>
+          </div>
+        </div>
+        <div class="event">
+          <div class="event-date">Jul 28</div>
+          <div class="event-details">
+            <div class="event-title">Fed Interest Rate Decision</div>
+            <div class="event-description">Federal Reserve announces decision on interest rates.</div>
+          </div>
+        </div>
+        <div class="event">
+          <div class="event-date">Aug 10</div>
+          <div class="event-details">
+            <div class="event-title">Bitcoin Core 26.0 Release</div>
+            <div class="event-description">Major update to Bitcoin Core software with new features and improvements.</div>
+          </div>
+        </div>
+        <div class="event">
+          <div class="event-date">Sep 22</div>
+          <div class="event-details">
+            <div class="event-title">Global Economic Forum</div>
+            <div class="event-description">World leaders and economists gather to discuss global economic trends.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="scarcity-metrics">
+      <h2>Scarcity metrics</h2>
+      <div class="metrics-container">
+        <div class="metric-card">
+          <div class="metric-title">Stock-to-Flow</div>
+          <div class="metric-value">56.2</div>
+          <div class="metric-description">Higher than gold (60.3)</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Annual Inflation</div>
+          <div class="metric-value">1.78%</div>
+          <div class="metric-description">Lower than gold (1.8%)</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Bitcoins Mined</div>
+          <div class="metric-value" id="bitcoins-mined">19,368,750</div>
+          <div class="supply-progress">
+            <div class="supply-progress-fill" style="width: 92.23%;"></div>
+          </div>
+          <div class="supply-progress-text">92.23% (1,631,250 remaining)</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Next Halving</div>
+          <div class="metric-value" id="days-remaining">1,056 days remaining</div>
+          <div class="metric-description">Estimated: April 2028</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="global-market-cap">
+      <h2>Global market capitalization</h2>
+      <div class="market-cap-container">
+        <div class="market-cap-item">
+          <div class="market-cap-item-name">Real Estate</div>
+          <div class="market-cap-item-value">$320.4T</div>
+          <div class="market-cap-item-percentage">46.4%</div>
+          <div class="market-cap-item-bar">
+            <div class="market-cap-item-fill" style="width: 46.4%;"></div>
+          </div>
+        </div>
+        <div class="market-cap-item">
+          <div class="market-cap-item-name">Stocks</div>
+          <div class="market-cap-item-value">$118.2T</div>
+          <div class="market-cap-item-percentage">17.1%</div>
+          <div class="market-cap-item-bar">
+            <div class="market-cap-item-fill" style="width: 17.1%;"></div>
+          </div>
+        </div>
+        <div class="market-cap-item">
+          <div class="market-cap-item-name">Debt</div>
+          <div class="market-cap-item-value">$133.0T</div>
+          <div class="market-cap-item-percentage">19.3%</div>
+          <div class="market-cap-item-bar">
+            <div class="market-cap-item-fill" style="width: 19.3%;"></div>
+          </div>
+        </div>
+        <div class="market-cap-item">
+          <div class="market-cap-item-name">Broad Money</div>
+          <div class="market-cap-item-value">$103.6T</div>
+          <div class="market-cap-item-percentage">15.0%</div>
+          <div class="market-cap-item-bar">
+            <div class="market-cap-item-fill" style="width: 15.0%;"></div>
+          </div>
+        </div>
+        <div class="market-cap-item">
+          <div class="market-cap-item-name">Gold</div>
+          <div class="market-cap-item-value">$13.2T</div>
+          <div class="market-cap-item-percentage">1.9%</div>
+          <div class="market-cap-item-bar">
+            <div class="market-cap-item-fill" style="width: 1.9%;"></div>
+          </div>
+        </div>
+        <div class="market-cap-item">
+          <div class="market-cap-item-name">Bitcoin</div>
+          <div class="market-cap-item-value">$2.3T</div>
+          <div class="market-cap-item-percentage">0.3%</div>
+          <div class="market-cap-item-bar">
+            <div class="market-cap-item-fill" style="width: 0.3%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="market-cap-total">Total: $690.7T</div>
+      <div class="market-cap-sources-toggle">
+        <button id="sources-toggle">Show sources</button>
+        <div id="market-cap-sources" style="display: none;">
+          <p>Real Estate: Savills Global Research</p>
+          <p>Stocks: WFE, Bloomberg</p>
+          <p>Debt: Institute of International Finance</p>
+          <p>Broad Money: IMF</p>
+          <p>Gold: World Gold Council</p>
+          <p>Bitcoin: CoinMarketCap</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="latest-news">
+      <h2>Latest news</h2>
+      <div class="news-container">
+        <div class="news-item">
+          <div class="news-source">Bitcoin Magazine</div>
+          <div class="news-date">May 21, 2025 14:32 UTC</div>
+          <div class="news-title">Bitcoin Surpasses $100,000 for First Time in History</div>
+          <div class="news-summary">The world's largest cryptocurrency by market capitalization has reached a new all-time high, breaking the psychological barrier of $100,000.</div>
+        </div>
+        <div class="news-item">
+          <div class="news-source">Blockworks</div>
+          <div class="news-date">May 21, 2025 10:15 UTC</div>
+          <div class="news-title">Central Banks Accelerate Digital Currency Plans Amid Bitcoin's Rise</div>
+          <div class="news-summary">Several major central banks have announced plans to accelerate their CBDC development programs as Bitcoin adoption continues to grow globally.</div>
+        </div>
+        <div class="news-item">
+          <div class="news-source">The Bitcoin Times</div>
+          <div class="news-date">May 20, 2025 22:45 UTC</div>
+          <div class="news-title">Lightning Network Capacity Exceeds 10,000 BTC</div>
+          <div class="news-summary">Bitcoin's Layer 2 scaling solution has reached a new milestone with over 10,000 BTC locked in payment channels, signaling growing adoption for everyday transactions.</div>
+        </div>
+        <div class="news-item">
+          <div class="news-source">Satoshi's Journal</div>
+          <div class="news-date">May 20, 2025 16:20 UTC</div>
+          <div class="news-title">Major Institutional Investors Allocate 5% of Portfolios to Bitcoin</div>
+          <div class="news-summary">Several pension funds and endowments have announced they are allocating 5% of their portfolios to Bitcoin as an inflation hedge and uncorrelated asset.</div>
+        </div>
+        <div class="news-item">
+          <div class="news-source">Bitcoinist</div>
+          <div class="news-date">May 19, 2025 09:10 UTC</div>
+          <div class="news-title">El Salvador's Bitcoin Treasury Now Worth $10 Billion</div>
+          <div class="news-summary">The first country to adopt Bitcoin as legal tender has seen its Bitcoin reserves grow to $10 billion in value, representing 30% of its GDP.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="bottom-sections">
+      <section id="satoshi-quotes">
+        <h2>Word of Satoshi</h2>
+        <blockquote>
+          The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.
+        </blockquote>
+      </section>
+
+      <section id="support">
+        <h2>Support this project</h2>
+        <div class="donation-container">
+          <div class="donation-address">
+            <div class="donation-address-text">17nMXp6jmDH9AWaMZcwWgYAG4vYe7Uo2m7</div>
+            <button id="copy-address">Copy</button>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
-  
+
   <footer>
-    <div class="footer-content">
-      <div class="footer-left">
-        <p>© 2025 Scarcity Panel</p>
-      </div>
-      <div class="footer-right">
-        <div class="footer-prices">
-          <span>BTC: <span id="footer-btc-price">$107,016.57</span></span>
-          <span>Gold: <span id="footer-gold-price">$3,323.10</span></span>
-          <span>Silver: <span id="footer-silver-price">$33.69</span></span>
-        </div>
-      </div>
+    <div class="footer-prices">
+      <span>BTC: <span id="footer-btc-price">$107,016.57</span></span>
+      <span>Gold: <span id="footer-gold-price">$3,323.10</span></span>
+      <span>Silver: <span id="footer-silver-price">$33.69</span></span>
+    </div>
+    <div class="footer-copyright">
+      &copy; 2025 What Matters. All rights reserved.
     </div>
   </footer>
-  
+
   <script src="script.js"></script>
 </body>
 </html>
