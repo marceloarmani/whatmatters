@@ -4,7 +4,7 @@ const assets = [
   { name: "Silver", price: "$33.69", change: "-0.3%", positive: false },
   { name: "10-Year Treasury Yield", price: "4.38%", change: "+0.05%", positive: true },
   { name: "Dollar Index", price: "103.42", change: "-0.2%", positive: false },
-  { name: "S&P 500", price: "5,218.24", change: "+0.7%", positive: true }
+  { name: "S&P 500", price: "5,789.24", change: "+0.7%", positive: true }
 ];
 
 const quotes = [
@@ -170,23 +170,56 @@ async function fetchBitcoinPrice() {
 // Função para buscar o preço do ouro
 async function fetchGoldPrice() {
   try {
-    // Usar Alpha Vantage para buscar o preço do ouro (XAU)
-    const url = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=XAU&to_currency=USD&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const response = await fetch(url);
+    // Usar API pública para obter o preço atual do ouro
+    const response = await fetch('https://api.metals.live/v1/spot/gold');
     
     if (response.ok) {
       const data = await response.json();
       
-      if (data && data['Realtime Currency Exchange Rate']) {
-        const exchangeData = data['Realtime Currency Exchange Rate'];
-        const price = parseFloat(exchangeData['5. Exchange Rate']);
-        const lastRefreshed = exchangeData['6. Last Refreshed'];
+      if (data && data.length > 0) {
+        const price = data[0].price;
         
         // Calcular uma variação simulada (já que a API não fornece)
         // Usando uma variação aleatória de ±1% para demonstração
         const change = (Math.random() * 2 - 1);
         
         // Formatar o preço com separador de milhar no padrão americano
+        const formattedPrice = price.toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+        
+        // Formatar a variação percentual
+        const formattedChange = change >= 0 ? 
+          `+${change.toFixed(1)}%` : 
+          `${change.toFixed(1)}%`;
+        
+        return {
+          name: "Gold",
+          price: formattedPrice,
+          change: formattedChange,
+          positive: change >= 0
+        };
+      }
+    }
+    
+    // Tentar Alpha Vantage como fallback
+    const url = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=XAU&to_currency=USD&apikey=${ALPHA_VANTAGE_API_KEY}`;
+    const alphaResponse = await fetch(url);
+    
+    if (alphaResponse.ok) {
+      const alphaData = await alphaResponse.json();
+      
+      if (alphaData && alphaData['Realtime Currency Exchange Rate']) {
+        const exchangeData = alphaData['Realtime Currency Exchange Rate'];
+        const price = parseFloat(exchangeData['5. Exchange Rate']);
+        
+        // Calcular uma variação simulada
+        const change = (Math.random() * 2 - 1);
+        
+        // Formatar o preço
         const formattedPrice = price.toLocaleString('en-US', {
           style: 'currency',
           currency: 'USD',
@@ -220,23 +253,56 @@ async function fetchGoldPrice() {
 // Função para buscar o preço da prata
 async function fetchSilverPrice() {
   try {
-    // Usar Alpha Vantage para buscar o preço da prata (XAG)
-    const url = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=XAG&to_currency=USD&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const response = await fetch(url);
+    // Usar API pública para obter o preço atual da prata
+    const response = await fetch('https://api.metals.live/v1/spot/silver');
     
     if (response.ok) {
       const data = await response.json();
       
-      if (data && data['Realtime Currency Exchange Rate']) {
-        const exchangeData = data['Realtime Currency Exchange Rate'];
-        const price = parseFloat(exchangeData['5. Exchange Rate']);
-        const lastRefreshed = exchangeData['6. Last Refreshed'];
+      if (data && data.length > 0) {
+        const price = data[0].price;
         
         // Calcular uma variação simulada (já que a API não fornece)
         // Usando uma variação aleatória de ±1% para demonstração
         const change = (Math.random() * 2 - 1);
         
         // Formatar o preço com separador de milhar no padrão americano
+        const formattedPrice = price.toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+        
+        // Formatar a variação percentual
+        const formattedChange = change >= 0 ? 
+          `+${change.toFixed(1)}%` : 
+          `${change.toFixed(1)}%`;
+        
+        return {
+          name: "Silver",
+          price: formattedPrice,
+          change: formattedChange,
+          positive: change >= 0
+        };
+      }
+    }
+    
+    // Tentar Alpha Vantage como fallback
+    const url = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=XAG&to_currency=USD&apikey=${ALPHA_VANTAGE_API_KEY}`;
+    const alphaResponse = await fetch(url);
+    
+    if (alphaResponse.ok) {
+      const alphaData = await alphaResponse.json();
+      
+      if (alphaData && alphaData['Realtime Currency Exchange Rate']) {
+        const exchangeData = alphaData['Realtime Currency Exchange Rate'];
+        const price = parseFloat(exchangeData['5. Exchange Rate']);
+        
+        // Calcular uma variação simulada
+        const change = (Math.random() * 2 - 1);
+        
+        // Formatar o preço
         const formattedPrice = price.toLocaleString('en-US', {
           style: 'currency',
           currency: 'USD',
@@ -270,16 +336,51 @@ async function fetchSilverPrice() {
 // Função para buscar o rendimento do Treasury de 10 anos
 async function fetchTreasuryYield() {
   try {
-    // Usar Alpha Vantage para buscar dados do Treasury de 10 anos (TNX)
-    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%5ETNX&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const response = await fetch(url);
+    // Usar API pública para obter o rendimento atual do Treasury de 10 anos
+    const response = await fetch('https://www.marketwatch.com/investing/bond/tmubmusd10y?countrycode=bx&mod=mw_quote_recentlyviewed');
     
     if (response.ok) {
-      const data = await response.json();
+      const html = await response.text();
       
-      if (data && data['Global Quote'] && data['Global Quote']['05. price']) {
-        const price = parseFloat(data['Global Quote']['05. price']);
-        const previousClose = parseFloat(data['Global Quote']['08. previous close'] || price);
+      // Extrair o valor do rendimento do HTML usando regex
+      const regex = /<bg-quote[^>]*field="Last"[^>]*>([^<]+)<\/bg-quote>/;
+      const match = html.match(regex);
+      
+      if (match && match[1]) {
+        const price = parseFloat(match[1]);
+        
+        // Extrair a variação percentual
+        const changeRegex = /<bg-quote[^>]*field="percentChange"[^>]*>([^<]+)<\/bg-quote>/;
+        const changeMatch = html.match(changeRegex);
+        const change = changeMatch && changeMatch[1] ? parseFloat(changeMatch[1]) : 0;
+        
+        // Formatar o rendimento como porcentagem
+        const formattedYield = `${price.toFixed(2)}%`;
+        
+        // Formatar a variação percentual
+        const formattedChange = change >= 0 ? 
+          `+${change.toFixed(2)}%` : 
+          `${change.toFixed(2)}%`;
+        
+        return {
+          name: "10-Year Treasury Yield",
+          price: formattedYield,
+          change: formattedChange,
+          positive: change >= 0
+        };
+      }
+    }
+    
+    // Tentar Alpha Vantage como fallback
+    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%5ETNX&apikey=${ALPHA_VANTAGE_API_KEY}`;
+    const alphaResponse = await fetch(url);
+    
+    if (alphaResponse.ok) {
+      const alphaData = await alphaResponse.json();
+      
+      if (alphaData && alphaData['Global Quote'] && alphaData['Global Quote']['05. price']) {
+        const price = parseFloat(alphaData['Global Quote']['05. price']);
+        const previousClose = parseFloat(alphaData['Global Quote']['08. previous close'] || price);
         
         // Calcular a variação percentual
         const change = ((price - previousClose) / previousClose) * 100;
@@ -313,19 +414,23 @@ async function fetchTreasuryYield() {
 // Função para buscar o Dollar Index
 async function fetchDollarIndex() {
   try {
-    // Usar Alpha Vantage para buscar dados do Dollar Index (DXY)
-    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=DXY&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const response = await fetch(url);
+    // Usar API pública para obter o valor atual do Dollar Index
+    const response = await fetch('https://www.marketwatch.com/investing/index/dxy?mod=mw_quote_recentlyviewed');
     
     if (response.ok) {
-      const data = await response.json();
+      const html = await response.text();
       
-      if (data && data['Global Quote'] && data['Global Quote']['05. price']) {
-        const price = parseFloat(data['Global Quote']['05. price']);
-        const previousClose = parseFloat(data['Global Quote']['08. previous close'] || price);
+      // Extrair o valor do Dollar Index do HTML usando regex
+      const regex = /<bg-quote[^>]*field="Last"[^>]*>([^<]+)<\/bg-quote>/;
+      const match = html.match(regex);
+      
+      if (match && match[1]) {
+        const price = parseFloat(match[1]);
         
-        // Calcular a variação percentual
-        const change = ((price - previousClose) / previousClose) * 100;
+        // Extrair a variação percentual
+        const changeRegex = /<bg-quote[^>]*field="percentChange"[^>]*>([^<]+)<\/bg-quote>/;
+        const changeMatch = html.match(changeRegex);
+        const change = changeMatch && changeMatch[1] ? parseFloat(changeMatch[1]) : 0;
         
         // Formatar o preço
         const formattedPrice = price.toFixed(2);
@@ -344,26 +449,22 @@ async function fetchDollarIndex() {
       }
     }
     
-    // Tentar alternativa com UUP (Invesco DB US Dollar Index Bullish Fund)
-    const alternativeUrl = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=UUP&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const alternativeResponse = await fetch(alternativeUrl);
+    // Tentar Alpha Vantage como fallback
+    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=DXY&apikey=${ALPHA_VANTAGE_API_KEY}`;
+    const alphaResponse = await fetch(url);
     
-    if (alternativeResponse.ok) {
-      const alternativeData = await alternativeResponse.json();
+    if (alphaResponse.ok) {
+      const alphaData = await alphaResponse.json();
       
-      if (alternativeData && alternativeData['Global Quote'] && alternativeData['Global Quote']['05. price']) {
-        // Converter o preço do UUP para uma aproximação do DXY (multiplicando por um fator)
-        const uupPrice = parseFloat(alternativeData['Global Quote']['05. price']);
-        const dxyApproxPrice = uupPrice * 3.85; // Fator aproximado para converter UUP para DXY
-        
-        const previousClose = parseFloat(alternativeData['Global Quote']['08. previous close'] || uupPrice);
-        const previousDxyApprox = previousClose * 3.85;
+      if (alphaData && alphaData['Global Quote'] && alphaData['Global Quote']['05. price']) {
+        const price = parseFloat(alphaData['Global Quote']['05. price']);
+        const previousClose = parseFloat(alphaData['Global Quote']['08. previous close'] || price);
         
         // Calcular a variação percentual
-        const change = ((dxyApproxPrice - previousDxyApprox) / previousDxyApprox) * 100;
+        const change = ((price - previousClose) / previousClose) * 100;
         
         // Formatar o preço
-        const formattedPrice = dxyApproxPrice.toFixed(2);
+        const formattedPrice = price.toFixed(2);
         
         // Formatar a variação percentual
         const formattedChange = change >= 0 ? 
@@ -391,19 +492,24 @@ async function fetchDollarIndex() {
 // Função para buscar o S&P 500
 async function fetchSP500() {
   try {
-    // Usar Alpha Vantage para buscar dados do S&P 500 (^GSPC)
-    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%5EGSPC&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const response = await fetch(url);
+    // Usar API pública para obter o valor atual do S&P 500
+    const response = await fetch('https://www.marketwatch.com/investing/index/spx?mod=mw_quote_recentlyviewed');
     
     if (response.ok) {
-      const data = await response.json();
+      const html = await response.text();
       
-      if (data && data['Global Quote'] && data['Global Quote']['05. price']) {
-        const price = parseFloat(data['Global Quote']['05. price']);
-        const previousClose = parseFloat(data['Global Quote']['08. previous close'] || price);
+      // Extrair o valor do S&P 500 do HTML usando regex
+      const regex = /<bg-quote[^>]*field="Last"[^>]*>([^<]+)<\/bg-quote>/;
+      const match = html.match(regex);
+      
+      if (match && match[1]) {
+        const priceStr = match[1].replace(/,/g, '');
+        const price = parseFloat(priceStr);
         
-        // Calcular a variação percentual
-        const change = ((price - previousClose) / previousClose) * 100;
+        // Extrair a variação percentual
+        const changeRegex = /<bg-quote[^>]*field="percentChange"[^>]*>([^<]+)<\/bg-quote>/;
+        const changeMatch = html.match(changeRegex);
+        const change = changeMatch && changeMatch[1] ? parseFloat(changeMatch[1]) : 0;
         
         // Formatar o preço com separador de milhar no padrão americano
         const formattedPrice = price.toLocaleString('en-US', {
@@ -425,26 +531,22 @@ async function fetchSP500() {
       }
     }
     
-    // Tentar alternativa com SPY (SPDR S&P 500 ETF Trust)
-    const alternativeUrl = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=SPY&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const alternativeResponse = await fetch(alternativeUrl);
+    // Tentar Alpha Vantage como fallback
+    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%5EGSPC&apikey=${ALPHA_VANTAGE_API_KEY}`;
+    const alphaResponse = await fetch(url);
     
-    if (alternativeResponse.ok) {
-      const alternativeData = await alternativeResponse.json();
+    if (alphaResponse.ok) {
+      const alphaData = await alphaResponse.json();
       
-      if (alternativeData && alternativeData['Global Quote'] && alternativeData['Global Quote']['05. price']) {
-        // Converter o preço do SPY para uma aproximação do S&P 500 (multiplicando por um fator)
-        const spyPrice = parseFloat(alternativeData['Global Quote']['05. price']);
-        const spxApproxPrice = spyPrice * 10; // Fator aproximado para converter SPY para S&P 500
-        
-        const previousClose = parseFloat(alternativeData['Global Quote']['08. previous close'] || spyPrice);
-        const previousSpxApprox = previousClose * 10;
+      if (alphaData && alphaData['Global Quote'] && alphaData['Global Quote']['05. price']) {
+        const price = parseFloat(alphaData['Global Quote']['05. price']);
+        const previousClose = parseFloat(alphaData['Global Quote']['08. previous close'] || price);
         
         // Calcular a variação percentual
-        const change = ((spxApproxPrice - previousSpxApprox) / previousSpxApprox) * 100;
+        const change = ((price - previousClose) / previousClose) * 100;
         
         // Formatar o preço com separador de milhar no padrão americano
-        const formattedPrice = spxApproxPrice.toLocaleString('en-US', {
+        const formattedPrice = price.toLocaleString('en-US', {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2
         });
@@ -474,51 +576,22 @@ async function fetchSP500() {
 
 // Função para obter dados de fallback em caso de erro na API
 function getFallbackAssetData(assetName) {
-  // Encontrar o ativo correspondente no array original
-  const fallbackAsset = assets.find(asset => asset.name === assetName);
+  // Valores atualizados para fallback
+  const fallbackData = {
+    "Gold": { price: "$2,350.40", change: "+0.5%", positive: true },
+    "Silver": { price: "$30.75", change: "-0.2%", positive: false },
+    "10-Year Treasury Yield": { price: "4.42%", change: "+0.03%", positive: true },
+    "Dollar Index": { price: "104.85", change: "-0.1%", positive: false },
+    "S&P 500": { price: "5,789.30", change: "+0.6%", positive: true }
+  };
   
-  if (fallbackAsset) {
-    // Adicionar uma pequena variação aleatória para simular atualização
-    let originalPrice;
-    
-    if (assetName === "10-Year Treasury Yield") {
-      originalPrice = parseFloat(fallbackAsset.price.replace(/%/g, ''));
-    } else {
-      originalPrice = parseFloat(fallbackAsset.price.replace(/[$,%]/g, ''));
-    }
-    
-    const variation = originalPrice * (Math.random() * 0.02 - 0.01); // ±1%
-    const newPrice = originalPrice + variation;
-    
-    // Determinar se a variação é positiva ou negativa
-    const isPositive = variation >= 0;
-    const changeValue = Math.abs(variation / originalPrice * 100);
-    
-    // Formatar o preço
-    let formattedPrice;
-    if (assetName === "10-Year Treasury Yield") {
-      formattedPrice = `${newPrice.toFixed(2)}%`;
-    } else if (assetName === "Dollar Index") {
-      formattedPrice = newPrice.toFixed(2);
-    } else {
-      formattedPrice = newPrice.toLocaleString('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
-    }
-    
-    // Formatar a variação
-    const formattedChange = isPositive ? 
-      `+${changeValue.toFixed(1)}%` : 
-      `-${changeValue.toFixed(1)}%`;
-    
+  // Retornar o valor de fallback para o ativo solicitado
+  if (fallbackData[assetName]) {
     return {
       name: assetName,
-      price: formattedPrice,
-      change: formattedChange,
-      positive: isPositive
+      price: fallbackData[assetName].price,
+      change: fallbackData[assetName].change,
+      positive: fallbackData[assetName].positive
     };
   }
   
@@ -577,9 +650,115 @@ async function updateBitcoinsMined() {
       if (supplyProgressText) {
         supplyProgressText.textContent = `${percentMined.toFixed(2)}% (${formattedRemaining} remaining)`;
       }
+    } else {
+      // Fallback para API alternativa se a primeira falhar
+      const alternativeResponse = await fetch('https://api.blockchain.com/v3/exchange/tickers/BTC-USD');
+      if (alternativeResponse.ok) {
+        // Esta API não fornece o total de bitcoins minerados diretamente,
+        // mas podemos usar um valor aproximado baseado na data atual
+        const currentDate = new Date();
+        const blocksPerDay = 144; // 144 blocos por dia em média
+        const genesisDate = new Date('2009-01-03');
+        const daysSinceGenesis = Math.floor((currentDate - genesisDate) / (1000 * 60 * 60 * 24));
+        const estimatedBlocks = daysSinceGenesis * blocksPerDay;
+        
+        // Calcular bitcoins minerados com base no cronograma de halving
+        let totalBitcoins = 0;
+        
+        // Primeiros 210.000 blocos: 50 BTC por bloco
+        if (estimatedBlocks > 210000) {
+          totalBitcoins += 210000 * 50;
+        } else {
+          totalBitcoins += estimatedBlocks * 50;
+          estimatedBlocks = 0;
+        }
+        
+        // Blocos 210.001 a 420.000: 25 BTC por bloco
+        if (estimatedBlocks > 0) {
+          const blocks2 = Math.min(estimatedBlocks, 210000);
+          totalBitcoins += blocks2 * 25;
+          estimatedBlocks -= blocks2;
+        }
+        
+        // Blocos 420.001 a 630.000: 12.5 BTC por bloco
+        if (estimatedBlocks > 0) {
+          const blocks3 = Math.min(estimatedBlocks, 210000);
+          totalBitcoins += blocks3 * 12.5;
+          estimatedBlocks -= blocks3;
+        }
+        
+        // Blocos 630.001 a 840.000: 6.25 BTC por bloco
+        if (estimatedBlocks > 0) {
+          const blocks4 = Math.min(estimatedBlocks, 210000);
+          totalBitcoins += blocks4 * 6.25;
+          estimatedBlocks -= blocks4;
+        }
+        
+        // Blocos 840.001 em diante: 3.125 BTC por bloco
+        if (estimatedBlocks > 0) {
+          totalBitcoins += estimatedBlocks * 3.125;
+        }
+        
+        // Formatar com separador de milhar no padrão americano
+        const formattedBitcoins = totalBitcoins.toLocaleString('en-US', {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        });
+        
+        // Calcular porcentagem minerada (de 21 milhões)
+        const percentMined = (totalBitcoins / 21000000) * 100;
+        const remaining = 21000000 - totalBitcoins;
+        const formattedRemaining = remaining.toLocaleString('en-US', {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        });
+        
+        // Atualizar o DOM
+        const bitcoinsMinedElement = document.getElementById('bitcoins-mined');
+        if (bitcoinsMinedElement) {
+          bitcoinsMinedElement.textContent = formattedBitcoins;
+        }
+        
+        // Atualizar a barra de progresso
+        const supplyProgressFill = document.querySelector('.supply-progress-fill');
+        if (supplyProgressFill) {
+          supplyProgressFill.style.width = `${percentMined.toFixed(2)}%`;
+        }
+        
+        // Atualizar o texto de progresso
+        const supplyProgressText = document.querySelector('.supply-progress-text');
+        if (supplyProgressText) {
+          supplyProgressText.textContent = `${percentMined.toFixed(2)}% (${formattedRemaining} remaining)`;
+        }
+      }
     }
   } catch (error) {
     console.error('Erro ao buscar dados de Bitcoins minerados:', error);
+    
+    // Usar valor de fallback em caso de erro
+    const fallbackBitcoins = 19420000; // Valor aproximado atualizado
+    const formattedBitcoins = fallbackBitcoins.toLocaleString('en-US');
+    const percentMined = (fallbackBitcoins / 21000000) * 100;
+    const remaining = 21000000 - fallbackBitcoins;
+    const formattedRemaining = remaining.toLocaleString('en-US');
+    
+    // Atualizar o DOM com valores de fallback
+    const bitcoinsMinedElement = document.getElementById('bitcoins-mined');
+    if (bitcoinsMinedElement) {
+      bitcoinsMinedElement.textContent = formattedBitcoins;
+    }
+    
+    // Atualizar a barra de progresso
+    const supplyProgressFill = document.querySelector('.supply-progress-fill');
+    if (supplyProgressFill) {
+      supplyProgressFill.style.width = `${percentMined.toFixed(2)}%`;
+    }
+    
+    // Atualizar o texto de progresso
+    const supplyProgressText = document.querySelector('.supply-progress-text');
+    if (supplyProgressText) {
+      supplyProgressText.textContent = `${percentMined.toFixed(2)}% (${formattedRemaining} remaining)`;
+    }
   }
 }
 
@@ -613,6 +792,9 @@ function checkHalvingDaysUpdate() {
   
   // Se não houver data de última atualização ou se for um dia diferente, atualizar
   if (!lastUpdateDate || lastUpdateDate !== currentDate) {
+    updateDaysToHalving();
+  } else {
+    // Forçar atualização para garantir que o valor seja exibido corretamente
     updateDaysToHalving();
   }
 }
