@@ -490,3 +490,203 @@ document.addEventListener('DOMContentLoaded', () => {
   setupCopyButton();
   setupSourcesToggle();
 });
+
+
+// Função para buscar e exibir notícias de feeds RSS
+async function fetchNews() {
+  const newsContainer = document.getElementById('news-content');
+  if (!newsContainer) return;
+
+  // Limpa o conteúdo atual
+  newsContainer.innerHTML = '<div class="news-grid"></div>'; // Recria o grid
+  const newsGrid = newsContainer.querySelector('.news-grid');
+
+  const feedUrls = [
+    'https://www.coindesk.com/arc/outboundfeeds/rss/?outputType=xml',
+    'https://cointelegraph.com/rss',
+    'https://cryptonews.com/news/feed/' // Adicionando mais uma fonte
+  ];
+
+  const corsProxy = 'https://api.allorigins.win/get?url=';
+  let allNewsItems = [];
+
+  try {
+    const fetchPromises = feedUrls.map(feedUrl => 
+      fetch(`${corsProxy}${encodeURIComponent(feedUrl)}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status} for ${feedUrl}`);
+          }
+          return response.json(); // allorigins wraps the response in JSON
+        })
+        .then(data => {
+          if (!data.contents) {
+             console.warn(`Conteúdo vazio recebido de ${feedUrl}`);
+             return []; // Retorna array vazio se não houver conteúdo
+          }
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(data.contents, 'application/xml');
+          const items = xmlDoc.querySelectorAll('item');
+          const news = [];
+          const sourceName = getSourceName(feedUrl); // Função auxiliar para obter nome da fonte
+
+          items.forEach(item => {
+            const title = item.querySelector('title')?.textContent || 'Sem título';
+            const link = item.querySelector('link')?.textContent || '#';
+            // Tenta obter a descrição, lidando com diferentes tags e CDATA
+            let description = item.querySelector('description')?.textContent || '';
+            if (description.includes('CDATA')) {
+                 try {
+                    const cdataContent = description.match(/<!\[CDATA\[(.*?)(\]\]>)?$/s);
+                    if(cdataContent && cdataContent[1]) {
+                        // Remove tags HTML da descrição
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = cdataContent[1];
+                        description = tempDiv.textContent || tempDiv.innerText || '';
+                    } else {
+                        description = ''; // Limpa se não conseguir extrair CDATA
+                    }
+                 } catch (e) {
+                    description = ''; // Limpa em caso de erro
+                 }
+            } else {
+                 // Remove tags HTML da descrição normal
+                 const tempDiv = document.createElement('div');
+                 tempDiv.innerHTML = description;
+                 description = tempDiv.textContent || tempDiv.innerText || '';
+            }
+            description = description.trim().substring(0, 150) + (description.length > 150 ? '...' : ''); // Limita e adiciona reticências
+
+            const pubDateStr = item.querySelector('pubDate')?.textContent;
+            const pubDate = pubDateStr ? new Date(pubDateStr) : new Date(0); // Usa data mínima se não houver
+
+            news.push({ title, link, description, pubDate, sourceName });
+          });
+          return news;
+        })
+        .catch(error => {
+          console.error(`Erro ao buscar ou processar feed ${feedUrl}:`, error);
+          return []; // Retorna array vazio em caso de erro para este feed
+        })
+    );
+
+    const results = await Promise.allSettled(fetchPromises);
+
+    results.forEach(result => {
+      if (result.status === 'fulfilled' && Array.isArray(result.value)) {
+        allNewsItems = allNewsItems.concat(result.value);
+      }
+    });
+
+    // Ordena todas as notícias pela data de publicação (mais recentes primeiro)
+    allNewsItems.sort((a, b) => b.pubDate - a.pubDate);
+
+    // Limita ao número desejado de notícias (ex: 6)
+    const latestNews = allNewsItems.slice(0, 6);
+
+    // Renderiza as notícias no grid
+    if (latestNews.length === 0) {
+        newsGrid.innerHTML = '<p>Não foi possível carregar as notícias no momento.</p>';
+        return;
+    }
+
+    latestNews.forEach(news => {
+      const newsItemElement = document.createElement('a');
+      newsItemElement.href = news.link;
+      newsItemElement.target = '_blank';
+      newsItemElement.className = 'news-item';
+
+      const newsContentElement = document.createElement('div');
+      newsContentElement.className = 'news-content';
+
+      const sourceElement = document.createElement('div');
+      sourceElement.className = 'news-source';
+      sourceElement.textContent = news.sourceName;
+
+      const titleElement = document.createElement('div');
+      titleElement.className = 'news-title';
+      titleElement.textContent = news.title;
+
+      const descriptionElement = document.createElement('div');
+      descriptionElement.className = 'news-description';
+      descriptionElement.textContent = news.description;
+
+      const dateElement = document.createElement('div');
+      dateElement.className = 'news-date';
+      // Formata a data para um formato legível
+      dateElement.textContent = news.pubDate.toLocaleString('pt-BR', { 
+          day: '2-digit', 
+          month: '2-digit', 
+          year: 'numeric', 
+          hour: '2-digit', 
+          minute: '2-digit' 
+      }); 
+
+      newsContentElement.appendChild(sourceElement);
+      newsContentElement.appendChild(titleElement);
+      newsContentElement.appendChild(descriptionElement);
+      newsContentElement.appendChild(dateElement);
+      newsItemElement.appendChild(newsContentElement);
+      newsGrid.appendChild(newsItemElement);
+    });
+
+  } catch (error) {
+    console.error('Erro geral ao buscar notícias:', error);
+    newsGrid.innerHTML = '<p>Erro ao carregar notícias. Tente novamente mais tarde.</p>';
+  }
+}
+
+// Função auxiliar para obter o nome da fonte a partir da URL do feed
+function getSourceName(feedUrl) {
+  if (feedUrl.includes('coindesk.com')) return 'CoinDesk';
+  if (feedUrl.includes('cointelegraph.com')) return 'Cointelegraph';
+  if (feedUrl.includes('cryptonews.com')) return 'CryptoNews';
+  // Adicione mais fontes conforme necessário
+  try {
+      const url = new URL(feedUrl);
+      return url.hostname.replace(/^www\./, ''); // Retorna o hostname como fallback
+  } catch {
+      return 'Fonte Desconhecida';
+  }
+}
+
+// Adiciona a chamada da função fetchNews ao final do script ou dentro do DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+  renderQuotes();
+  updateBitcoinsMined();
+  checkHalvingDaysUpdate();
+  updateBitcoinMarketCap();
+  rotateSatoshiQuotes();
+  fetchNews(); // Busca notícias ao carregar a página
+  // Atualiza notícias periodicamente (ex: a cada 30 minutos)
+  setInterval(fetchNews, 1800000);
+
+  // Toggle para fontes do Market Cap
+  const sourcesToggle = document.getElementById('sources-toggle');
+  const marketCapSources = document.getElementById('market-cap-sources');
+  if (sourcesToggle && marketCapSources) {
+    sourcesToggle.addEventListener('click', () => {
+      const isHidden = marketCapSources.style.display === 'none' || marketCapSources.style.display === '';
+      marketCapSources.style.display = isHidden ? 'block' : 'none';
+      sourcesToggle.textContent = isHidden ? 'Hide sources' : 'Show sources';
+    });
+  }
+  
+  // Funcionalidade de cópia para o endereço de doação
+  const copyButton = document.querySelector('.copy-button');
+  const donationAddress = document.querySelector('.donation-address-text');
+  if (copyButton && donationAddress) {
+      copyButton.addEventListener('click', () => {
+          navigator.clipboard.writeText(donationAddress.textContent)
+              .then(() => {
+                  copyButton.textContent = 'Copied!';
+                  setTimeout(() => { copyButton.textContent = 'Copy Address'; }, 2000);
+              })
+              .catch(err => {
+                  console.error('Erro ao copiar endereço:', err);
+                  // Poderia adicionar um fallback aqui se necessário
+              });
+      });
+  }
+});
+
