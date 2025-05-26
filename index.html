@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +6,7 @@
   <title>Scarcity Panel</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11.5 1L2 6v12l9.5 5 9.5-5V6l-9.5-5zm7.5 16.5l-7.5 3.94-7.5-3.94V6.5l7.5-3.94 7.5 3.94v11z' fill='%23f7931a'/%3E%3Cpath d='M8.5 12v4l3 1.5 3-1.5v-4l-3-1.5-3 1.5z' fill='%23f7931a'/%3E%3C/svg%3E" type="image/svg+xml">
 </head>
 <body>
   <header class="compact-header">
@@ -330,28 +327,29 @@
                 <div class="news-date">May 18, 2025 11:20 UTC</div>
               </div>
             </a>
-            <a href="https://satoshisjournal.com/" target="_blank" class="news-item">
+            <a href="https://blockworks.co/" target="_blank" class="news-item">
               <div class="news-content">
-                <div class="news-source">Satoshi's Journal</div>
-                <div class="news-title">Institutional Adoption Accelerates as Pension Funds Enter Crypto</div>
-                <div class="news-description">Major pension funds are now allocating portions of their portfolios to Bitcoin and other digital assets.</div>
-                <div class="news-date">May 17, 2025 13:05 UTC</div>
+                <div class="news-source">Blockworks</div>
+                <div class="news-title">Treasury Yields Rise as Fed Signals Policy Shift</div>
+                <div class="news-description">The 10-year Treasury yield reached 4.38% as markets anticipate changes in monetary policy.</div>
+                <div class="news-date">May 17, 2025 15:30 UTC</div>
               </div>
             </a>
-            <a href="https://bitcoinist.com/" target="_blank" class="news-item">
+            <a href="https://bitcointimes.news/" target="_blank" class="news-item">
               <div class="news-content">
-                <div class="news-source">Bitcoinist</div>
-                <div class="news-title">El Salvador's Bitcoin Strategy Shows Long-term Success</div>
-                <div class="news-description">The country's Bitcoin reserves have appreciated significantly since adoption as legal tender in 2021.</div>
-                <div class="news-date">May 16, 2025 08:30 UTC</div>
+                <div class="news-source">The Bitcoin Times</div>
+                <div class="news-title">Dollar Index Falls as Global Currencies Strengthen</div>
+                <div class="news-description">The US Dollar Index dropped below 104 as major currencies gain ground against the greenback.</div>
+                <div class="news-date">May 16, 2025 13:45 UTC</div>
               </div>
             </a>
           </div>
         </div>
       </section>
       
-      <!-- Word of Satoshi and Support side by side -->
+      <!-- Word of Satoshi and Support in horizontal layout -->
       <div class="horizontal-sections">
+        <!-- Word of Satoshi -->
         <section id="satoshi-quotes" class="standard-section">
           <h2 class="section-header">Word of Satoshi</h2>
           <div class="quote-container">
@@ -360,12 +358,13 @@
           </div>
         </section>
         
+        <!-- Support -->
         <section id="support" class="standard-section">
-          <h2 class="section-header">Support this project</h2>
+          <h2 class="section-header">Support</h2>
           <div class="donation-container">
             <div class="donation-address">
-              <div class="donation-address-text">17nMXp6jmDH9AWaMZcwWgYAG4vYe7Uo2m7</div>
-              <button id="copy-address" class="copy-button">Copy Address</button>
+              <div class="donation-address-text">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
+              <button class="copy-button" id="copy-address">Copy Address</button>
             </div>
           </div>
         </section>
@@ -375,15 +374,11 @@
   
   <footer>
     <div class="footer-content">
-      <div class="footer-left">
-        <p>© 2025 Scarcity Panel</p>
-      </div>
-      <div class="footer-right">
-        <div class="footer-prices">
-          <span>BTC: <span id="footer-btc-price">$107,016.57</span></span>
-          <span>Gold: <span id="footer-gold-price">$3,323.10</span></span>
-          <span>Silver: <span id="footer-silver-price">$33.69</span></span>
-        </div>
+      <div>© 2025 Scarcity Panel | Data updated every minute</div>
+      <div class="footer-prices">
+        <span>BTC: <span id="footer-btc-price">$107,016.57</span></span>
+        <span>Gold: <span id="footer-gold-price">$3,323.10</span></span>
+        <span>Silver: <span id="footer-silver-price">$33.69</span></span>
       </div>
     </div>
   </footer>
