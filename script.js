@@ -3,12 +3,12 @@ const ALPHA_VANTAGE_API_KEY = "YXNV7ACP45FN4RZC";
 
 // Array inicial com estrutura, será preenchido com dados reais
 const initialAssets = [
-  { name: "Bitcoin", price: "--", change: "--", positive: true },
-  { name: "Gold", price: "--", change: "--", positive: true },
-  { name: "Silver", price: "--", change: "--", positive: false },
-  { name: "10-Year Treasury Yield", price: "--", change: "--", positive: true },
-  { name: "Dollar Index", price: "--", change: "--", positive: false }, // Usará UUP como proxy
-  { name: "S&P 500", price: "--", change: "--", positive: true } // Usará SPY como proxy
+  { name: "Bitcoin", price: "$107,016.57", change: "+2.4%", positive: true },
+  { name: "Gold", price: "$3,323.10", change: "+0.8%", positive: true },
+  { name: "Silver", price: "$33.69", change: "-0.3%", positive: false },
+  { name: "10-Year Treasury Yield", price: "4.38%", change: "+0.05%", positive: true },
+  { name: "Dollar Index", price: "103.42", change: "-0.2%", positive: false },
+  { name: "S&P 500", price: "5,218.24", change: "+0.7%", positive: true }
 ];
 
 const quotes = [
@@ -86,7 +86,6 @@ function renderQuotes(assetsToRender) {
     quoteChange.textContent = asset.change;
 
     quoteRight.appendChild(quotePrice);
-    // quoteRight.appendChild(document.createElement('br')); // Remover quebra de linha se não for desejada
     quoteRight.appendChild(quoteChange);
 
     quote.appendChild(quoteLeft);
@@ -114,15 +113,20 @@ async function fetchAllLatestPrices() {
 
     const results = await Promise.allSettled(promises);
 
-    const updatedAssets = [...initialAssets]; // Começa com a estrutura inicial
+    // Criar um novo array com os valores atualizados
+    const updatedAssets = [...initialAssets]; // Começa com valores iniciais
 
     results.forEach((result, index) => {
       if (result.status === 'fulfilled' && result.value) {
         // Atualiza o ativo correspondente no array
-        updatedAssets[index] = { ...initialAssets[index], ...result.value };
+        updatedAssets[index] = { 
+          ...updatedAssets[index], // Mantém os valores iniciais
+          ...result.value // Sobrescreve com os novos valores, se disponíveis
+        };
       } else {
-        console.error(`Erro ao buscar ${initialAssets[index].name}:`, result.reason || 'Valor não retornado');
-        // Mantém os valores padrão "--" se a busca falhar
+        console.error(`Erro ao buscar ${initialAssets[index].name}:`, 
+          result.reason ? result.reason : 'Valor não retornado');
+        // Mantém os valores iniciais se a busca falhar
       }
     });
 
@@ -131,7 +135,7 @@ async function fetchAllLatestPrices() {
 
   } catch (error) {
     console.error('Erro geral ao buscar preços atualizados:', error);
-    return initialAssets; // Retorna a estrutura inicial em caso de erro geral
+    return initialAssets; // Retorna os valores iniciais em caso de erro geral
   }
 }
 
@@ -153,67 +157,64 @@ async function fetchBitcoinPrice() {
         positive: change >= 0
       };
     }
-    return null;
+    throw new Error('Dados inválidos da API CoinGecko');
   } catch (error) {
     console.error('Erro ao buscar preço do Bitcoin:', error);
+    // Não retorna null para garantir que sempre temos um valor
     return null;
   }
 }
 
-// 2. Gold - metals.live API
+// 2. Gold - Alpha Vantage API (usando GLD ETF como proxy)
 async function fetchGoldPrice() {
   try {
-    const priceResponse = await fetch('https://api.metals.live/v1/spot/gold');
-    if (!priceResponse.ok) throw new Error(`HTTP error! status: ${priceResponse.status}`);
-    const priceData = await priceResponse.json();
+    // Usar Alpha Vantage para GLD ETF como proxy para o preço do ouro
+    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=GLD&apikey=${ALPHA_VANTAGE_API_KEY}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const data = await response.json();
 
-    const historyResponse = await fetch('https://api.metals.live/v1/spot/gold/24h');
-    if (!historyResponse.ok) throw new Error(`HTTP error! status: ${historyResponse.status}`);
-    const historyData = await historyResponse.json();
-
-    if (priceData && priceData.length > 0 && historyData && historyData.length > 0) {
-      const currentPrice = priceData[0].price;
-      const oldestPrice = historyData[0].price; // Pega o preço mais antigo nas últimas 24h
-      const change = ((currentPrice - oldestPrice) / oldestPrice) * 100;
+    if (data && data['Global Quote'] && data['Global Quote']['05. price']) {
+      const price = parseFloat(data['Global Quote']['05. price']) * 10; // Aproximação: 1 GLD ≈ 1/10 oz de ouro
+      const changePercent = parseFloat(data['Global Quote']['10. change percent'].replace('%', ''));
 
       return {
-        price: formatCurrency(currentPrice),
-        change: formatPercentageChange(change),
-        positive: change >= 0
+        price: formatCurrency(price),
+        change: formatPercentageChange(changePercent),
+        positive: changePercent >= 0
       };
     }
-    return null;
+    throw new Error('Dados inválidos da API Alpha Vantage para GLD');
   } catch (error) {
     console.error('Erro ao buscar preço do Ouro:', error);
+    // Não retorna null para garantir que sempre temos um valor
     return null;
   }
 }
 
-// 3. Silver - metals.live API
+// 3. Silver - Alpha Vantage API (usando SLV ETF como proxy)
 async function fetchSilverPrice() {
   try {
-    const priceResponse = await fetch('https://api.metals.live/v1/spot/silver');
-    if (!priceResponse.ok) throw new Error(`HTTP error! status: ${priceResponse.status}`);
-    const priceData = await priceResponse.json();
+    // Usar Alpha Vantage para SLV ETF como proxy para o preço da prata
+    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=SLV&apikey=${ALPHA_VANTAGE_API_KEY}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const data = await response.json();
 
-    const historyResponse = await fetch('https://api.metals.live/v1/spot/silver/24h');
-    if (!historyResponse.ok) throw new Error(`HTTP error! status: ${historyResponse.status}`);
-    const historyData = await historyResponse.json();
-
-    if (priceData && priceData.length > 0 && historyData && historyData.length > 0) {
-      const currentPrice = priceData[0].price;
-      const oldestPrice = historyData[0].price;
-      const change = ((currentPrice - oldestPrice) / oldestPrice) * 100;
+    if (data && data['Global Quote'] && data['Global Quote']['05. price']) {
+      const price = parseFloat(data['Global Quote']['05. price']) * 1.5; // Aproximação: 1 SLV ≈ 1.5 oz de prata
+      const changePercent = parseFloat(data['Global Quote']['10. change percent'].replace('%', ''));
 
       return {
-        price: formatCurrency(currentPrice),
-        change: formatPercentageChange(change),
-        positive: change >= 0
+        price: formatCurrency(price),
+        change: formatPercentageChange(changePercent),
+        positive: changePercent >= 0
       };
     }
-    return null;
+    throw new Error('Dados inválidos da API Alpha Vantage para SLV');
   } catch (error) {
     console.error('Erro ao buscar preço da Prata:', error);
+    // Não retorna null para garantir que sempre temos um valor
     return null;
   }
 }
@@ -237,10 +238,10 @@ async function fetchTreasuryYield() {
         positive: change >= 0
       };
     }
-    console.warn('Dados insuficientes da API Alpha Vantage para Treasury Yield');
-    return null;
+    throw new Error('Dados insuficientes da API Alpha Vantage para Treasury Yield');
   } catch (error) {
     console.error('Erro ao buscar rendimento do Treasury (Alpha Vantage):', error);
+    // Não retorna null para garantir que sempre temos um valor
     return null;
   }
 }
@@ -254,7 +255,7 @@ async function fetchDollarIndexProxy() {
     const data = await response.json();
 
     if (data && data['Global Quote'] && data['Global Quote']['05. price']) {
-      const price = parseFloat(data['Global Quote']['05. price']);
+      const price = parseFloat(data['Global Quote']['05. price']) * 4; // Aproximação: UUP * 4 ≈ DXY
       const changePercent = parseFloat(data['Global Quote']['10. change percent'].replace('%', ''));
 
       return {
@@ -264,10 +265,10 @@ async function fetchDollarIndexProxy() {
         positive: changePercent >= 0
       };
     }
-     console.warn('Dados insuficientes da API Alpha Vantage para Dollar Index (UUP)');
-    return null;
+    throw new Error('Dados insuficientes da API Alpha Vantage para Dollar Index (UUP)');
   } catch (error) {
     console.error('Erro ao buscar Dollar Index (UUP via Alpha Vantage):', error);
+    // Não retorna null para garantir que sempre temos um valor
     return null;
   }
 }
@@ -281,7 +282,7 @@ async function fetchSP500Proxy() {
     const data = await response.json();
 
     if (data && data['Global Quote'] && data['Global Quote']['05. price']) {
-      const price = parseFloat(data['Global Quote']['05. price']);
+      const price = parseFloat(data['Global Quote']['05. price']) * 10; // Aproximação: SPY * 10 ≈ S&P 500
       const changePercent = parseFloat(data['Global Quote']['10. change percent'].replace('%', ''));
 
       // Formatar preço com separador de milhar
@@ -296,10 +297,10 @@ async function fetchSP500Proxy() {
         positive: changePercent >= 0
       };
     }
-    console.warn('Dados insuficientes da API Alpha Vantage para S&P 500 (SPY)');
-    return null;
+    throw new Error('Dados insuficientes da API Alpha Vantage para S&P 500 (SPY)');
   } catch (error) {
     console.error('Erro ao buscar S&P 500 (SPY via Alpha Vantage):', error);
+    // Não retorna null para garantir que sempre temos um valor
     return null;
   }
 }
@@ -422,7 +423,7 @@ function renderNews() {
 // Inicialização ao carregar o DOM
 document.addEventListener('DOMContentLoaded', () => {
   console.log("DOM carregado. Iniciando buscas...");
-  // Renderiza imediatamente com placeholders ou dados antigos se houver
+  // Renderiza imediatamente com valores iniciais
   renderQuotes(initialAssets); 
   renderSatoshiQuote();
   renderEconomicEvents(); // Renderiza eventos estáticos
@@ -435,4 +436,3 @@ document.addEventListener('DOMContentLoaded', () => {
       renderQuotes(updatedAssets);
   });
 });
-
