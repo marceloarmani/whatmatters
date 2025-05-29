@@ -247,6 +247,26 @@ async function fetchTreasuryYield() {
     throw new Error('Resposta inválida da API Alpha Vantage para Treasury Yield');
   } catch (error) {
     console.error('Erro ao buscar rendimento do Treasury:', error);
+    // Tentar API alternativa (Yahoo Finance) se Alpha Vantage falhar
+    try {
+      const response = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/%5ETNX?interval=1d');
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      if (data && data.chart && data.chart.result && data.chart.result[0]) {
+        const result = data.chart.result[0];
+        const quote = result.indicators.quote[0];
+        const lastIndex = quote.close.length - 1;
+        const price = quote.close[lastIndex] / 10; // Dividir por 10 para obter o rendimento correto
+        const previousClose = result.meta.previousClose / 10;
+        const change = ((price - previousClose) / previousClose) * 100;
+        
+        const formattedYield = `${price.toFixed(2)}%`;
+        const formattedChange = change >= 0 ? `+${change.toFixed(2)}%` : `${change.toFixed(2)}%`;
+        return { name: "10-Year Treasury Yield", price: formattedYield, change: formattedChange, positive: change >= 0 };
+      }
+    } catch (backupError) {
+      console.error('Erro na API de backup para Treasury Yield:', backupError);
+    }
     // Fallback para valor estático
     const yield_value = 4.51; // Valor exemplo de maio 2025
     const change = 0.03; // Variação exemplo
@@ -275,6 +295,26 @@ async function fetchDollarIndex() {
     throw new Error('Resposta inválida da API Alpha Vantage para Dollar Index');
   } catch (error) {
     console.error('Erro ao buscar Dollar Index:', error);
+    // Tentar API alternativa (Yahoo Finance) se Alpha Vantage falhar
+    try {
+      const response = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/DX-Y.NYB?interval=1d');
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      if (data && data.chart && data.chart.result && data.chart.result[0]) {
+        const result = data.chart.result[0];
+        const quote = result.indicators.quote[0];
+        const lastIndex = quote.close.length - 1;
+        const price = quote.close[lastIndex];
+        const previousClose = result.meta.previousClose;
+        const change = ((price - previousClose) / previousClose) * 100;
+        
+        const formattedPrice = price.toFixed(2);
+        const formattedChange = change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
+        return { name: "Dollar Index", price: formattedPrice, change: formattedChange, positive: change >= 0 };
+      }
+    } catch (backupError) {
+      console.error('Erro na API de backup para Dollar Index:', backupError);
+    }
     // Fallback para valor estático
     const price = 99.11; // Valor exemplo de maio 2025
     const change = -0.85; // Variação exemplo
@@ -302,10 +342,65 @@ async function fetchSP500() {
     }
     throw new Error('Resposta inválida da API Alpha Vantage para S&P 500');
   } catch (error) {
-    console.error('Erro ao buscar S&P 500:', error);
-    // Fallback para valor estático
+    console.error('Erro ao buscar S&P 500 via Alpha Vantage:', error);
+    
+    // Tentar API alternativa (Yahoo Finance) se Alpha Vantage falhar
+    try {
+      console.log('Tentando Yahoo Finance para S&P 500');
+      const response = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=1d');
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      
+      if (data && data.chart && data.chart.result && data.chart.result[0]) {
+        const result = data.chart.result[0];
+        const quote = result.indicators.quote[0];
+        const lastIndex = quote.close.length - 1;
+        
+        if (quote.close[lastIndex] !== null) {
+          const price = quote.close[lastIndex];
+          const previousClose = result.meta.previousClose;
+          const change = ((price - previousClose) / previousClose) * 100;
+          
+          console.log(`Yahoo Finance S&P 500: ${price}, change: ${change}%`);
+          
+          const formattedPrice = price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          const formattedChange = change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
+          return { name: "S&P 500", price: formattedPrice, change: formattedChange, positive: change >= 0 };
+        }
+      }
+      throw new Error('Dados inválidos da API Yahoo Finance para S&P 500');
+    } catch (backupError) {
+      console.error('Erro na API de backup para S&P 500:', backupError);
+      
+      // Tentar terceira fonte (Finnhub) se Yahoo Finance falhar
+      try {
+        console.log('Tentando Finnhub para S&P 500');
+        const response = await fetch('https://finnhub.io/api/v1/quote?symbol=SPY&token=c2qih42ad3ickc1qkdog');
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        
+        if (data && data.c) {
+          // SPY é um ETF que acompanha o S&P 500, mas com valor aproximadamente 1/10
+          // Multiplicamos por 10 para obter uma estimativa do valor do S&P 500
+          const price = data.c * 10;
+          const previousClose = data.pc * 10;
+          const change = ((price - previousClose) / previousClose) * 100;
+          
+          console.log(`Finnhub S&P 500 (via SPY): ${price}, change: ${change}%`);
+          
+          const formattedPrice = price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          const formattedChange = change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
+          return { name: "S&P 500", price: formattedPrice, change: formattedChange, positive: change >= 0 };
+        }
+      } catch (thirdError) {
+        console.error('Erro na terceira fonte para S&P 500:', thirdError);
+      }
+    }
+    
+    // Fallback para valor estático se todas as APIs falharem
+    console.log('Usando fallback estático para S&P 500');
     const price = 5802.82; // Valor exemplo de maio 2025
-    const change = -0.67; // Variação exemplo
+    const change = 0.67; // Variação exemplo
     const formattedPrice = price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const formattedChange = change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
     return { name: "S&P 500", price: formattedPrice, change: formattedChange, positive: change >= 0 };
@@ -322,6 +417,17 @@ async function fetchMinedBitcoins() {
     return totalbc;
   } catch (error) {
     console.error('Erro ao buscar Bitcoins minerados:', error);
+    // Tentar API alternativa (Blockchair) se blockchain.info falhar
+    try {
+      const response = await fetch('https://api.blockchair.com/bitcoin/stats');
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      if (data && data.data && data.data.circulation) {
+        return data.data.circulation;
+      }
+    } catch (backupError) {
+      console.error('Erro na API de backup para Bitcoins minerados:', backupError);
+    }
     return 19368750; // Retorna o valor antigo em caso de erro
   }
 }
@@ -335,6 +441,17 @@ async function fetchBitcoinBlockCount() {
     return parseInt(blockCount);
   } catch (error) {
     console.error('Erro ao buscar contagem de blocos Bitcoin:', error);
+    // Tentar API alternativa (Blockchair) se blockchain.info falhar
+    try {
+      const response = await fetch('https://api.blockchair.com/bitcoin/stats');
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      if (data && data.data && data.data.blocks) {
+        return data.data.blocks;
+      }
+    } catch (backupError) {
+      console.error('Erro na API de backup para contagem de blocos Bitcoin:', backupError);
+    }
     return 840000; // Valor aproximado para maio de 2025 como fallback
   }
 }
@@ -345,10 +462,26 @@ async function fetchBitcoinBlockCount() {
 function renderQuotes() {
   const quotesContainer = document.getElementById('quotes');
   if (!quotesContainer) return;
-  quotesContainer.innerHTML = ''; // Limpar antes de adicionar
+  
+  // Adicionar indicador visual de atualização
+  const loadingIndicator = document.createElement('div');
+  loadingIndicator.className = 'loading-indicator';
+  loadingIndicator.textContent = 'Atualizando...';
+  quotesContainer.appendChild(loadingIndicator);
+  
+  console.log('Iniciando atualização de preços...');
 
   // Forçar a atualização imediata dos preços
   fetchAllLatestPrices().then(updatedAssets => {
+    console.log('Preços atualizados recebidos:', updatedAssets);
+    
+    // Remover indicador de carregamento
+    const indicator = document.querySelector('.loading-indicator');
+    if (indicator) indicator.remove();
+    
+    // Limpar antes de adicionar
+    quotesContainer.innerHTML = '';
+    
     const assetsToRender = updatedAssets || assets; // Usa atualizado ou fallback
     assetsToRender.forEach(asset => {
       const quoteWrapper = document.createElement('div');
@@ -386,12 +519,24 @@ function renderQuotes() {
       quotesContainer.appendChild(quoteWrapper);
     });
     updateFooterPrices(assetsToRender);
+    
+    // Registrar timestamp da última atualização
+    const now = new Date();
+    console.log(`Atualização de preços concluída às ${now.toLocaleTimeString()}`);
+    
+    // Adicionar timestamp de atualização no rodapé
+    const footerCopyright = document.querySelector('.footer-copyright');
+    if (footerCopyright) {
+      footerCopyright.textContent = `© 2025 Scarcity Panel. Dados atualizados em ${now.toLocaleTimeString()}.`;
+    }
   });
 }
 
 // Função para buscar todos os preços atualizados
 async function fetchAllLatestPrices() {
   try {
+    console.log('Buscando todos os preços atualizados...');
+    
     const promises = [
       fetchBitcoinPrice(),
       fetchGoldPrice(),
@@ -410,7 +555,10 @@ async function fetchAllLatestPrices() {
     // Atualizar apenas os valores que foram obtidos com sucesso
     results.forEach((result, index) => {
       if (result.status === 'fulfilled' && result.value) {
+        console.log(`Atualizado com sucesso: ${result.value.name} = ${result.value.price}`);
         updatedAssets[index] = result.value;
+      } else {
+        console.error(`Falha ao atualizar ${assets[index].name}:`, result.reason);
       }
     });
     
@@ -430,6 +578,7 @@ async function updateScarcityMetrics() {
 
   if (minedElement && progressFillElement && progressTextElement) {
     try {
+      console.log('Atualizando métricas de escassez...');
       const minedBitcoins = await fetchMinedBitcoins();
       const formattedMinedBitcoins = minedBitcoins.toLocaleString('en-US', { maximumFractionDigits: 0 });
       minedElement.textContent = formattedMinedBitcoins;
@@ -447,6 +596,8 @@ async function updateScarcityMetrics() {
       if (bitcoinsTitleElement) {
         bitcoinsTitleElement.textContent = `Bitcoins Mined (Block ${blockCount.toLocaleString('en-US')})`;
       }
+      
+      console.log(`Métricas de escassez atualizadas: ${formattedMinedBitcoins} BTC, Bloco ${blockCount}`);
 
     } catch (error) {
       console.error('Erro ao atualizar métricas de escassez (Bitcoins Minerados):', error);
@@ -462,6 +613,7 @@ async function updateHalvingCountdown() {
   if (!daysRemainingElement || !nextHalvingDateElement) return;
 
   try {
+    console.log('Atualizando contagem regressiva do Halving...');
     // Buscar o número atual de blocos
     const currentBlock = await fetchBitcoinBlockCount();
     
@@ -484,9 +636,11 @@ async function updateHalvingCountdown() {
     if (daysRemaining >= 0) {
       daysRemainingElement.textContent = `${daysRemaining.toLocaleString('en-US')} days remaining (${blocksRemaining.toLocaleString('en-US')} blocks)`;
       nextHalvingDateElement.textContent = `${halvingMonth} ${halvingYear} (Est.)`;
+      console.log(`Contagem regressiva do Halving atualizada: ${daysRemaining} dias restantes, ${blocksRemaining} blocos`);
     } else {
       daysRemainingElement.textContent = `Halving occurred`;
       nextHalvingDateElement.textContent = `Completed`;
+      console.log('Halving já ocorreu');
     }
   } catch (error) {
     console.error('Erro ao atualizar contagem regressiva do Halving:', error);
@@ -503,9 +657,11 @@ async function updateHalvingCountdown() {
     if (diffDays >= 0) {
       daysRemainingElement.textContent = `${diffDays.toLocaleString('en-US')} days remaining`;
       nextHalvingDateElement.textContent = `March 2028 (Est.)`;
+      console.log(`Usando fallback para contagem do Halving: ${diffDays} dias restantes`);
     } else {
       daysRemainingElement.textContent = `Halving occurred`;
       nextHalvingDateElement.textContent = `Completed`;
+      console.log('Usando fallback: Halving já ocorreu');
     }
   }
 }
@@ -544,6 +700,8 @@ const events = [
 function renderEvents() {
   const eventsContainer = document.getElementById('events-container');
   if (!eventsContainer) return;
+  
+  console.log('Renderizando eventos ordenados por data...');
   
   // Ordenar eventos por proximidade da data
   const sortedEvents = [...events].sort((a, b) => a.date - b.date);
@@ -602,6 +760,8 @@ function renderEvents() {
   // Limpar e adicionar a nova grid
   eventsContainer.innerHTML = '';
   eventsContainer.appendChild(eventsGrid);
+  
+  console.log(`${sortedEvents.length} eventos renderizados e ordenados por data`);
 }
 
 // Função para atualizar os preços no rodapé
@@ -668,6 +828,8 @@ function setupCopyButton() {
 // --- Inicialização --- 
 
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('Inicializando aplicação...');
+  
   // Forçar a atualização imediata dos preços
   renderQuotes(); // Renderiza cotações iniciais
   updateScarcityMetrics(); // Atualiza métricas de escassez iniciais (Bitcoins)
@@ -676,21 +838,35 @@ document.addEventListener('DOMContentLoaded', () => {
   updateSatoshiQuote(); // Atualiza a citação de Satoshi
   setupCopyButton(); // Configura o botão de cópia do endereço de doação
 
-  // Atualiza as cotações a cada 30 segundos (30000 ms) para garantir dados mais recentes
-  setInterval(renderQuotes, 30000);
+  // Atualiza as cotações a cada 15 segundos (15000 ms) para garantir dados mais recentes
+  setInterval(() => {
+    console.log('Intervalo: Atualizando cotações...');
+    renderQuotes();
+  }, 15000);
   
   // Atualiza a quantidade de bitcoins minerados e contagem de blocos a cada 2 minutos (120000 ms)
-  setInterval(updateScarcityMetrics, 120000);
+  setInterval(() => {
+    console.log('Intervalo: Atualizando métricas de escassez...');
+    updateScarcityMetrics();
+  }, 120000);
 
   // Atualiza a contagem regressiva do Halving a cada 10 minutos (600000 ms)
-  setInterval(updateHalvingCountdown, 600000);
+  setInterval(() => {
+    console.log('Intervalo: Atualizando contagem regressiva do Halving...');
+    updateHalvingCountdown();
+  }, 600000);
 
   // Atualiza a citação de Satoshi a cada 5 minutos (300000 ms)
-  setInterval(updateSatoshiQuote, 300000);
+  setInterval(() => {
+    console.log('Intervalo: Atualizando citação de Satoshi...');
+    updateSatoshiQuote();
+  }, 300000);
 
   // Adiciona listener para o botão de fontes
   const sourcesButton = document.getElementById('sources-toggle');
   if (sourcesButton) {
     sourcesButton.addEventListener('click', toggleSources);
   }
+  
+  console.log('Inicialização concluída, todos os intervalos de atualização configurados');
 });
