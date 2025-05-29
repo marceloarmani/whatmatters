@@ -347,6 +347,7 @@ function renderQuotes() {
   if (!quotesContainer) return;
   quotesContainer.innerHTML = ''; // Limpar antes de adicionar
 
+  // Forçar a atualização imediata dos preços
   fetchAllLatestPrices().then(updatedAssets => {
     const assetsToRender = updatedAssets || assets; // Usa atualizado ou fallback
     assetsToRender.forEach(asset => {
@@ -399,13 +400,20 @@ async function fetchAllLatestPrices() {
       fetchDollarIndex(),
       fetchSP500()
     ];
+    
+    // Usar Promise.allSettled para garantir que todas as promessas sejam resolvidas
     const results = await Promise.allSettled(promises);
-    const updatedAssets = [...assets]; // Começa com os valores padrão
+    
+    // Iniciar com valores padrão
+    const updatedAssets = [...assets];
+    
+    // Atualizar apenas os valores que foram obtidos com sucesso
     results.forEach((result, index) => {
       if (result.status === 'fulfilled' && result.value) {
         updatedAssets[index] = result.value;
       }
     });
+    
     return updatedAssets;
   } catch (error) {
     console.error('Erro ao buscar todos os preços atualizados:', error);
@@ -624,22 +632,61 @@ function toggleSources() {
   }
 }
 
+// Função para atualizar a citação de Satoshi
+function updateSatoshiQuote() {
+  const quoteElement = document.getElementById('satoshi-quote');
+  if (quoteElement) {
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    quoteElement.textContent = quotes[randomIndex];
+  }
+}
+
+// Função para copiar o endereço de doação
+function setupCopyButton() {
+  const copyButton = document.getElementById('copy-button');
+  const donationAddress = document.getElementById('donation-address');
+  
+  if (copyButton && donationAddress) {
+    copyButton.addEventListener('click', () => {
+      const textArea = document.createElement('textarea');
+      textArea.value = donationAddress.textContent;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      
+      // Feedback visual
+      const originalText = copyButton.textContent;
+      copyButton.textContent = 'Copied!';
+      setTimeout(() => {
+        copyButton.textContent = originalText;
+      }, 2000);
+    });
+  }
+}
+
 // --- Inicialização --- 
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Forçar a atualização imediata dos preços
   renderQuotes(); // Renderiza cotações iniciais
   updateScarcityMetrics(); // Atualiza métricas de escassez iniciais (Bitcoins)
   updateHalvingCountdown(); // Atualiza contagem regressiva do Halving inicial
   renderEvents(); // Renderiza eventos ordenados por data
+  updateSatoshiQuote(); // Atualiza a citação de Satoshi
+  setupCopyButton(); // Configura o botão de cópia do endereço de doação
 
-  // Atualiza as cotações a cada 1 minuto (60000 ms)
-  setInterval(renderQuotes, 60000);
+  // Atualiza as cotações a cada 30 segundos (30000 ms) para garantir dados mais recentes
+  setInterval(renderQuotes, 30000);
   
   // Atualiza a quantidade de bitcoins minerados e contagem de blocos a cada 2 minutos (120000 ms)
   setInterval(updateScarcityMetrics, 120000);
 
   // Atualiza a contagem regressiva do Halving a cada 10 minutos (600000 ms)
   setInterval(updateHalvingCountdown, 600000);
+
+  // Atualiza a citação de Satoshi a cada 5 minutos (300000 ms)
+  setInterval(updateSatoshiQuote, 300000);
 
   // Adiciona listener para o botão de fontes
   const sourcesButton = document.getElementById('sources-toggle');
