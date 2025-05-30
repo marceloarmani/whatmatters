@@ -137,16 +137,25 @@
               <div class="scarcity-metric-title">Bitcoins Mined</div>
               <div class="scarcity-metric-value" id="bitcoins-mined">19,368,750</div>
               <div class="scarcity-metric-description">Amount of bitcoins already mined out of 21 million total</div>
-              <div class="supply-progress">
-                <div class="supply-progress-fill" style="width: 92.23%;"></div>
-                <div class="supply-progress-text">92.23% (1,631,250 remaining)</div>
+              <div class="bitcoin-stats">
+                <div class="bitcoin-stat-row">
+                  <div class="bitcoin-stat-label">Current Block:</div>
+                  <div class="bitcoin-stat-value" id="current-block-count">845,000</div>
+                </div>
+                <div class="supply-progress">
+                  <div class="supply-progress-fill" style="width: 92.23%;"></div>
+                  <div class="supply-progress-text">92.23% (1,631,250 remaining)</div>
+                </div>
               </div>
             </div>
             <div class="scarcity-metric">
               <div class="scarcity-metric-title">Next Halving</div>
-              <div class="scarcity-metric-value">April 2028</div>
+              <div class="scarcity-metric-value" id="next-halving-date">April 2028</div>
               <div class="scarcity-metric-description">Event that cuts mining reward in half</div>
-              <div class="days-remaining" id="days-remaining">1056 days remaining</div>
+              <div class="halving-countdown">
+                <div class="days-remaining" id="days-remaining">1056 days</div>
+                <div class="blocks-remaining" id="blocks-remaining">(105,000 blocks)</div>
+              </div>
             </div>
           </div>
         </div>
@@ -242,58 +251,12 @@
       <!-- Latest News -->
       <section id="news-summary" class="standard-section">
         <h2 class="section-header">Latest news</h2>
+        <div class="news-header">
+          <div class="news-update-info">Auto-updated daily from Bitcoin-focused sources</div>
+          <div class="news-last-updated" id="news-last-updated">Last updated: May 30, 2025</div>
+        </div>
         <div id="news-content">
           <!-- News will be inserted via JavaScript -->
-          <div class="news-grid">
-            <a href="https://bitcoinmagazine.com/" target="_blank" class="news-item">
-              <div class="news-content">
-                <div class="news-source">Bitcoin Magazine</div>
-                <div class="news-title">Bitcoin Surpasses $100,000 for First Time in History</div>
-                <div class="news-description">The world's largest cryptocurrency has reached a new all-time high, breaking the psychological barrier of $100,000.</div>
-                <div class="news-date">May 21, 2025 14:32 UTC</div>
-              </div>
-            </a>
-            <a href="https://blockworks.co/" target="_blank" class="news-item">
-              <div class="news-content">
-                <div class="news-source">Blockworks</div>
-                <div class="news-title">Central Banks Accelerate Digital Currency Development</div>
-                <div class="news-description">Major central banks are fast-tracking CBDC projects in response to growing cryptocurrency adoption.</div>
-                <div class="news-date">May 20, 2025 09:15 UTC</div>
-              </div>
-            </a>
-            <a href="https://bitcointimes.news/" target="_blank" class="news-item">
-              <div class="news-content">
-                <div class="news-source">The Bitcoin Times</div>
-                <div class="news-title">Gold Reaches Record High Amid Inflation Concerns</div>
-                <div class="news-description">The precious metal continues its upward trajectory as investors seek protection from rising inflation.</div>
-                <div class="news-date">May 19, 2025 16:45 UTC</div>
-              </div>
-            </a>
-            <a href="https://bitcoinmagazine.com/" target="_blank" class="news-item">
-              <div class="news-content">
-                <div class="news-source">Bitcoin Magazine</div>
-                <div class="news-title">Mining Difficulty Hits New Record as Hash Rate Soars</div>
-                <div class="news-description">Bitcoin's network security continues to strengthen as mining operations expand globally.</div>
-                <div class="news-date">May 18, 2025 11:20 UTC</div>
-              </div>
-            </a>
-            <a href="https://www.coindesk.com/" target="_blank" class="news-item">
-              <div class="news-content">
-                <div class="news-source">CoinDesk</div>
-                <div class="news-title">SEC Approves Spot Ethereum ETFs for US Market</div>
-                <div class="news-description">Following Bitcoin ETFs, the SEC has now given the green light to spot Ethereum ETFs, expanding institutional access.</div>
-                <div class="news-date">May 17, 2025 15:10 UTC</div>
-              </div>
-            </a>
-            <a href="https://www.ft.com/" target="_blank" class="news-item">
-              <div class="news-content">
-                <div class="news-source">Financial Times</div>
-                <div class="news-title">Global Debt Reaches $400 Trillion as Interest Rates Rise</div>
-                <div class="news-description">Governments and corporations face mounting pressure as debt servicing costs increase substantially.</div>
-                <div class="news-date">May 16, 2025 08:45 UTC</div>
-              </div>
-            </a>
-          </div>
         </div>
       </section>
       
@@ -311,11 +274,11 @@
         <!-- Support Section -->
         <section id="support" class="standard-section">
           <h2 class="section-header">Support</h2>
-          <div class="donation-container">
-            <p>Help maintain this resource:</p>
-            <div class="donation-address">
-              <div class="donation-address-text" id="donation-address">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
-              <button class="copy-button" id="copy-button">Copy Address</button>
+          <div class="support-content">
+            <p>If you find this panel useful, consider supporting its development:</p>
+            <div class="donation-address-container">
+              <span id="donation-address">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</span>
+              <button id="copy-button">Copy</button>
             </div>
           </div>
         </section>
@@ -324,10 +287,10 @@
   </main>
   <footer>
     <div class="footer-content">
-      <div class="footer-copyright">© 2025 Scarcity Panel. Data updated automatically.</div>
       <div class="footer-prices" id="footer-prices">
         <!-- Footer prices will be inserted via JavaScript -->
       </div>
+      <div class="footer-copyright">© 2025 Scarcity Panel</div>
     </div>
   </footer>
   <script src="script.js"></script>
