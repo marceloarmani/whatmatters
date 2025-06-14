@@ -348,6 +348,75 @@
           </div>
         </div>
       </section>
+
+      <!-- Bitcoin Podcasts -->
+      <section id="bitcoin-podcasts" class="standard-section">
+        <h2 class="section-header">Bitcoin podcasts</h2>
+        <div class="podcasts-grid">
+          <div class="podcast-item">
+            <div class="podcast-header">
+              <div class="podcast-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#f7931a">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <div class="podcast-info">
+                <h3 class="podcast-title">Coin Stories Podcast</h3>
+                <p class="podcast-host">Natalie Brunell</p>
+              </div>
+            </div>
+            <p class="podcast-description">Investing journalist and Bitcoin educator exploring the intersection of money, technology, and freedom through compelling stories and expert interviews.</p>
+            <a href="https://www.youtube.com/@nataliebrunell" target="_blank" class="podcast-link">
+              <span>Watch on YouTube</span>
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <path d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </a>
+          </div>
+          
+          <div class="podcast-item">
+            <div class="podcast-header">
+              <div class="podcast-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#f7931a">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <div class="podcast-info">
+                <h3 class="podcast-title">The Jack Mallers Show</h3>
+                <p class="podcast-host">Jack Mallers</p>
+              </div>
+            </div>
+            <p class="podcast-description">CEO of Strike covering the biggest stories in Bitcoin, macroeconomics, financial markets, and the future of money with live weekly episodes.</p>
+            <a href="https://www.youtube.com/channel/UC3ol9RQbQHqle_Uly6w9LfA" target="_blank" class="podcast-link">
+              <span>Watch on YouTube</span>
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <path d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </a>
+          </div>
+          
+          <div class="podcast-item">
+            <div class="podcast-header">
+              <div class="podcast-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#f7931a">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <div class="podcast-info">
+                <h3 class="podcast-title">The Bitcoin Standard Podcast</h3>
+                <p class="podcast-host">Saifedean Ammous</p>
+              </div>
+            </div>
+            <p class="podcast-description">Author of "The Bitcoin Standard" exploring Austrian economics, sound money principles, and Bitcoin's role in the future of monetary systems.</p>
+            <a href="https://www.youtube.com/@saifedean" target="_blank" class="podcast-link">
+              <span>Watch on YouTube</span>
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <path d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </section>
       
       <!-- Horizontal sections layout for Word of Satoshi and Support -->
       <div class="horizontal-sections">
@@ -399,8 +468,44 @@
         setTimeout(() => {
           button.textContent = originalText;
         }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
       });
     }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      renderQuotes();
+      updateScarcityMetrics();
+      updateMarketSentiment();
+      updateSatoshiQuote();
+      
+      // Update data every 5 minutes
+      setInterval(() => {
+        renderQuotes();
+        updateScarcityMetrics();
+        updateMarketSentiment();
+      }, 300000);
+      
+      // Update Satoshi quote every 30 seconds
+      setInterval(updateSatoshiQuote, 30000);
+      
+      // Sources toggle functionality
+      const sourcesToggle = document.getElementById('sources-toggle');
+      const sourcesDiv = document.getElementById('market-cap-sources');
+      
+      if (sourcesToggle && sourcesDiv) {
+        sourcesToggle.addEventListener('click', function() {
+          if (sourcesDiv.style.display === 'none' || sourcesDiv.style.display === '') {
+            sourcesDiv.style.display = 'block';
+            sourcesToggle.textContent = 'Hide sources';
+          } else {
+            sourcesDiv.style.display = 'none';
+            sourcesToggle.textContent = 'Show sources';
+          }
+        });
+      }
+    });
   </script>
 </body>
 </html>
