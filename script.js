@@ -5,12 +5,14 @@ const ALPHA_VANTAGE_BASE_URL = "https://www.alphavantage.co/query";
 // Valores de fallback atualizados (devem ser atualizados manualmente periodicamente)
 const FALLBACK_VALUES = {
   bitcoin: { name: "Bitcoin", price: "$104,586.00", change: "-0.3%", positive: false },
-  gold: { name: "Gold", price: "$2,650.00", change: "+0.2%", positive: true },
-  silver: { name: "Silver", price: "$30.50", change: "-0.1%", positive: false },
+  gold: { name: "Gold", price: "$3,433.47", change: "+1.60%", positive: true },
+  silver: { name: "Silver", price: "$36.32", change: "+0.25%", positive: true },
   treasury: { name: "10-Year Treasury Yield", price: "4.46%", change: "+0.02%", positive: true },
   dollar: { name: "Dollar Index", price: "106.50", change: "+0.1%", positive: true },
   sp500: { name: "S&P 500", price: "5,950.00", change: "+0.3%", positive: true }
 };
+
+
 
 const quotes = [
   "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.",
@@ -67,6 +69,7 @@ async function fetchSilverPrice() {
     return FALLBACK_VALUES.silver;
   }
 }
+
 
 // Função melhorada para Treasury Yield com múltiplas tentativas
 async function fetchTreasuryYield() {
@@ -202,6 +205,7 @@ async function fetchMinedBitcoins() {
     return 19873500; // Valor de fallback atualizado
   }
 }
+
 
 // Função para buscar dados de sentimento de mercado (FUNCIONA)
 async function fetchMarketSentiment() {
@@ -403,6 +407,7 @@ async function updateScarcityMetrics() {
   }
 }
 
+
 // Função para atualizar a contagem regressiva do Halving
 function updateHalvingCountdown() {
   const daysRemainingElement = document.getElementById('days-remaining');
@@ -599,17 +604,18 @@ document.addEventListener('DOMContentLoaded', () => {
   updateHalvingCountdown();
   updateMarketSentiment();
   updateGlobalMarketCap();
-
-  // Intervalos de atualização
-  setInterval(renderQuotes, 300000); // 5 minutos
-  setInterval(updateScarcityMetrics, 600000); // 10 minutos
-  setInterval(updateHalvingCountdown, 3600000); // 1 hora
-  setInterval(updateMarketSentiment, 900000); // 15 minutos
-  setInterval(updateGlobalMarketCap, 1800000); // 30 minutos
-
+  
+  // Configurar botão de fontes
   const sourcesButton = document.getElementById('sources-toggle');
   if (sourcesButton) {
     sourcesButton.addEventListener('click', toggleSources);
   }
+  
+  // Atualizar dados a cada 5 minutos
+  setInterval(() => {
+    renderQuotes();
+    updateMarketSentiment();
+    updateGlobalMarketCap();
+  }, 300000);
 });
 
