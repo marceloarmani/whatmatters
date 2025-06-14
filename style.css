@@ -811,10 +811,144 @@ footer {
   .scarcity-metrics-grid {
     grid-template-columns: 1fr;
   }
+}
+
+
+
+/* Bitcoin Podcasts */
+#bitcoin-podcasts {
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem; /* Consistent spacing */
+}
+
+.podcasts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.2rem;
+}
+
+.podcast-item {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.2rem;
+  border-left: 4px solid #f7931a;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.podcast-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-left-color: #e67e00;
+}
+
+.podcast-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.podcast-icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 0.8rem;
+  flex-shrink: 0;
+}
+
+.podcast-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.podcast-info {
+  flex: 1;
+}
+
+.podcast-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 0.2rem 0;
+  line-height: 1.3;
+}
+
+.podcast-host {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+  font-weight: 500;
+}
+
+.podcast-description {
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.podcast-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: #f7931a;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.podcast-link:hover {
+  background: #e67e00;
+  transform: translateX(2px);
+}
+
+.podcast-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Responsive adjustments for podcasts */
+@media (max-width: 767px) {
+  .podcasts-grid {
+    grid-template-columns: 1fr;
+  }
   
-  .footer-prices {
-    flex-direction: column;
-    gap: 5px;
+  .podcast-item {
+    padding: 1rem;
+  }
+  
+  .podcast-header {
+    margin-bottom: 0.6rem;
+  }
+  
+  .podcast-icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 0.6rem;
+  }
+  
+  .podcast-title {
+    font-size: 1rem;
+  }
+  
+  .podcast-host {
+    font-size: 0.85rem;
+  }
+  
+  .podcast-description {
+    font-size: 0.85rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .podcast-link {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
   }
 }
 
