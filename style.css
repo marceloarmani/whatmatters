@@ -657,6 +657,143 @@ header.compact-header p {
   color: #999;
 }
 
+/* Bitcoin Podcasts - SEÇÃO REDESENHADA MODERNA E ELEGANTE */
+#bitcoin-podcasts {
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+}
+
+.podcasts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.podcast-item {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.podcast-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+  border-color: #f7931a;
+}
+
+.podcast-thumbnail {
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.podcast-thumbnail::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.1;
+}
+
+.podcast-placeholder {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: rgba(247, 147, 26, 0.1);
+  border-radius: 50%;
+  border: 2px solid rgba(247, 147, 26, 0.3);
+}
+
+.podcast-placeholder svg {
+  width: 40px;
+  height: 40px;
+  fill: #f7931a;
+}
+
+.podcast-content {
+  padding: 1.5rem;
+}
+
+.podcast-header {
+  margin-bottom: 1rem;
+}
+
+.podcast-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 0.3rem 0;
+  line-height: 1.3;
+}
+
+.podcast-host {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  margin: 0;
+  font-weight: 500;
+}
+
+.podcast-description {
+  font-size: 0.85rem;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 1.2rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.podcast-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: linear-gradient(135deg, #f7931a 0%, #e67e00 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(247, 147, 26, 0.2);
+}
+
+.podcast-link:hover {
+  background: linear-gradient(135deg, #e67e00 0%, #d4af37 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(247, 147, 26, 0.3);
+  color: white;
+}
+
+.podcast-link svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.3s ease;
+}
+
+.podcast-link:hover svg {
+  transform: translateX(2px);
+}
+
 /* Horizontal sections layout for Word of Satoshi and Support */
 .horizontal-sections {
   display: grid;
@@ -760,15 +897,10 @@ footer {
 
 .footer-content {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   max-width: 1100px;
   margin: 0 auto;
-}
-
-.footer-prices {
-  display: flex;
-  gap: 15px;
 }
 
 /* Responsiveness */
@@ -778,6 +910,10 @@ footer {
   }
   
   .news-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .podcasts-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -796,6 +932,10 @@ footer {
     grid-template-columns: 1fr;
   }
   
+  .podcasts-grid {
+    grid-template-columns: 1fr;
+  }
+  
   .footer-content {
     flex-direction: column;
     gap: 10px;
@@ -804,7 +944,8 @@ footer {
 
 @media (max-width: 575px) {
   .news-grid,
-  .events-grid {
+  .events-grid,
+  .podcasts-grid {
     grid-template-columns: 1fr;
   }
   
@@ -812,8 +953,8 @@ footer {
     grid-template-columns: 1fr;
   }
   
-  .footer-prices {
-    flex-direction: column;
-    gap: 5px;
+  .horizontal-sections {
+    grid-template-columns: 1fr;
   }
 }
+
