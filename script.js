@@ -12,8 +12,6 @@ const FALLBACK_VALUES = {
   sp500: { name: "S&P 500", price: "5,950.00", change: "+0.3%", positive: true }
 };
 
-
-
 const quotes = [
   "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.",
   "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks.",
@@ -69,7 +67,6 @@ async function fetchSilverPrice() {
     return FALLBACK_VALUES.silver;
   }
 }
-
 
 // Função melhorada para Treasury Yield com múltiplas tentativas
 async function fetchTreasuryYield() {
@@ -205,7 +202,6 @@ async function fetchMinedBitcoins() {
     return 19873500; // Valor de fallback atualizado
   }
 }
-
 
 // Função para buscar dados de sentimento de mercado (FUNCIONA)
 async function fetchMarketSentiment() {
@@ -347,7 +343,6 @@ function renderQuotes() {
       quoteWrapper.appendChild(quote);
       quotesContainer.appendChild(quoteWrapper);
     });
-    updateFooterPrices(updatedAssets);
   });
 }
 
@@ -400,37 +395,23 @@ async function updateScarcityMetrics() {
 
       progressFillElement.style.width = `${percentageMined.toFixed(2)}%`;
       progressTextElement.textContent = `${percentageMined.toFixed(2)}% (${formattedRemaining} remaining)`;
-
     } catch (error) {
       console.error('Erro ao atualizar métricas de escassez:', error);
     }
   }
-}
 
-
-// Função para atualizar a contagem regressiva do Halving
-function updateHalvingCountdown() {
+  // Atualizar contagem regressiva para o próximo halving
   const daysRemainingElement = document.getElementById('days-remaining');
-  const nextHalvingDateElement = document.querySelector('#scarcity-metrics .scarcity-metric:nth-child(4) .scarcity-metric-value');
-  if (!daysRemainingElement || !nextHalvingDateElement) return;
-
-  const halvingDate = new Date(Date.UTC(2028, 2, 26, 0, 0, 0));
-  const now = new Date();
-  const nowUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
-
-  const diffTime = halvingDate - nowUtc;
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays >= 0) {
-    daysRemainingElement.textContent = `${diffDays} days remaining`;
-    nextHalvingDateElement.textContent = `March 2028 (Est.)`;
-  } else {
-    daysRemainingElement.textContent = `Halving occurred`;
-    nextHalvingDateElement.textContent = `Completed`;
+  if (daysRemainingElement) {
+    const nextHalvingDate = new Date('2028-04-01');
+    const currentDate = new Date();
+    const timeDifference = nextHalvingDate.getTime() - currentDate.getTime();
+    const daysRemaining = Math.ceil(timeDifference / (1000 * 3600 * 24));
+    daysRemainingElement.textContent = `${daysRemaining} days remaining`;
   }
 }
 
-// Função para atualizar os indicadores de sentimento de mercado
+// Função para atualizar dados de sentimento de mercado
 async function updateMarketSentiment() {
   try {
     const sentimentData = await fetchMarketSentiment();
@@ -445,7 +426,7 @@ async function updateMarketSentiment() {
         gaugeFill.style.width = `${sentimentData.fearGreed.value}%`;
       }
     }
-
+    
     // Atualizar BTC Dominance
     const btcDominanceElement = document.getElementById('btc-dominance');
     if (btcDominanceElement) {
@@ -456,8 +437,8 @@ async function updateMarketSentiment() {
         gaugeFill.style.width = `${sentimentData.btcDominance}%`;
       }
     }
-
-    // Atualizar Volatilidade
+    
+    // Atualizar Volatility
     const volatilityElement = document.getElementById('volatility');
     if (volatilityElement) {
       const gaugeValue = volatilityElement.querySelector('.gauge-value');
@@ -465,338 +446,88 @@ async function updateMarketSentiment() {
       if (gaugeValue && gaugeFill) {
         const volatilityLevel = sentimentData.volatility < 5 ? 'Low' : sentimentData.volatility < 10 ? 'Medium' : 'High';
         gaugeValue.textContent = `${sentimentData.volatility.toFixed(1)}% - ${volatilityLevel}`;
-        gaugeFill.style.width = `${Math.min(sentimentData.volatility * 4, 100)}%`;
+        gaugeFill.style.width = `${Math.min(sentimentData.volatility * 5, 100)}%`;
       }
     }
-
-    // Atualizar Volume de Transações
+    
+    // Atualizar Transaction Volume
     const transactionVolumeElement = document.getElementById('transaction-volume');
     if (transactionVolumeElement) {
       const gaugeValue = transactionVolumeElement.querySelector('.gauge-value');
       const gaugeFill = transactionVolumeElement.querySelector('.gauge-fill');
       if (gaugeValue && gaugeFill) {
-        const volumeLevel = sentimentData.transactionVolume > 50 ? 'High' : sentimentData.transactionVolume > 25 ? 'Medium' : 'Low';
+        const volumeLevel = sentimentData.transactionVolume > 50 ? 'High' : sentimentData.transactionVolume > 20 ? 'Medium' : 'Low';
         gaugeValue.textContent = `$${sentimentData.transactionVolume}B - ${volumeLevel}`;
-        gaugeFill.style.width = `${Math.min(sentimentData.transactionVolume, 100)}%`;
+        gaugeFill.style.width = `${Math.min(sentimentData.transactionVolume * 2, 100)}%`;
       }
     }
-
-    // Atualizar Hash Rate da Rede
-    const networkHashRateElement = document.getElementById('network-hash-rate');
-    if (networkHashRateElement) {
-      const gaugeValue = networkHashRateElement.querySelector('.gauge-value');
-      const gaugeFill = networkHashRateElement.querySelector('.gauge-fill');
+    
+    // Atualizar Network Hash Rate
+    const hashRateElement = document.getElementById('network-hash-rate');
+    if (hashRateElement && sentimentData.hashRate > 0) {
+      const gaugeValue = hashRateElement.querySelector('.gauge-value');
+      const gaugeFill = hashRateElement.querySelector('.gauge-fill');
       if (gaugeValue && gaugeFill) {
-        if (sentimentData.hashRate > 0) {
-          gaugeValue.textContent = `${sentimentData.hashRate} EH/s - Record High`;
-          gaugeFill.style.width = `${Math.min((sentimentData.hashRate / 600) * 100, 100)}%`;
-        } else {
-          gaugeValue.textContent = `0 EH/s - Record High`;
-          gaugeFill.style.width = `72%`;
-        }
+        gaugeValue.textContent = `${sentimentData.hashRate} EH/s - Record High`;
+        gaugeFill.style.width = '72%';
       }
     }
-
-    // Atualizar Market Cap do Bitcoin
-    const bitcoinMarketCapElement = document.getElementById('bitcoin-market-cap');
-    if (bitcoinMarketCapElement) {
-      try {
-        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_market_cap=true&include_24hr_change=true');
-        if (response.ok) {
-          const data = await response.json();
-          if (data && data.bitcoin) {
-            const marketCap = data.bitcoin.usd_market_cap;
-            const change = data.bitcoin.usd_24h_change;
-            const formattedMarketCap = `$${(marketCap / 1e12).toFixed(1)}T`;
-            const formattedChange = change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
-            
-            const gaugeValue = bitcoinMarketCapElement.querySelector('.gauge-value');
-            const indicatorChange = bitcoinMarketCapElement.querySelector('.indicator-change');
-            const gaugeFill = bitcoinMarketCapElement.querySelector('.gauge-fill');
-            if (gaugeValue && indicatorChange && gaugeFill) {
-              gaugeValue.textContent = `${formattedMarketCap} - All-time High`;
-              indicatorChange.textContent = `${formattedChange} (24h)`;
-              indicatorChange.className = `indicator-change ${change >= 0 ? '' : 'negative'}`;
-              gaugeFill.style.width = `${Math.min((marketCap / 3e12) * 100, 100)}%`;
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Erro ao buscar market cap do Bitcoin:', error);
-      }
-    }
-
+    
   } catch (error) {
     console.error('Erro ao atualizar sentimento de mercado:', error);
   }
 }
 
-// Função para atualizar a capitalização de mercado global
-async function updateGlobalMarketCap() {
-  try {
-    const globalResponse = await fetch('https://api.coingecko.com/api/v3/global');
-    let bitcoinMarketCap = 2.1;
-    
-    if (globalResponse.ok) {
-      const globalData = await globalResponse.json();
-      if (globalData && globalData.data) {
-        bitcoinMarketCap = globalData.data.market_cap_percentage.btc * globalData.data.total_market_cap.usd / 100 / 1e12;
-      }
-    }
-
-    const bitcoinMarketCapItem = document.querySelector('.market-cap-item:last-child');
-    if (bitcoinMarketCapItem) {
-      const valueElement = bitcoinMarketCapItem.querySelector('.market-cap-item-value');
-      const fillElement = bitcoinMarketCapItem.querySelector('.market-cap-item-fill');
-      const percentageElement = bitcoinMarketCapItem.querySelector('.market-cap-item-percentage');
-      
-      if (valueElement && fillElement && percentageElement) {
-        const formattedValue = `$${bitcoinMarketCap.toFixed(1)}T`;
-        valueElement.textContent = formattedValue;
-        
-        const totalGlobalAssets = 690.7;
-        const newPercentage = (bitcoinMarketCap / totalGlobalAssets) * 100;
-        fillElement.style.width = `${newPercentage.toFixed(1)}%`;
-        percentageElement.textContent = `${newPercentage.toFixed(1)}%`;
-      }
-    }
-
-  } catch (error) {
-    console.error('Erro ao atualizar capitalização de mercado global:', error);
+// Função para atualizar citações do Satoshi
+function updateSatoshiQuote() {
+  const quoteElement = document.getElementById('satoshi-quote');
+  if (quoteElement) {
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    quoteElement.textContent = quotes[randomIndex];
   }
 }
 
-// --- Funções de atualização de notícias automáticas ---
+// Função para carregar thumbnails dos podcasts do YouTube
+async function loadPodcastThumbnails() {
+  const podcastChannels = [
+    {
+      id: 'podcast-1-thumbnail',
+      channelId: 'UCxODjeUwZHk3p-7TU-IsDOA', // Natalie Brunell
+      fallbackImage: 'https://yt3.ggpht.com/ytc/AKedOLSKHmnhOJAhw8RvP_lbMx8SYOsb_TOgKNBMeGhOdA=s800-c-k-c0x00ffffff-no-rj'
+    },
+    {
+      id: 'podcast-2-thumbnail',
+      channelId: 'UC3ol9RQbQHqle_Uly6w9LfA', // Jack Mallers
+      fallbackImage: 'https://yt3.ggpht.com/ytc/AKedOLRjHQQgTnNdPVm5nGWZmRvBQqzHnhOJAhw8RvP_lbMx8SYOsb_TOgKNBMeGhOdA=s800-c-k-c0x00ffffff-no-rj'
+    },
+    {
+      id: 'podcast-3-thumbnail',
+      channelId: 'UCmvjlpMSYVeO-i_OfHJyNkA', // Saifedean Ammous
+      fallbackImage: 'https://yt3.ggpht.com/ytc/AKedOLTjHQQgTnNdPVm5nGWZmRvBQqzHnhOJAhw8RvP_lbMx8SYOsb_TOgKNBMeGhOdA=s800-c-k-c0x00ffffff-no-rj'
+    }
+  ];
 
-// Fontes não-mainstream priorizadas
-const NON_MAINSTREAM_SOURCES = [
-  'Bitcoin Magazine',
-  'The Defiant',
-  'Decrypt',
-  'Blockworks',
-  'The Block',
-  'BeInCrypto',
-  'U.Today',
-  'Bitcoinist',
-  'The Crypto Times',
-  'CoinGape'
-];
-
-// Fontes mainstream a evitar
-const MAINSTREAM_SOURCES_TO_AVOID = [
-  'Bloomberg',
-  'Forbes',
-  'CNBC',
-  'Reuters',
-  'Wall Street Journal',
-  'CNN',
-  'BBC',
-  'Associated Press'
-];
-
-// Cache de notícias para evitar requests excessivos
-let newsCache = {
-  data: [],
-  lastUpdate: 0,
-  cacheTimeout: 3600000 // 1 hora em ms
-};
-
-// Função para buscar notícias do Reddit (fontes não-mainstream)
-async function fetchRedditCryptoNews() {
-  try {
-    const subreddits = ['Bitcoin', 'CryptoCurrency', 'btc'];
-    const allPosts = [];
-    
-    for (const subreddit of subreddits) {
+  podcastChannels.forEach(async (podcast) => {
+    const thumbnailElement = document.getElementById(podcast.id);
+    if (thumbnailElement) {
       try {
-        // Simular busca do Reddit (substituir por API real se disponível)
-        const posts = await simulateRedditAPI(subreddit);
-        allPosts.push(...posts);
+        // Simular carregamento de thumbnail (na prática, você usaria a API do YouTube)
+        // Por enquanto, mantém o placeholder com ícone Bitcoin
+        console.log(`Loading thumbnail for ${podcast.id}`);
+        
+        // Adicionar efeito de carregamento
+        setTimeout(() => {
+          const placeholder = thumbnailElement.querySelector('.podcast-placeholder');
+          if (placeholder) {
+            placeholder.style.background = 'rgba(247, 147, 26, 0.15)';
+            placeholder.style.borderColor = 'rgba(247, 147, 26, 0.4)';
+          }
+        }, Math.random() * 2000);
+        
       } catch (error) {
-        console.error(`Erro ao buscar posts do r/${subreddit}:`, error);
+        console.error(`Erro ao carregar thumbnail para ${podcast.id}:`, error);
       }
     }
-    
-    return allPosts.slice(0, 6); // Retornar apenas 6 posts mais relevantes
-  } catch (error) {
-    console.error('Erro ao buscar notícias do Reddit:', error);
-    return [];
-  }
-}
-
-// Simulação de API do Reddit (substituir por implementação real)
-async function simulateRedditAPI(subreddit) {
-  // Esta é uma simulação - em produção, usar API real do Reddit
-  const samplePosts = [
-    {
-      title: "Bitcoin Network Hash Rate Reaches New All-Time High",
-      description: "The Bitcoin network's computational power continues to grow, demonstrating increasing security and miner confidence.",
-      source: "r/Bitcoin",
-      url: `https://reddit.com/r/${subreddit}`,
-      date: new Date().toISOString(),
-      score: 1250
-    },
-    {
-      title: "Lightning Network Adoption Surges in El Salvador",
-      description: "Local businesses report significant increase in Lightning Network transactions following recent infrastructure improvements.",
-      source: "r/Bitcoin",
-      url: `https://reddit.com/r/${subreddit}`,
-      date: new Date(Date.now() - 3600000).toISOString(),
-      score: 890
-    },
-    {
-      title: "Major Mining Pool Announces Carbon Neutral Operations",
-      description: "Leading Bitcoin mining pool commits to 100% renewable energy sources by end of 2025.",
-      source: "r/Bitcoin",
-      url: `https://reddit.com/r/${subreddit}`,
-      date: new Date(Date.now() - 7200000).toISOString(),
-      score: 756
-    }
-  ];
-  
-  return samplePosts;
-}
-
-// Função para buscar notícias de fontes especializadas via RSS/API
-async function fetchSpecializedCryptoNews() {
-  const newsItems = [];
-  
-  // Simular busca de fontes especializadas
-  const specializedNews = [
-    {
-      title: "Bitcoin ETF Inflows Hit Record High This Week",
-      description: "Institutional demand for Bitcoin exposure through ETFs reaches unprecedented levels as adoption accelerates.",
-      source: "Bitcoin Magazine",
-      url: "https://bitcoinmagazine.com/",
-      date: new Date(Date.now() - 1800000).toISOString()
-    },
-    {
-      title: "DeFi Protocol Launches Bitcoin-Backed Lending",
-      description: "New decentralized finance protocol enables users to borrow against Bitcoin collateral with competitive rates.",
-      source: "The Defiant",
-      url: "https://thedefiant.io/",
-      date: new Date(Date.now() - 5400000).toISOString()
-    },
-    {
-      title: "Taproot Adoption Reaches 80% Among Bitcoin Wallets",
-      description: "Latest Bitcoin upgrade sees widespread adoption as wallet providers implement privacy and efficiency improvements.",
-      source: "Decrypt",
-      url: "https://decrypt.co/",
-      date: new Date(Date.now() - 9000000).toISOString()
-    },
-    {
-      title: "Institutional Bitcoin Holdings Surpass $100B Milestone",
-      description: "Corporate treasuries and investment funds now hold over $100 billion worth of Bitcoin, marking historic achievement.",
-      source: "Blockworks",
-      url: "https://blockworks.co/",
-      date: new Date(Date.now() - 12600000).toISOString()
-    },
-    {
-      title: "Bitcoin Mining Difficulty Adjusts to New Record",
-      description: "Network difficulty reaches all-time high as mining competition intensifies following recent price movements.",
-      source: "Bitcoinist",
-      url: "https://bitcoinist.com/",
-      date: new Date(Date.now() - 16200000).toISOString()
-    },
-    {
-      title: "Layer 2 Solutions See 300% Growth in Transaction Volume",
-      description: "Bitcoin's second-layer scaling solutions experience massive growth as users seek faster, cheaper transactions.",
-      source: "The Block",
-      url: "https://theblock.co/",
-      date: new Date(Date.now() - 19800000).toISOString()
-    }
-  ];
-  
-  return specializedNews;
-}
-
-// Função principal para atualizar notícias
-async function updateLatestNews() {
-  try {
-    // Verificar cache
-    const now = Date.now();
-    if (newsCache.data.length > 0 && (now - newsCache.lastUpdate) < newsCache.cacheTimeout) {
-      renderNews(newsCache.data);
-      return;
-    }
-    
-    console.log('🔄 Atualizando notícias de fontes não-mainstream...');
-    
-    // Buscar notícias de múltiplas fontes
-    const [redditNews, specializedNews] = await Promise.all([
-      fetchRedditCryptoNews(),
-      fetchSpecializedCryptoNews()
-    ]);
-    
-    // Combinar e ordenar por relevância/data
-    const allNews = [...redditNews, ...specializedNews];
-    const sortedNews = allNews
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .slice(0, 6); // Manter apenas 6 notícias mais recentes
-    
-    // Atualizar cache
-    newsCache.data = sortedNews;
-    newsCache.lastUpdate = now;
-    
-    // Renderizar notícias
-    renderNews(sortedNews);
-    
-    console.log('✅ Notícias atualizadas com sucesso');
-  } catch (error) {
-    console.error('❌ Erro ao atualizar notícias:', error);
-    // Em caso de erro, manter notícias do cache se disponíveis
-    if (newsCache.data.length > 0) {
-      renderNews(newsCache.data);
-    }
-  }
-}
-
-// Função para renderizar notícias na página
-function renderNews(newsItems) {
-  const newsContainer = document.querySelector('#news-content .news-grid');
-  if (!newsContainer) return;
-  
-  newsContainer.innerHTML = '';
-  
-  newsItems.forEach(item => {
-    const newsElement = document.createElement('a');
-    newsElement.href = item.url;
-    newsElement.target = '_blank';
-    newsElement.className = 'news-item';
-    
-    const formattedDate = new Date(item.date).toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'UTC'
-    }) + ' UTC';
-    
-    newsElement.innerHTML = `
-      <div class="news-content">
-        <div class="news-source">${item.source}</div>
-        <div class="news-title">${item.title}</div>
-        <div class="news-description">${item.description}</div>
-        <div class="news-date">${formattedDate}</div>
-      </div>
-    `;
-    
-    newsContainer.appendChild(newsElement);
-  });
-}
-
-// --- Fim das funções de notícias ---
-
-function updateFooterPrices(currentAssets) {
-  const footerPrices = document.getElementById('footer-prices');
-  if (!footerPrices) return;
-  footerPrices.innerHTML = '';
-  currentAssets.forEach(asset => {
-    const priceItem = document.createElement('span');
-    priceItem.className = 'footer-price-item';
-    priceItem.innerHTML = `<strong>${asset.name}:</strong> ${asset.price} <span class="${asset.positive ? 'positive' : 'negative'}">(${asset.change})</span>`;
-    footerPrices.appendChild(priceItem);
   });
 }
 
@@ -814,54 +545,3 @@ function toggleSources() {
   }
 }
 
-// --- Inicialização --- 
-
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('🚀 Scarcity Panel - Versão Melhorada Carregada');
-  console.log('✅ APIs Funcionando: Bitcoin (CoinGecko), Sentimento de Mercado');
-  console.log('⚠️ APIs com Fallback: Gold, Silver, Treasury, Dollar Index, S&P 500');
-  
-  renderQuotes();
-  updateScarcityMetrics();
-  updateHalvingCountdown();
-  updateMarketSentiment();
-  updateGlobalMarketCap();
-  updateLatestNews(); // ADICIONADO: Atualização inicial das notícias
-  
-  // Configurar botão de fontes
-  const sourcesButton = document.getElementById('sources-toggle');
-  if (sourcesButton) {
-    sourcesButton.addEventListener('click', toggleSources);
-  }
-  
-  // Atualizar dados a cada 5 minutos
-  setInterval(() => {
-    renderQuotes();
-    updateScarcityMetrics(); // ADICIONADO: Atualização automática das métricas de escassez
-    updateMarketSentiment();
-    updateGlobalMarketCap();
-  }, 300000);
-  
-  // Atualização diária às 00:00 UTC para dados que mudam menos frequentemente
-  const now = new Date();
-  const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0) - now;
-  
-  setTimeout(() => {
-    // Primeira atualização diária
-    updateScarcityMetrics();
-    updateHalvingCountdown();
-    updateLatestNews(); // ADICIONADO: Atualização diária das notícias
-    
-    // Configurar atualização diária recorrente (24 horas = 86400000 ms)
-    setInterval(() => {
-      updateScarcityMetrics();
-      updateHalvingCountdown();
-      updateLatestNews(); // ADICIONADO: Atualização diária das notícias
-    }, 86400000);
-  }, msUntilMidnight);
-  
-  // Atualização das notícias a cada 2 horas para manter conteúdo fresco
-  setInterval(() => {
-    updateLatestNews();
-  }, 7200000); // 2 horas em ms
-});
