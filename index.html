@@ -348,18 +348,20 @@
         </div>
       </section>
 
-      <!-- Bitcoin Podcasts - SEÇÃO MELHORADA -->
+      <!-- Bitcoin Podcasts - SEÇÃO COM THUMBNAILS CLICÁVEIS DOS VÍDEOS MAIS RECENTES -->
       <section id="bitcoin-podcasts" class="standard-section">
         <h2 class="section-header">Bitcoin podcasts</h2>
         <div class="podcasts-grid">
           <div class="podcast-item">
-            <div class="podcast-thumbnail" id="podcast-1-thumbnail">
-              <div class="podcast-placeholder">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#f7931a">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
+            <a href="https://www.youtube.com/@nataliebrunell" target="_blank" id="podcast-1-link" class="podcast-thumbnail-link">
+              <div class="podcast-thumbnail" id="podcast-1-thumbnail">
+                <div class="podcast-placeholder">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#f7931a">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                </div>
               </div>
-            </div>
+            </a>
             <div class="podcast-content">
               <div class="podcast-header">
                 <h3 class="podcast-title">Coin Stories Podcast</h3>
@@ -376,13 +378,15 @@
           </div>
           
           <div class="podcast-item">
-            <div class="podcast-thumbnail" id="podcast-2-thumbnail">
-              <div class="podcast-placeholder">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#f7931a">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
+            <a href="https://www.youtube.com/channel/UC3ol9RQbQHqle_Uly6w9LfA" target="_blank" id="podcast-2-link" class="podcast-thumbnail-link">
+              <div class="podcast-thumbnail" id="podcast-2-thumbnail">
+                <div class="podcast-placeholder">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#f7931a">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                </div>
               </div>
-            </div>
+            </a>
             <div class="podcast-content">
               <div class="podcast-header">
                 <h3 class="podcast-title">The Jack Mallers Show</h3>
@@ -399,13 +403,15 @@
           </div>
           
           <div class="podcast-item">
-            <div class="podcast-thumbnail" id="podcast-3-thumbnail">
-              <div class="podcast-placeholder">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#f7931a">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
+            <a href="https://www.youtube.com/@saifedean" target="_blank" id="podcast-3-link" class="podcast-thumbnail-link">
+              <div class="podcast-thumbnail" id="podcast-3-thumbnail">
+                <div class="podcast-placeholder">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#f7931a">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                </div>
               </div>
-            </div>
+            </a>
             <div class="podcast-content">
               <div class="podcast-header">
                 <h3 class="podcast-title">The Bitcoin Standard Podcast</h3>
@@ -488,6 +494,7 @@
         renderQuotes();
         updateScarcityMetrics();
         updateMarketSentiment();
+        loadPodcastThumbnails(); // Atualizar thumbnails também
       }, 300000);
       
       // Update Satoshi quote every 30 seconds
