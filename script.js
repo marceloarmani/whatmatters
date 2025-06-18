@@ -21,6 +21,37 @@ const quotes = [
   "With e-currency based on cryptographic proof, without the need to trust a third party middleman, money can be secure and transactions effortless."
 ];
 
+// Configuração dos canais de podcast do YouTube
+const PODCAST_CHANNELS = [
+  {
+    id: 'podcast-1',
+    name: 'Coin Stories Podcast',
+    host: 'Natalie Brunell',
+    description: 'Investing journalist and Bitcoin educator exploring the intersection of money, technology, and freedom through compelling stories and expert interviews.',
+    channelId: 'UCxODjeUwZHk3p-7TU-IsDOA',
+    youtubeUrl: 'https://www.youtube.com/@nataliebrunell',
+    rssUrl: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCxODjeUwZHk3p-7TU-IsDOA'
+  },
+  {
+    id: 'podcast-2',
+    name: 'The Jack Mallers Show',
+    host: 'Jack Mallers',
+    description: 'CEO of Strike covering the biggest stories in Bitcoin, macroeconomics, financial markets, and the future of money with live weekly episodes.',
+    channelId: 'UC3ol9RQbQHqle_Uly6w9LfA',
+    youtubeUrl: 'https://www.youtube.com/channel/UC3ol9RQbQHqle_Uly6w9LfA',
+    rssUrl: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC3ol9RQbQHqle_Uly6w9LfA'
+  },
+  {
+    id: 'podcast-3',
+    name: 'The Bitcoin Standard Podcast',
+    host: 'Saifedean Ammous',
+    description: 'Author of "The Bitcoin Standard" exploring Austrian economics, sound money principles, and Bitcoin\'s role in the future of monetary systems.',
+    channelId: 'UCmvjlpMSYVeO-i_OfHJyNkA',
+    youtubeUrl: 'https://www.youtube.com/@saifedean',
+    rssUrl: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCmvjlpMSYVeO-i_OfHJyNkA'
+  }
+];
+
 // --- Funções de busca de dados com APIs confiáveis --- 
 
 // Função para buscar o preço do Bitcoin usando CoinGecko API (FUNCIONA)
@@ -300,6 +331,77 @@ async function fetchMarketSentiment() {
   }
 }
 
+// Função para buscar vídeo mais recente de um canal do YouTube via RSS
+async function fetchLatestVideoFromChannel(channel) {
+  try {
+    // Usar um proxy CORS para acessar o RSS feed do YouTube
+    const proxyUrl = 'https://api.allorigins.win/get?url=';
+    const rssUrl = encodeURIComponent(channel.rssUrl);
+    const response = await fetch(`${proxyUrl}${rssUrl}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(data.contents, 'text/xml');
+    
+    // Buscar o primeiro item (vídeo mais recente)
+    const entries = xmlDoc.getElementsByTagName('entry');
+    if (entries.length > 0) {
+      const firstEntry = entries[0];
+      
+      // Extrair informações do vídeo
+      const title = firstEntry.getElementsByTagName('title')[0]?.textContent || 'Título não disponível';
+      const link = firstEntry.getElementsByTagName('link')[0]?.getAttribute('href') || channel.youtubeUrl;
+      const published = firstEntry.getElementsByTagName('published')[0]?.textContent || '';
+      
+      // Extrair thumbnail do vídeo
+      const mediaGroup = firstEntry.getElementsByTagName('media:group')[0];
+      let thumbnail = '';
+      if (mediaGroup) {
+        const mediaThumbnails = mediaGroup.getElementsByTagName('media:thumbnail');
+        if (mediaThumbnails.length > 0) {
+          // Pegar a thumbnail de melhor qualidade (geralmente a última)
+          thumbnail = mediaThumbnails[mediaThumbnails.length - 1].getAttribute('url');
+        }
+      }
+      
+      // Se não encontrou thumbnail no RSS, extrair ID do vídeo e construir URL da thumbnail
+      if (!thumbnail && link) {
+        const videoIdMatch = link.match(/watch\?v=([^&]+)/);
+        if (videoIdMatch) {
+          const videoId = videoIdMatch[1];
+          thumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+        }
+      }
+      
+      return {
+        title: title,
+        link: link,
+        thumbnail: thumbnail,
+        published: published,
+        channelName: channel.name
+      };
+    }
+    
+    throw new Error('Nenhum vídeo encontrado no feed RSS');
+    
+  } catch (error) {
+    console.error(`Erro ao buscar vídeo mais recente do canal ${channel.name}:`, error);
+    
+    // Retornar dados de fallback
+    return {
+      title: `Último vídeo de ${channel.name}`,
+      link: channel.youtubeUrl,
+      thumbnail: '',
+      published: '',
+      channelName: channel.name
+    };
+  }
+}
+
 // --- Funções de Renderização e Atualização --- 
 
 function renderQuotes() {
@@ -489,46 +591,52 @@ function updateSatoshiQuote() {
 
 // Função para carregar thumbnails dos podcasts do YouTube
 async function loadPodcastThumbnails() {
-  const podcastChannels = [
-    {
-      id: 'podcast-1-thumbnail',
-      channelId: 'UCxODjeUwZHk3p-7TU-IsDOA', // Natalie Brunell
-      fallbackImage: 'https://yt3.ggpht.com/ytc/AKedOLSKHmnhOJAhw8RvP_lbMx8SYOsb_TOgKNBMeGhOdA=s800-c-k-c0x00ffffff-no-rj'
-    },
-    {
-      id: 'podcast-2-thumbnail',
-      channelId: 'UC3ol9RQbQHqle_Uly6w9LfA', // Jack Mallers
-      fallbackImage: 'https://yt3.ggpht.com/ytc/AKedOLRjHQQgTnNdPVm5nGWZmRvBQqzHnhOJAhw8RvP_lbMx8SYOsb_TOgKNBMeGhOdA=s800-c-k-c0x00ffffff-no-rj'
-    },
-    {
-      id: 'podcast-3-thumbnail',
-      channelId: 'UCmvjlpMSYVeO-i_OfHJyNkA', // Saifedean Ammous
-      fallbackImage: 'https://yt3.ggpht.com/ytc/AKedOLTjHQQgTnNdPVm5nGWZmRvBQqzHnhOJAhw8RvP_lbMx8SYOsb_TOgKNBMeGhOdA=s800-c-k-c0x00ffffff-no-rj'
-    }
-  ];
-
-  podcastChannels.forEach(async (podcast) => {
-    const thumbnailElement = document.getElementById(podcast.id);
-    if (thumbnailElement) {
-      try {
-        // Simular carregamento de thumbnail (na prática, você usaria a API do YouTube)
-        // Por enquanto, mantém o placeholder com ícone Bitcoin
-        console.log(`Loading thumbnail for ${podcast.id}`);
-        
-        // Adicionar efeito de carregamento
-        setTimeout(() => {
-          const placeholder = thumbnailElement.querySelector('.podcast-placeholder');
-          if (placeholder) {
-            placeholder.style.background = 'rgba(247, 147, 26, 0.15)';
-            placeholder.style.borderColor = 'rgba(247, 147, 26, 0.4)';
-          }
-        }, Math.random() * 2000);
-        
-      } catch (error) {
-        console.error(`Erro ao carregar thumbnail para ${podcast.id}:`, error);
+  console.log('Carregando thumbnails dos podcasts...');
+  
+  for (const channel of PODCAST_CHANNELS) {
+    try {
+      console.log(`Buscando vídeo mais recente do canal: ${channel.name}`);
+      const latestVideo = await fetchLatestVideoFromChannel(channel);
+      
+      // Atualizar a thumbnail e link do podcast
+      const thumbnailElement = document.getElementById(`${channel.id}-thumbnail`);
+      const linkElement = document.querySelector(`#${channel.id}-link`);
+      
+      if (thumbnailElement && latestVideo.thumbnail) {
+        // Substituir o placeholder pela thumbnail real
+        const placeholder = thumbnailElement.querySelector('.podcast-placeholder');
+        if (placeholder) {
+          const img = document.createElement('img');
+          img.src = latestVideo.thumbnail;
+          img.alt = latestVideo.title;
+          img.style.width = '100%';
+          img.style.height = '100%';
+          img.style.objectFit = 'cover';
+          img.style.borderRadius = '0';
+          
+          // Adicionar evento de erro para fallback
+          img.onerror = function() {
+            console.log(`Erro ao carregar thumbnail para ${channel.name}, mantendo placeholder`);
+            this.style.display = 'none';
+          };
+          
+          thumbnailElement.innerHTML = '';
+          thumbnailElement.appendChild(img);
+        }
       }
+      
+      // Atualizar o link para o vídeo mais recente
+      if (linkElement && latestVideo.link) {
+        linkElement.href = latestVideo.link;
+        linkElement.title = latestVideo.title;
+      }
+      
+      console.log(`✓ Thumbnail carregada para ${channel.name}: ${latestVideo.title}`);
+      
+    } catch (error) {
+      console.error(`Erro ao carregar thumbnail para ${channel.name}:`, error);
     }
-  });
+  }
 }
 
 function toggleSources() {
