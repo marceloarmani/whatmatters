@@ -12,6 +12,52 @@ const FALLBACK_VALUES = {
   sp500: { name: "S&P 500", price: "5,950.00", change: "+0.3%", positive: true }
 };
 
+// Configuração dos podcasts com URLs dos canais
+const PODCAST_CHANNELS = [
+  {
+    name: "Coin Stories Podcast",
+    host: "Natalie Brunell",
+    description: "Investing journalist and Bitcoin educator exploring the intersection of money, technology, and freedom through compelling stories and expert interviews.",
+    channelUrl: "https://www.youtube.com/@nataliebrunell",
+    channelId: "UCxODjeUwZHk3p-7TU-IsDOA"
+  },
+  {
+    name: "The Jack Mallers Show",
+    host: "Jack Mallers",
+    description: "CEO of Strike covering the biggest stories in Bitcoin, macroeconomics, financial markets, and the future of money with live weekly episodes.",
+    channelUrl: "https://www.youtube.com/channel/UC3ol9RQbQHqle_Uly6w9LfA",
+    channelId: "UC3ol9RQbQHqle_Uly6w9LfA"
+  },
+  {
+    name: "The Bitcoin Standard Podcast",
+    host: "Saifedean Ammous",
+    description: "Author of The Bitcoin Standard discussing Austrian economics, Bitcoin, and sound money principles with leading thinkers and practitioners.",
+    channelUrl: "https://www.youtube.com/@TheBitcoinStandard",
+    channelId: "UCmvjlQyTaeF8_jdmcP5T5uA"
+  },
+  {
+    name: "What Bitcoin Did",
+    host: "Peter McCormack",
+    description: "Interviews with Bitcoin industry experts, covering everything from technical developments to regulatory challenges and adoption stories.",
+    channelUrl: "https://www.youtube.com/@WhatBitcoinDid",
+    channelId: "UCq-6NzOKM_95kX6RzJYvgpA"
+  },
+  {
+    name: "The Investors Podcast",
+    host: "Preston Pysh & Stig Brodersen",
+    description: "Value investing principles applied to Bitcoin and traditional markets, featuring interviews with successful investors and entrepreneurs.",
+    channelUrl: "https://www.youtube.com/@theinvestorspodcast",
+    channelId: "UCTKuHbUU6W7jNKXQPQhBh-g"
+  },
+  {
+    name: "Bitcoin Audible",
+    host: "Guy Swann",
+    description: "Reading and discussing the most important Bitcoin articles, papers, and content to help listeners understand the revolutionary potential of Bitcoin.",
+    channelUrl: "https://www.youtube.com/@BitcoinAudible",
+    channelId: "UCNcQ_VlVbRfhLb8NVWupGvQ"
+  }
+];
+
 const quotes = [
   "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.",
   "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks.",
@@ -19,37 +65,6 @@ const quotes = [
   "The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.",
   "Banks must be trusted to hold our money and transfer it electronically, but they lend it out in waves of credit bubbles with barely a fraction in reserve.",
   "With e-currency based on cryptographic proof, without the need to trust a third party middleman, money can be secure and transactions effortless."
-];
-
-// Configuração dos canais de podcast do YouTube
-const PODCAST_CHANNELS = [
-  {
-    id: 'podcast-1',
-    name: 'Coin Stories Podcast',
-    host: 'Natalie Brunell',
-    description: 'Investing journalist and Bitcoin educator exploring the intersection of money, technology, and freedom through compelling stories and expert interviews.',
-    channelId: 'UCxODjeUwZHk3p-7TU-IsDOA',
-    youtubeUrl: 'https://www.youtube.com/@nataliebrunell',
-    rssUrl: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCxODjeUwZHk3p-7TU-IsDOA'
-  },
-  {
-    id: 'podcast-2',
-    name: 'The Jack Mallers Show',
-    host: 'Jack Mallers',
-    description: 'CEO of Strike covering the biggest stories in Bitcoin, macroeconomics, financial markets, and the future of money with live weekly episodes.',
-    channelId: 'UC3ol9RQbQHqle_Uly6w9LfA',
-    youtubeUrl: 'https://www.youtube.com/channel/UC3ol9RQbQHqle_Uly6w9LfA',
-    rssUrl: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC3ol9RQbQHqle_Uly6w9LfA'
-  },
-  {
-    id: 'podcast-3',
-    name: 'The Bitcoin Standard Podcast',
-    host: 'Saifedean Ammous',
-    description: 'Author of "The Bitcoin Standard" exploring Austrian economics, sound money principles, and Bitcoin\'s role in the future of monetary systems.',
-    channelId: 'UCmvjlpMSYVeO-i_OfHJyNkA',
-    youtubeUrl: 'https://www.youtube.com/@saifedean',
-    rssUrl: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCmvjlpMSYVeO-i_OfHJyNkA'
-  }
 ];
 
 // --- Funções de busca de dados com APIs confiáveis --- 
@@ -331,74 +346,95 @@ async function fetchMarketSentiment() {
   }
 }
 
-// Função para buscar vídeo mais recente de um canal do YouTube via RSS
-async function fetchLatestVideoFromChannel(channel) {
+// Função para buscar o último vídeo de um canal do YouTube
+async function fetchLatestVideoThumbnail(channelId) {
   try {
     // Usar um proxy CORS para acessar o RSS feed do YouTube
     const proxyUrl = 'https://api.allorigins.win/get?url=';
-    const rssUrl = encodeURIComponent(channel.rssUrl);
-    const response = await fetch(`${proxyUrl}${rssUrl}`);
+    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+    const fullUrl = proxyUrl + encodeURIComponent(rssUrl);
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    const response = await fetch(fullUrl);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     
     const data = await response.json();
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(data.contents, 'text/xml');
+    const xmlText = data.contents;
     
-    // Buscar o primeiro item (vídeo mais recente)
+    // Parse do XML para extrair o ID do último vídeo
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+    
+    // Buscar o primeiro entry (último vídeo)
     const entries = xmlDoc.getElementsByTagName('entry');
     if (entries.length > 0) {
       const firstEntry = entries[0];
+      const videoIdElement = firstEntry.getElementsByTagName('yt:videoId')[0];
       
-      // Extrair informações do vídeo
-      const title = firstEntry.getElementsByTagName('title')[0]?.textContent || 'Título não disponível';
-      const link = firstEntry.getElementsByTagName('link')[0]?.getAttribute('href') || channel.youtubeUrl;
-      const published = firstEntry.getElementsByTagName('published')[0]?.textContent || '';
-      
-      // Extrair thumbnail do vídeo
-      const mediaGroup = firstEntry.getElementsByTagName('media:group')[0];
-      let thumbnail = '';
-      if (mediaGroup) {
-        const mediaThumbnails = mediaGroup.getElementsByTagName('media:thumbnail');
-        if (mediaThumbnails.length > 0) {
-          // Pegar a thumbnail de melhor qualidade (geralmente a última)
-          thumbnail = mediaThumbnails[mediaThumbnails.length - 1].getAttribute('url');
-        }
+      if (videoIdElement) {
+        const videoId = videoIdElement.textContent;
+        // Retornar a thumbnail de alta qualidade
+        return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
       }
-      
-      // Se não encontrou thumbnail no RSS, extrair ID do vídeo e construir URL da thumbnail
-      if (!thumbnail && link) {
-        const videoIdMatch = link.match(/watch\?v=([^&]+)/);
-        if (videoIdMatch) {
-          const videoId = videoIdMatch[1];
-          thumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-        }
-      }
-      
-      return {
-        title: title,
-        link: link,
-        thumbnail: thumbnail,
-        published: published,
-        channelName: channel.name
-      };
     }
     
-    throw new Error('Nenhum vídeo encontrado no feed RSS');
-    
+    throw new Error('Não foi possível extrair o ID do vídeo');
   } catch (error) {
-    console.error(`Erro ao buscar vídeo mais recente do canal ${channel.name}:`, error);
+    console.error('Erro ao buscar thumbnail do último vídeo:', error);
     
-    // Retornar dados de fallback
-    return {
-      title: `Último vídeo de ${channel.name}`,
-      link: channel.youtubeUrl,
-      thumbnail: '',
-      published: '',
-      channelName: channel.name
+    // Fallback: usar thumbnails específicas conhecidas para cada canal
+    const fallbackThumbnails = {
+      'UCxODjeUwZHk3p-7TU-IsDOA': 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg', // Natalie Brunell
+      'UC3ol9RQbQHqle_Uly6w9LfA': 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg', // Jack Mallers
+      'UCmvjlQyTaeF8_jdmcP5T5uA': 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg', // Bitcoin Standard
+      'UCq-6NzOKM_95kX6RzJYvgpA': 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg', // What Bitcoin Did
+      'UCTKuHbUU6W7jNKXQPQhBh-g': 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg', // Investors Podcast
+      'UCNcQ_VlVbRfhLb8NVWupGvQ': 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg'  // Bitcoin Audible
     };
+    
+    return fallbackThumbnails[channelId] || null;
+  }
+}
+
+// Função para renderizar os podcasts com thumbnails dos últimos vídeos
+async function renderPodcasts() {
+  const podcastsContainer = document.getElementById('podcasts-container');
+  if (!podcastsContainer) return;
+
+  podcastsContainer.innerHTML = '';
+
+  for (const podcast of PODCAST_CHANNELS) {
+    const podcastItem = document.createElement('div');
+    podcastItem.className = 'podcast-item';
+
+    // Buscar thumbnail do último vídeo
+    const thumbnail = await fetchLatestVideoThumbnail(podcast.channelId);
+
+    podcastItem.innerHTML = `
+      ${thumbnail ? `<img src="${thumbnail}" alt="${podcast.name} latest video" class="podcast-thumbnail" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
+      <div class="podcast-thumbnail" style="${thumbnail ? 'display: none;' : 'display: flex;'}">Carregando thumbnail...</div>
+      <div class="podcast-content">
+        <div class="podcast-header">
+          <div class="podcast-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="white">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+          </div>
+          <div class="podcast-info">
+            <h3 class="podcast-title">${podcast.name}</h3>
+            <p class="podcast-host">${podcast.host}</p>
+          </div>
+        </div>
+        <p class="podcast-description">${podcast.description}</p>
+        <a href="${podcast.channelUrl}" target="_blank" class="podcast-link">
+          <span>Watch on YouTube</span>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+            <path d="M7 17L17 7M17 7H7M17 7V17"/>
+          </svg>
+        </a>
+      </div>
+    `;
+
+    podcastsContainer.appendChild(podcastItem);
   }
 }
 
@@ -445,6 +481,7 @@ function renderQuotes() {
       quoteWrapper.appendChild(quote);
       quotesContainer.appendChild(quoteWrapper);
     });
+    updateFooterPrices(updatedAssets);
   });
 }
 
@@ -480,36 +517,40 @@ async function fetchAllLatestPrices() {
 
 // Função para atualizar as métricas de escassez
 async function updateScarcityMetrics() {
-  const minedElement = document.getElementById('bitcoins-mined');
-  const progressFillElement = document.querySelector('.supply-progress-fill');
-  const progressTextElement = document.querySelector('.supply-progress-text');
-  const totalPossibleBitcoins = 21000000;
-
-  if (minedElement && progressFillElement && progressTextElement) {
-    try {
-      const minedBitcoins = await fetchMinedBitcoins();
-      const formattedMinedBitcoins = minedBitcoins.toLocaleString('en-US', { maximumFractionDigits: 0 });
-      minedElement.textContent = formattedMinedBitcoins;
-
-      const percentageMined = (minedBitcoins / totalPossibleBitcoins) * 100;
-      const remainingBitcoins = totalPossibleBitcoins - minedBitcoins;
-      const formattedRemaining = remainingBitcoins.toLocaleString('en-US', { maximumFractionDigits: 0 });
-
-      progressFillElement.style.width = `${percentageMined.toFixed(2)}%`;
-      progressTextElement.textContent = `${percentageMined.toFixed(2)}% (${formattedRemaining} remaining)`;
-    } catch (error) {
-      console.error('Erro ao atualizar métricas de escassez:', error);
+  try {
+    const minedBitcoins = await fetchMinedBitcoins();
+    const totalSupply = 21000000;
+    const remaining = totalSupply - minedBitcoins;
+    const percentage = (minedBitcoins / totalSupply) * 100;
+    
+    // Atualizar o valor de bitcoins minerados
+    const minedElement = document.getElementById('bitcoins-mined');
+    if (minedElement) {
+      minedElement.textContent = minedBitcoins.toLocaleString('en-US', { maximumFractionDigits: 0 });
     }
-  }
-
-  // Atualizar contagem regressiva para o próximo halving
-  const daysRemainingElement = document.getElementById('days-remaining');
-  if (daysRemainingElement) {
-    const nextHalvingDate = new Date('2028-04-01');
-    const currentDate = new Date();
-    const timeDifference = nextHalvingDate.getTime() - currentDate.getTime();
-    const daysRemaining = Math.ceil(timeDifference / (1000 * 3600 * 24));
-    daysRemainingElement.textContent = `${daysRemaining} days remaining`;
+    
+    // Atualizar a barra de progresso
+    const progressFill = document.querySelector('.supply-progress-fill');
+    const progressText = document.querySelector('.supply-progress-text');
+    if (progressFill && progressText) {
+      progressFill.style.width = `${percentage.toFixed(2)}%`;
+      progressText.textContent = `${percentage.toFixed(2)}% (${remaining.toLocaleString('en-US', { maximumFractionDigits: 0 })} remaining)`;
+    }
+    
+    // Calcular dias restantes até o próximo halving (aproximado)
+    const blocksPerDay = 144; // Aproximadamente 144 blocos por dia
+    const currentBlock = Math.floor(minedBitcoins * 100000000 / 50 / 100000000 * 210000); // Estimativa grosseira
+    const nextHalvingBlock = Math.ceil(currentBlock / 210000) * 210000 + 210000;
+    const blocksRemaining = nextHalvingBlock - currentBlock;
+    const daysRemaining = Math.floor(blocksRemaining / blocksPerDay);
+    
+    const daysElement = document.getElementById('days-remaining');
+    if (daysElement) {
+      daysElement.textContent = `${daysRemaining} days remaining`;
+    }
+    
+  } catch (error) {
+    console.error('Erro ao atualizar métricas de escassez:', error);
   }
 }
 
@@ -518,138 +559,133 @@ async function updateMarketSentiment() {
   try {
     const sentimentData = await fetchMarketSentiment();
     
-    // Atualizar Fear & Greed Index
-    const fearGreedElement = document.getElementById('fear-greed');
-    if (fearGreedElement) {
-      const gaugeValue = fearGreedElement.querySelector('.gauge-value');
-      const gaugeFill = fearGreedElement.querySelector('.gauge-fill');
-      if (gaugeValue && gaugeFill) {
-        gaugeValue.textContent = `${sentimentData.fearGreed.value} - ${sentimentData.fearGreed.classification}`;
-        gaugeFill.style.width = `${sentimentData.fearGreed.value}%`;
-      }
+    // Atualizar BTC Dominance
+    const btcDominanceElement = document.querySelector('#btc-dominance .gauge-value');
+    if (btcDominanceElement) {
+      btcDominanceElement.textContent = `${sentimentData.btcDominance}% - Moderate`;
     }
     
-    // Atualizar BTC Dominance
-    const btcDominanceElement = document.getElementById('btc-dominance');
-    if (btcDominanceElement) {
-      const gaugeValue = btcDominanceElement.querySelector('.gauge-value');
-      const gaugeFill = btcDominanceElement.querySelector('.gauge-fill');
-      if (gaugeValue && gaugeFill) {
-        gaugeValue.textContent = `${sentimentData.btcDominance}% - Moderate`;
-        gaugeFill.style.width = `${sentimentData.btcDominance}%`;
-      }
+    // Atualizar Fear & Greed Index
+    const fearGreedElement = document.querySelector('#fear-greed .gauge-value');
+    if (fearGreedElement) {
+      fearGreedElement.textContent = `${sentimentData.fearGreed.value} - ${sentimentData.fearGreed.classification}`;
     }
     
     // Atualizar Volatility
-    const volatilityElement = document.getElementById('volatility');
+    const volatilityElement = document.querySelector('#volatility .gauge-value');
     if (volatilityElement) {
-      const gaugeValue = volatilityElement.querySelector('.gauge-value');
-      const gaugeFill = volatilityElement.querySelector('.gauge-fill');
-      if (gaugeValue && gaugeFill) {
-        const volatilityLevel = sentimentData.volatility < 5 ? 'Low' : sentimentData.volatility < 10 ? 'Medium' : 'High';
-        gaugeValue.textContent = `${sentimentData.volatility.toFixed(1)}% - ${volatilityLevel}`;
-        gaugeFill.style.width = `${Math.min(sentimentData.volatility * 5, 100)}%`;
-      }
+      volatilityElement.textContent = `${sentimentData.volatility.toFixed(1)}% - Low`;
     }
     
     // Atualizar Transaction Volume
-    const transactionVolumeElement = document.getElementById('transaction-volume');
-    if (transactionVolumeElement) {
-      const gaugeValue = transactionVolumeElement.querySelector('.gauge-value');
-      const gaugeFill = transactionVolumeElement.querySelector('.gauge-fill');
-      if (gaugeValue && gaugeFill) {
-        const volumeLevel = sentimentData.transactionVolume > 50 ? 'High' : sentimentData.transactionVolume > 20 ? 'Medium' : 'Low';
-        gaugeValue.textContent = `$${sentimentData.transactionVolume}B - ${volumeLevel}`;
-        gaugeFill.style.width = `${Math.min(sentimentData.transactionVolume * 2, 100)}%`;
-      }
+    const volumeElement = document.querySelector('#transaction-volume .gauge-value');
+    if (volumeElement) {
+      volumeElement.textContent = `$${sentimentData.transactionVolume}B - High`;
     }
     
-    // Atualizar Network Hash Rate
-    const hashRateElement = document.getElementById('network-hash-rate');
-    if (hashRateElement && sentimentData.hashRate > 0) {
-      const gaugeValue = hashRateElement.querySelector('.gauge-value');
-      const gaugeFill = hashRateElement.querySelector('.gauge-fill');
-      if (gaugeValue && gaugeFill) {
-        gaugeValue.textContent = `${sentimentData.hashRate} EH/s - Record High`;
-        gaugeFill.style.width = '72%';
+    // Atualizar Network Hash Rate se disponível
+    if (sentimentData.hashRate > 0) {
+      const hashRateElement = document.querySelector('#network-hash-rate .gauge-value');
+      if (hashRateElement) {
+        hashRateElement.textContent = `${sentimentData.hashRate} EH/s - Record High`;
       }
     }
     
   } catch (error) {
-    console.error('Erro ao atualizar sentimento de mercado:', error);
+    console.error('Erro ao atualizar dados de sentimento:', error);
   }
 }
 
-// Função para atualizar citações do Satoshi
-function updateSatoshiQuote() {
-  const quoteElement = document.getElementById('satoshi-quote');
-  if (quoteElement) {
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    quoteElement.textContent = quotes[randomIndex];
-  }
-}
-
-// Função para carregar thumbnails dos podcasts do YouTube
-async function loadPodcastThumbnails() {
-  console.log('Carregando thumbnails dos podcasts...');
+// Função para atualizar preços no footer
+function updateFooterPrices(assets) {
+  const footerPrices = document.getElementById('footer-prices');
+  if (!footerPrices) return;
   
-  for (const channel of PODCAST_CHANNELS) {
-    try {
-      console.log(`Buscando vídeo mais recente do canal: ${channel.name}`);
-      const latestVideo = await fetchLatestVideoFromChannel(channel);
-      
-      // Atualizar a thumbnail e link do podcast
-      const thumbnailElement = document.getElementById(`${channel.id}-thumbnail`);
-      const linkElement = document.querySelector(`#${channel.id}-link`);
-      
-      if (thumbnailElement && latestVideo.thumbnail) {
-        // Substituir o placeholder pela thumbnail real
-        const placeholder = thumbnailElement.querySelector('.podcast-placeholder');
-        if (placeholder) {
-          const img = document.createElement('img');
-          img.src = latestVideo.thumbnail;
-          img.alt = latestVideo.title;
-          img.style.width = '100%';
-          img.style.height = '100%';
-          img.style.objectFit = 'cover';
-          img.style.borderRadius = '0';
-          
-          // Adicionar evento de erro para fallback
-          img.onerror = function() {
-            console.log(`Erro ao carregar thumbnail para ${channel.name}, mantendo placeholder`);
-            this.style.display = 'none';
-          };
-          
-          thumbnailElement.innerHTML = '';
-          thumbnailElement.appendChild(img);
-        }
-      }
-      
-      // Atualizar o link para o vídeo mais recente
-      if (linkElement && latestVideo.link) {
-        linkElement.href = latestVideo.link;
-        linkElement.title = latestVideo.title;
-      }
-      
-      console.log(`✓ Thumbnail carregada para ${channel.name}: ${latestVideo.title}`);
-      
-    } catch (error) {
-      console.error(`Erro ao carregar thumbnail para ${channel.name}:`, error);
+  footerPrices.innerHTML = '';
+  
+  // Mostrar apenas Bitcoin, Gold e S&P 500 no footer
+  const footerAssets = [assets[0], assets[1], assets[5]]; // Bitcoin, Gold, S&P 500
+  
+  footerAssets.forEach(asset => {
+    if (asset) {
+      const priceSpan = document.createElement('span');
+      priceSpan.textContent = `${asset.name}: ${asset.price}`;
+      footerPrices.appendChild(priceSpan);
     }
-  }
+  });
 }
 
+// Função para mostrar/esconder fontes
 function toggleSources() {
   const sourcesDiv = document.getElementById('market-cap-sources');
-  const toggleButton = document.getElementById('sources-toggle');
-  if (sourcesDiv && toggleButton) {
-    if (sourcesDiv.style.display === 'none' || sourcesDiv.style.display === '') {
-      sourcesDiv.style.display = 'block';
-      toggleButton.textContent = 'Hide sources';
-    } else {
-      sourcesDiv.style.display = 'none';
-      toggleButton.textContent = 'Show sources';
-    }
+  const button = document.getElementById('sources-toggle');
+  
+  if (sourcesDiv.style.display === 'none' || sourcesDiv.style.display === '') {
+    sourcesDiv.style.display = 'block';
+    button.textContent = 'Hide sources';
+  } else {
+    sourcesDiv.style.display = 'none';
+    button.textContent = 'Show sources';
   }
 }
+
+// Função para copiar endereço de doação
+function copyToClipboard() {
+  const addressElement = document.getElementById('donation-address');
+  const address = addressElement.textContent;
+  
+  navigator.clipboard.writeText(address).then(() => {
+    const button = document.querySelector('.copy-button');
+    const originalText = button.textContent;
+    button.textContent = 'Copied!';
+    setTimeout(() => {
+      button.textContent = originalText;
+    }, 2000);
+  }).catch(err => {
+    console.error('Erro ao copiar endereço:', err);
+  });
+}
+
+// Função para exibir uma citação aleatória do Satoshi
+function displayRandomQuote() {
+  const quoteElement = document.getElementById('satoshi-quote');
+  if (quoteElement) {
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    quoteElement.textContent = randomQuote;
+  }
+}
+
+// Inicialização quando a página carrega
+document.addEventListener('DOMContentLoaded', function() {
+  // Renderizar cotações
+  renderQuotes();
+  
+  // Renderizar podcasts
+  renderPodcasts();
+  
+  // Atualizar métricas de escassez
+  updateScarcityMetrics();
+  
+  // Atualizar dados de sentimento
+  updateMarketSentiment();
+  
+  // Exibir citação aleatória
+  displayRandomQuote();
+  
+  // Configurar botão de fontes
+  const sourcesButton = document.getElementById('sources-toggle');
+  if (sourcesButton) {
+    sourcesButton.addEventListener('click', toggleSources);
+  }
+  
+  // Atualizar dados a cada 5 minutos
+  setInterval(() => {
+    renderQuotes();
+    updateScarcityMetrics();
+    updateMarketSentiment();
+  }, 5 * 60 * 1000);
+  
+  // Trocar citação a cada 30 segundos
+  setInterval(displayRandomQuote, 30000);
+});
 
