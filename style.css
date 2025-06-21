@@ -1,562 +1,943 @@
-// Configuração da API Alpha Vantage
-const ALPHA_VANTAGE_API_KEY = "YXNV7ACP45FN4RZC";
-const ALPHA_VANTAGE_BASE_URL = "https://www.alphavantage.co/query";
-
-// Valores de fallback atualizados (devem ser atualizados manualmente periodicamente )
-const FALLBACK_VALUES = {
-  bitcoin: { name: "Bitcoin", price: "$104,324.00", change: "-0.6%", positive: false },
-  gold: { name: "Gold", price: "$3,433.47", change: "+1.60%", positive: true },
-  silver: { name: "Silver", price: "$36.32", change: "+0.25%", positive: true },
-  treasury: { name: "10-Year Treasury Yield", price: "4.39%", change: "-0.07%", positive: false },
-  dollar: { name: "Dollar Index", price: "82.88", change: "+0.2%", positive: true },
-  sp500: { name: "S&P 500", price: "5,974.40", change: "-0.0%", positive: false }
-};
-
-// Configuração dos podcasts com IDs dos canais do YouTube
-const PODCAST_CHANNELS = [
-  {
-    name: "Coin Stories Podcast",
-    host: "Natalie Brunell",
-    description: "Investing journalist and Bitcoin educator exploring the intersection of money, technology, and freedom through compelling stories and expert interviews.",
-    channelId: "UCxeedoaXm_uPh9fgflym8Aw",
-    channelUrl: "https://www.youtube.com/@nataliebrunell"
-  },
-  {
-    name: "The Jack Mallers Show",
-    host: "Jack Mallers",
-    description: "CEO of Strike covering the biggest stories in Bitcoin, macroeconomics, financial markets, and the future of money with live weekly episodes.",
-    channelId: "UC3ol9RQbQHqle_Uly6w9LfA",
-    channelUrl: "https://www.youtube.com/channel/UC3ol9RQbQHqle_Uly6w9LfA"
-  },
-  {
-    name: "The Bitcoin Standard Podcast",
-    host: "Saifedean Ammous",
-    description: "Author of \"The Bitcoin Standard\" exploring Austrian economics, sound money principles, and Bitcoin's role in the future of monetary systems.",
-    channelId: "UCtOjAGhOyOgZLjOyNdGJNOA",
-    channelUrl: "https://www.youtube.com/@saifedean"
-  }
-];
-
-// Citações do Satoshi
-const quotes = [
-  "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.",
-  "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks.",
-  "If you don't believe it or don't get it, I don't have the time to try to convince you, sorry.",
-  "Being open source means anyone can independently review the code. If it was closed source, nobody could verify the security.",
-  "The nature of Bitcoin is such that once version 0.1 was released, the core design was set in stone for the rest of its lifetime."
-];
-
-// --- Funções Principais ---
-
-// Função para renderizar cotações dos ativos principais
-function renderQuotes( ) {
-  console.log('Renderizando cotações...');
-  const quotesContainer = document.getElementById('quotes');
-  if (!quotesContainer) {
-    console.error('Container de cotações não encontrado');
-    return;
-  }
-  
-  quotesContainer.innerHTML = '';
-  
-  Object.values(FALLBACK_VALUES).forEach(asset => {
-    const quoteElement = document.createElement('div');
-    quoteElement.className = 'quote-item';
-    
-    quoteElement.innerHTML = `
-      <div class="quote-name">${asset.name}</div>
-      <div class="quote-price">${asset.price}</div>
-      <div class="quote-change ${asset.positive ? 'positive' : 'negative'}">${asset.change}</div>
-    `;
-    
-    quotesContainer.appendChild(quoteElement);
-  });
-  
-  console.log('Cotações renderizadas com sucesso');
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  color: #e0e0e0;
+  line-height: 1.6;
 }
 
-// Função para buscar o último vídeo de um canal do YouTube
-async function fetchLatestVideo(channelId) {
-  try {
-    // Método 1: Tentar usar RSS feed com proxy CORS
-    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl )}`;
-    
-    try {
-      const response = await fetch(proxyUrl);
-      if (response.ok) {
-        const data = await response.json();
-        const xmlText = data.contents;
-        
-        // Parse do XML usando DOMParser
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-        
-        // Pegar o primeiro entry (último vídeo)
-        const entries = xmlDoc.getElementsByTagName('entry');
-        if (entries.length > 0) {
-          const firstEntry = entries[0];
-          const videoId = firstEntry.getElementsByTagName('yt:videoId')[0]?.textContent;
-          const title = firstEntry.getElementsByTagName('title')[0]?.textContent;
-          const published = firstEntry.getElementsByTagName('published')[0]?.textContent;
-          
-          if (videoId) {
-            return {
-              videoId: videoId,
-              title: title,
-              thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-              thumbnailMedium: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-              published: published,
-              url: `https://www.youtube.com/watch?v=${videoId}`
-            };
-          }
-        }
-      }
-    } catch (corsError ) {
-      console.log(`CORS error for channel ${channelId}, trying fallback method`);
-    }
-    
-    // Método 2: Fallback com dados simulados baseados no canal
-    const fallbackData = {
-      "UCxeedoaXm_uPh9fgflym8Aw": { // Natalie Brunell
-        videoId: "dQw4w9WgXcQ",
-        title: "Bitcoin Education and Financial Freedom",
-        published: "2025-06-18T10:00:00Z"
-      },
-      "UC3ol9RQbQHqle_Uly6w9LfA": { // Jack Mallers
-        videoId: "kLl4I2HgqUM", 
-        title: "Bitcoin and Gold: The New Safe Haven Assets",
-        published: "2025-06-16T15:30:00Z"
-      },
-      "UCtOjAGhOyOgZLjOyNdGJNOA": { // Saifedean Ammous
-        videoId: "kLl4I2HgqUM",
-        title: "The Gold Standard: Saifedean's Next Book!",
-        published: "2024-12-10T12:00:00Z"
-      }
-    };
-    
-    const fallback = fallbackData[channelId];
-    if (fallback) {
-      return {
-        videoId: fallback.videoId,
-        title: fallback.title,
-        thumbnail: `https://img.youtube.com/vi/${fallback.videoId}/maxresdefault.jpg`,
-        thumbnailMedium: `https://img.youtube.com/vi/${fallback.videoId}/mqdefault.jpg`,
-        published: fallback.published,
-        url: `https://www.youtube.com/watch?v=${fallback.videoId}`
-      };
-    }
-    
-    return null;
-  } catch (error ) {
-    console.error(`Erro ao buscar último vídeo do canal ${channelId}:`, error);
-    return null;
+.compact-header {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+  color: white;
+  padding: 1rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 2px solid #f7931a;
+}
+
+.header-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(247, 147, 26, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(247, 147, 26, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(247, 147, 26, 0.08) 0%, transparent 50%);
+}
+
+.header-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.header-logo {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.header-logo svg {
+  width: 48px;
+  height: 48px;
+  fill: #f7931a;
+  filter: drop-shadow(0 2px 4px rgba(247, 147, 26, 0.3));
+}
+
+.compact-header h1 {
+  margin: 0.5rem 0 0.25rem 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(45deg, #f7931a, #ffb347);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.compact-header p {
+  margin: 0;
+  font-size: 1rem;
+  opacity: 0.9;
+  font-weight: 300;
+}
+
+.header-accent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #f7931a, transparent);
+}
+
+.main-layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.standard-section {
+  background: rgba(45, 45, 45, 0.8);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(247, 147, 26, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.section-header {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: #f7931a;
+  border-bottom: 2px solid rgba(247, 147, 26, 0.3);
+  padding-bottom: 0.5rem;
+}
+
+.section-header-with-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid rgba(247, 147, 26, 0.3);
+  padding-bottom: 0.5rem;
+}
+
+.section-header-with-total h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  color: #f7931a;
+}
+
+.market-cap-total {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #e0e0e0;
+}
+
+/* Main Indicators Styles */
+.vertical-quotes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.quote-item {
+  background: rgba(26, 26, 26, 0.8);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid rgba(247, 147, 26, 0.3);
+  transition: all 0.3s ease;
+}
+
+.quote-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(247, 147, 26, 0.2);
+  border-color: rgba(247, 147, 26, 0.5);
+}
+
+.quote-name {
+  font-size: 0.9rem;
+  color: #b0b0b0;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.quote-price {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+}
+
+.quote-change {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.quote-change.positive {
+  color: #4caf50;
+}
+
+.quote-change.negative {
+  color: #f44336;
+}
+
+/* Market Sentiment Styles */
+.sentiment-indicators {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.indicator {
+  background: rgba(26, 26, 26, 0.6);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid rgba(247, 147, 26, 0.2);
+}
+
+.indicator-title {
+  font-size: 0.9rem;
+  color: #b0b0b0;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+.gauge {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.gauge-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f44336, #ff9800, #4caf50);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.gauge-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+}
+
+.indicator-change {
+  font-size: 0.8rem;
+  color: #4caf50;
+}
+
+/* Events Styles */
+.calendar-container {
+  width: 100%;
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.event-item {
+  background: rgba(26, 26, 26, 0.6);
+  border-radius: 8px;
+  padding: 1rem;
+  border-left: 4px solid #f7931a;
+  transition: all 0.3s ease;
+}
+
+.event-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(247, 147, 26, 0.2);
+}
+
+.event-item.high {
+  border-left-color: #f44336;
+}
+
+.event-item.medium {
+  border-left-color: #ff9800;
+}
+
+.event-item.low {
+  border-left-color: #4caf50;
+}
+
+.event-date {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.event-date span {
+  font-size: 0.9rem;
+  color: #b0b0b0;
+  font-weight: 500;
+}
+
+.event-impact {
+  display: flex;
+  gap: 2px;
+}
+
+.impact-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f7931a;
+}
+
+.event-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.event-description {
+  font-size: 0.9rem;
+  color: #b0b0b0;
+  line-height: 1.4;
+}
+
+/* Scarcity Metrics Styles */
+.scarcity-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.scarcity-metric {
+  background: rgba(26, 26, 26, 0.6);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid rgba(247, 147, 26, 0.2);
+  transition: all 0.3s ease;
+}
+
+.scarcity-metric:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(247, 147, 26, 0.2);
+  border-color: rgba(247, 147, 26, 0.4);
+}
+
+.scarcity-metric-title {
+  font-size: 1rem;
+  color: #b0b0b0;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+.scarcity-metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f7931a;
+  margin-bottom: 0.75rem;
+}
+
+.scarcity-metric-description {
+  font-size: 0.9rem;
+  color: #b0b0b0;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.scarcity-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.scarcity-comparison-item {
+  font-size: 0.85rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.scarcity-comparison-item.bitcoin {
+  background: rgba(247, 147, 26, 0.2);
+  color: #f7931a;
+}
+
+.scarcity-comparison-item.gold {
+  background: rgba(212, 175, 55, 0.2);
+  color: #d4af37;
+}
+
+.scarcity-comparison-item.silver {
+  background: rgba(192, 192, 192, 0.2);
+  color: #c0c0c0;
+}
+
+.supply-progress {
+  width: 100%;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.supply-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f7931a, #ffb347);
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.supply-progress-text {
+  font-size: 0.85rem;
+  color: #f7931a;
+  font-weight: 600;
+}
+
+.days-remaining {
+  font-size: 1.2rem;
+  color: #f7931a;
+  font-weight: 600;
+}
+
+/* Market Cap Styles */
+.market-cap-container {
+  width: 100%;
+}
+
+.market-cap-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.market-cap-item {
+  background: rgba(26, 26, 26, 0.6);
+  border-radius: 6px;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.market-cap-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.market-cap-item-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.market-cap-item-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f7931a;
+}
+
+.market-cap-item-bar {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.market-cap-item-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.market-cap-item-percentage {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.sources-button {
+  background: rgba(247, 147, 26, 0.2);
+  color: #f7931a;
+  border: 1px solid rgba(247, 147, 26, 0.5);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.sources-button:hover {
+  background: rgba(247, 147, 26, 0.3);
+  border-color: rgba(247, 147, 26, 0.7);
+}
+
+.market-cap-sources {
+  display: none;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(26, 26, 26, 0.6);
+  border-radius: 6px;
+  border: 1px solid rgba(247, 147, 26, 0.2);
+}
+
+.market-cap-sources p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #b0b0b0;
+  line-height: 1.4;
+}
+
+.market-cap-sources a {
+  color: #f7931a;
+  text-decoration: none;
+}
+
+.market-cap-sources a:hover {
+  text-decoration: underline;
+}
+
+/* News Styles */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.news-item {
+  background: rgba(26, 26, 26, 0.6);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid rgba(247, 147, 26, 0.2);
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  display: block;
+}
+
+.news-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(247, 147, 26, 0.2);
+  border-color: rgba(247, 147, 26, 0.4);
+}
+
+.news-source {
+  display: inline-block;
+  background: rgba(247, 147, 26, 0.2);
+  color: #f7931a;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.news-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.news-description {
+  font-size: 0.9rem;
+  color: #b0b0b0;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.news-date {
+  font-size: 0.8rem;
+  color: #888;
+  font-weight: 500;
+}
+
+/* Podcast Styles */
+.podcasts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.podcast-item {
+  background: rgba(26, 26, 26, 0.6);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid rgba(247, 147, 26, 0.2);
+  transition: all 0.3s ease;
+}
+
+.podcast-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(247, 147, 26, 0.2);
+  border-color: rgba(247, 147, 26, 0.4);
+}
+
+.podcast-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.podcast-thumbnail {
+  width: 80px;
+  height: 60px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.podcast-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.podcast-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.podcast-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.podcast-info {
+  flex: 1;
+}
+
+.podcast-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 0.25rem 0;
+}
+
+.podcast-host {
+  font-size: 0.9rem;
+  color: #f7931a;
+  margin: 0;
+  font-weight: 500;
+}
+
+.podcast-description {
+  font-size: 0.9rem;
+  color: #b0b0b0;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+}
+
+.latest-video {
+  background: rgba(247, 147, 26, 0.1);
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-left: 3px solid #f7931a;
+}
+
+.video-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
+}
+
+.video-date {
+  font-size: 0.8rem;
+  color: #f7931a;
+  font-weight: 500;
+}
+
+.podcast-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(247, 147, 26, 0.2);
+  color: #f7931a;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.podcast-link:hover {
+  background: rgba(247, 147, 26, 0.3);
+  transform: translateX(2px);
+}
+
+.podcast-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Horizontal Sections */
+.horizontal-sections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+/* Quote Styles */
+.quote-container {
+  text-align: center;
+}
+
+#satoshi-quote {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: #e0e0e0;
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+  border-left: 4px solid #f7931a;
+  padding-left: 1rem;
+  text-align: left;
+}
+
+.quote-author {
+  font-size: 0.9rem;
+  color: #f7931a;
+  font-weight: 600;
+}
+
+/* Support Styles */
+.donation-container p {
+  margin: 0 0 1rem 0;
+  color: #e0e0e0;
+}
+
+.donation-address {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.donation-address-text {
+  background: rgba(26, 26, 26, 0.8);
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  color: #f7931a;
+  border: 1px solid rgba(247, 147, 26, 0.3);
+  flex: 1;
+  word-break: break-all;
+}
+
+.copy-button {
+  background: #f7931a;
+  color: #1a1a1a;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.copy-button:hover {
+  background: #ffb347;
+  transform: translateY(-1px);
+}
+
+/* Footer */
+footer {
+  background: rgba(26, 26, 26, 0.9);
+  border-top: 1px solid rgba(247, 147, 26, 0.3);
+  padding: 1rem 0;
+  margin-top: 2rem;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-text p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #b0b0b0;
+}
+
+.footer-prices {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: #f7931a;
+}
+
+/* Estilos para sistema de atualização */
+.update-indicator {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  z-index: 1000;
+  font-size: 0.9rem;
+}
+
+.update-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #f7931a;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.update-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 5px;
+  color: white;
+  font-size: 0.9rem;
+  z-index: 1001;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.update-notification.show {
+  transform: translateX(0);
+}
+
+.update-notification.success {
+  background: #4caf50;
+}
+
+.update-notification.error {
+  background: #f44336;
+}
+
+/* Estilos para categorias de notícias */
+.news-source.bitcoin {
+  background: #f7931a;
+  color: white;
+}
+
+.news-source.crypto {
+  background: #6a5acd;
+  color: white;
+}
+
+.news-source.economics {
+  background: #d4af37;
+  color: white;
+}
+
+.news-item.bitcoin-news {
+  border-left: 3px solid #f7931a;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .compact-header h1 {
+    font-size: 2rem;
+  }
+  
+  .main-layout {
+    padding: 1rem 0.5rem;
+    gap: 1.5rem;
+  }
+  
+  .standard-section {
+    padding: 1rem;
+  }
+  
+  .section-header-with-total {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .vertical-quotes {
+    grid-template-columns: 1fr;
+  }
+  
+  .sentiment-indicators {
+    grid-template-columns: 1fr;
+  }
+  
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .scarcity-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .news-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .podcasts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .podcast-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .podcast-thumbnail,
+  .podcast-icon {
+    margin-bottom: 0.5rem;
+  }
+  
+  .horizontal-sections {
+    grid-template-columns: 1fr;
+  }
+  
+  .footer-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .donation-address {
+    flex-direction: column;
   }
 }
 
-// Função para carregar todos os podcasts com seus últimos vídeos
-async function loadPodcasts() {
-  console.log('Carregando podcasts...');
-  const podcastsGrid = document.getElementById('podcasts-grid');
-  if (!podcastsGrid) {
-    console.error('Container de podcasts não encontrado');
-    return;
+@media (max-width: 480px) {
+  .compact-header h1 {
+    font-size: 1.8rem;
   }
   
-  podcastsGrid.innerHTML = '';
-  
-  for (const podcast of PODCAST_CHANNELS) {
-    try {
-      const latestVideo = await fetchLatestVideo(podcast.channelId);
-      
-      const podcastElement = document.createElement('div');
-      podcastElement.className = 'podcast-item';
-      
-      let thumbnailHtml = '';
-      let videoInfoHtml = '';
-      
-      if (latestVideo) {
-        thumbnailHtml = `
-          <div class="podcast-thumbnail">
-            <img src="${latestVideo.thumbnail}" alt="${latestVideo.title}" onerror="this.style.display='none'">
-          </div>
-        `;
-        
-        const publishDate = new Date(latestVideo.published);
-        videoInfoHtml = `
-          <div class="latest-video">
-            <div class="video-title">${latestVideo.title}</div>
-            <div class="video-date">${publishDate.toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'numeric', 
-              day: 'numeric' 
-            })}</div>
-          </div>
-        `;
-      }
-      
-      podcastElement.innerHTML = `
-        <div class="podcast-header">
-          ${thumbnailHtml}
-          <div class="podcast-icon">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#f7931a">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-            </svg>
-          </div>
-          <div class="podcast-info">
-            <h3 class="podcast-title">${podcast.name}</h3>
-            <p class="podcast-host">${podcast.host}</p>
-          </div>
-        </div>
-        <p class="podcast-description">${podcast.description}</p>
-        ${videoInfoHtml}
-        <a href="${podcast.channelUrl}" target="_blank" class="podcast-link">
-          <span>${latestVideo ? 'Watch Latest Video' : 'Watch on YouTube'}</span>
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-            <path d="M7 17L17 7M17 7H7M17 7V17"/>
-          </svg>
-        </a>
-      `;
-      
-      podcastsGrid.appendChild(podcastElement );
-    } catch (error) {
-      console.error(`Erro ao carregar podcast ${podcast.name}:`, error);
-    }
+  .compact-header p {
+    font-size: 0.9rem;
   }
   
-  console.log('Podcasts carregados com sucesso');
-}
-
-// Função para atualizar métricas de escassez
-function updateScarcityMetrics() {
-  console.log('Atualizando métricas de escassez...');
-  
-  // Calcular bitcoins minerados (aproximação)
-  const totalSupply = 21000000;
-  const currentSupply = 19880965; // Aproximação atual
-  const percentage = (currentSupply / totalSupply * 100).toFixed(2);
-  const remaining = totalSupply - currentSupply;
-  
-  // Atualizar bitcoins minerados
-  const bitcoinsMined = document.getElementById('bitcoins-mined');
-  if (bitcoinsMined) {
-    bitcoinsMined.textContent = currentSupply.toLocaleString();
+  .main-layout {
+    padding: 1rem 0.25rem;
   }
   
-  // Atualizar barra de progresso
-  const supplyProgressFill = document.querySelector('.supply-progress-fill');
-  const supplyProgressText = document.querySelector('.supply-progress-text');
-  if (supplyProgressFill && supplyProgressText) {
-    supplyProgressFill.style.width = `${percentage}%`;
-    supplyProgressText.textContent = `${percentage}% (${remaining.toLocaleString()} remaining)`;
-  }
-  
-  // Calcular dias até próximo halving (aproximação)
-  const nextHalvingDate = new Date('2028-04-01');
-  const today = new Date();
-  const daysRemaining = Math.ceil((nextHalvingDate - today) / (1000 * 60 * 60 * 24));
-  
-  const daysRemainingElement = document.getElementById('days-remaining');
-  if (daysRemainingElement) {
-    daysRemainingElement.textContent = `${daysRemaining} days remaining`;
-  }
-  
-  console.log('Métricas de escassez atualizadas');
-}
-
-// Função para atualizar sentimento do mercado
-function updateMarketSentiment() {
-  console.log('Atualizando sentimento do mercado...');
-  // Esta função pode ser expandida para buscar dados reais
-  console.log('Sentimento do mercado atualizado');
-}
-
-// Função para atualizar citação do Satoshi
-function updateSatoshiQuote() {
-  const quoteElement = document.getElementById('satoshi-quote');
-  if (quoteElement) {
-    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-    quoteElement.textContent = randomQuote;
+  .scarcity-metrics-grid {
+    grid-template-columns: 1fr;
   }
 }
-
-// Fontes de notícias alternativas (não mainstream)
-const ALTERNATIVE_NEWS_SOURCES = [
-  {
-    name: "Bitcoin Magazine",
-    url: "https://bitcoinmagazine.com",
-    rss: "https://bitcoinmagazine.com/feed",
-    category: "bitcoin"
-  },
-  {
-    name: "The Bitcoin Times",
-    url: "https://bitcointimes.news",
-    rss: "https://bitcointimes.news/feed",
-    category: "bitcoin"
-  },
-  {
-    name: "Blockworks",
-    url: "https://blockworks.co",
-    rss: "https://blockworks.co/feed",
-    category: "crypto"
-  },
-  {
-    name: "Decrypt",
-    url: "https://decrypt.co",
-    rss: "https://decrypt.co/feed",
-    category: "crypto"
-  },
-  {
-    name: "CoinDesk",
-    url: "https://coindesk.com",
-    rss: "https://coindesk.com/arc/outboundfeeds/rss/",
-    category: "crypto"
-  },
-  {
-    name: "Cypherpunk Times",
-    url: "https://cypherpunktimes.com",
-    rss: "https://cypherpunktimes.com/feed/",
-    category: "bitcoin"
-  },
-  {
-    name: "Bitcoin News",
-    url: "https://news.bitcoin.com",
-    rss: "https://news.bitcoin.com/feed/",
-    category: "bitcoin"
-  },
-  {
-    name: "CryptoSlate",
-    url: "https://cryptoslate.com",
-    rss: "https://cryptoslate.com/feed/",
-    category: "crypto"
-  },
-  {
-    name: "The Block",
-    url: "https://theblock.co",
-    rss: "https://theblock.co/rss.xml",
-    category: "crypto"
-  },
-  {
-    name: "CryptoPotato",
-    url: "https://cryptopotato.com",
-    rss: "https://cryptopotato.com/feed/",
-    category: "crypto"
-  },
-  {
-    name: "Mises Institute",
-    url: "https://mises.org",
-    rss: "https://mises.org/feed",
-    category: "economics"
-  },
-  {
-    name: "Zero Hedge",
-    url: "https://zerohedge.com",
-    rss: "https://feeds.feedburner.com/zerohedge/feed",
-    category: "economics"
-  }
-];
-
-// Função para buscar notícias de fontes alternativas
-async function fetchAlternativeNews( ) {
-  const allNews = [];
-  const maxNewsPerSource = 2;
-  
-  // Priorizar fontes Bitcoin-específicas
-  const prioritySources = ALTERNATIVE_NEWS_SOURCES.filter(s => s.category === 'bitcoin');
-  const otherSources = ALTERNATIVE_NEWS_SOURCES.filter(s => s.category !== 'bitcoin');
-  const sourcesToUse = [...prioritySources, ...otherSources].slice(0, 8);
-  
-  for (const source of sourcesToUse) {
-    try {
-      // Usar proxy CORS para acessar RSS feeds
-      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(source.rss )}`;
-      const response = await fetch(proxyUrl);
-      
-      if (response.ok) {
-        const data = await response.json();
-        const xmlText = data.contents;
-        
-        // Parse do XML
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-        
-        // Extrair itens do RSS
-        const items = xmlDoc.getElementsByTagName('item');
-        
-        for (let i = 0; i < Math.min(items.length, maxNewsPerSource); i++) {
-          const item = items[i];
-          const title = item.getElementsByTagName('title')[0]?.textContent;
-          const description = item.getElementsByTagName('description')[0]?.textContent;
-          const link = item.getElementsByTagName('link')[0]?.textContent;
-          const pubDate = item.getElementsByTagName('pubDate')[0]?.textContent;
-          
-          if (title && link) {
-            // Filtrar notícias relevantes
-            const relevantKeywords = ['bitcoin', 'btc', 'cryptocurrency', 'crypto', 'blockchain', 'inflation', 'fed', 'monetary', 'gold', 'silver', 'economy'];
-            const titleLower = title.toLowerCase();
-            const isRelevant = relevantKeywords.some(keyword => titleLower.includes(keyword));
-            
-            if (isRelevant || source.category === 'bitcoin') {
-              allNews.push({
-                source: source.name,
-                title: title,
-                description: description ? description.replace(/<[^>]*>/g, '').substring(0, 150) + '...' : '',
-                link: link,
-                date: pubDate ? new Date(pubDate) : new Date(),
-                sourceUrl: source.url,
-                category: source.category,
-                priority: source.category === 'bitcoin' ? 1 : 2
-              });
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.error(`Erro ao buscar notícias de ${source.name}:`, error);
-    }
-  }
-  
-  // Ordenar por prioridade e data
-  allNews.sort((a, b) => {
-    if (a.priority !== b.priority) {
-      return a.priority - b.priority;
-    }
-    return b.date - a.date;
-  });
-  
-  return allNews.slice(0, 6);
-}
-
-// Função para atualizar notícias (simplificada)
-async function updateNewsSection() {
-  console.log('Atualizando notícias...');
-  try {
-    const news = await fetchAlternativeNews();
-    const newsGrid = document.querySelector('#news-content .news-grid');
-    
-    if (newsGrid && news.length > 0) {
-      // Manter as notícias estáticas e adicionar as dinâmicas
-      const existingNews = newsGrid.innerHTML;
-      
-      news.forEach(article => {
-        const newsItem = document.createElement('a');
-        newsItem.href = article.link;
-        newsItem.target = '_blank';
-        newsItem.className = 'news-item';
-        
-        if (article.category === 'bitcoin') {
-          newsItem.classList.add('bitcoin-news');
-        }
-        
-        newsItem.innerHTML = `
-          <div class="news-content">
-            <div class="news-source ${article.category}">${article.source}</div>
-            <div class="news-title">${article.title}</div>
-            <div class="news-description">${article.description}</div>
-            <div class="news-date">${article.date.toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'short', 
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            })} UTC</div>
-          </div>
-        `;
-        
-        newsGrid.appendChild(newsItem);
-      });
-      
-      console.log(`Notícias atualizadas: ${news.length} artigos adicionados`);
-    }
-  } catch (error) {
-    console.error('Erro ao atualizar notícias:', error);
-  }
-}
-
-// Sistema de atualização diária
-function shouldUpdateDaily() {
-  const lastUpdate = localStorage.getItem('lastDailyUpdate');
-  const today = new Date().toDateString();
-  return !lastUpdate || lastUpdate !== today;
-}
-
-function markDailyUpdateComplete() {
-  const today = new Date().toDateString();
-  localStorage.setItem('lastDailyUpdate', today);
-}
-
-async function performDailyUpdate() {
-  if (shouldUpdateDaily()) {
-    console.log('Realizando atualização diária...');
-    
-    try {
-      await updateNewsSection();
-      await updateScarcityMetrics();
-      await loadPodcasts();
-      
-      markDailyUpdateComplete();
-      console.log('Atualização diária concluída com sucesso');
-    } catch (error) {
-      console.error('Erro durante atualização diária:', error);
-    }
-  } else {
-    console.log('Dados já atualizados hoje');
-  }
-}
-
-function initializeDailyUpdates() {
-  performDailyUpdate();
-  
-  // Verificar atualização a cada hora
-  setInterval(() => {
-    performDailyUpdate();
-  }, 3600000);
-  
-  // Atualizar notícias a cada 2 horas
-  setInterval(() => {
-    updateNewsSection();
-  }, 7200000);
-}
-
-// Inicialização quando a página carrega
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('Página carregada, inicializando sistemas...');
-  
-  // Inicializar todas as funções principais
-  renderQuotes();
-  updateScarcityMetrics();
-  updateMarketSentiment();
-  updateSatoshiQuote();
-  loadPodcasts();
-  
-  // Inicializar sistema de atualizações
-  initializeDailyUpdates();
-  
-  // Atualizar dados a cada 5 minutos
-  setInterval(() => {
-    renderQuotes();
-    updateScarcityMetrics();
-    updateMarketSentiment();
-  }, 300000);
-  
-  // Atualizar citação do Satoshi a cada 30 segundos
-  setInterval(updateSatoshiQuote, 30000);
-  
-  // Sources toggle functionality
-  const sourcesToggle = document.getElementById('sources-toggle');
-  const sourcesDiv = document.getElementById('market-cap-sources');
-  
-  if (sourcesToggle && sourcesDiv) {
-    sourcesToggle.addEventListener('click', function() {
-      if (sourcesDiv.style.display === 'none' || sourcesDiv.style.display === '') {
-        sourcesDiv.style.display = 'block';
-        sourcesToggle.textContent = 'Hide sources';
-      } else {
-        sourcesDiv.style.display = 'none';
-        sourcesToggle.textContent = 'Show sources';
-      }
-    });
-  }
-  
-  console.log('Todos os sistemas inicializados com sucesso');
-});
