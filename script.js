@@ -225,7 +225,7 @@ async function fetchMarketSentiment() {
     let btcDominance = 61.2;
 
     if (dominanceResponse.ok) {
-      const dominanceJson = await dominanceJson.json();
+      const dominanceJson = await dominanceResponse.json();
       if (dominanceJson && dominanceJson.data && dominanceJson.data.market_cap_percentage) {
         btcDominance = dominanceJson.data.market_cap_percentage.btc.toFixed(1);
       }
@@ -747,7 +747,8 @@ async function updateLatestNews() {
 
 // Função para renderizar notícias na página
 function renderNews(newsItems) {
-  const newsContainer = document.querySelector('#news-content .news-grid');
+  // Alterado o seletor para usar o ID #news-content
+  const newsContainer = document.querySelector('#news-content');
   if (!newsContainer) return;
 
   newsContainer.innerHTML = '';
@@ -767,7 +768,11 @@ function renderNews(newsItems) {
       timeZone: 'UTC'
     }) + ' UTC';
 
+    // Adicione um placeholder para imagem se não houver uma
+    const imageUrl = item.image || 'https://via.placeholder.com/300x120?text=No+Image';
+
     newsElement.innerHTML = `
+      <img src="${imageUrl}" alt="${item.title}" class="news-image">
       <div class="news-content">
         <div class="news-source">${item.source}</div>
         <div class="news-title">${item.title}</div>
