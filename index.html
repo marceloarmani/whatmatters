@@ -25,9 +25,11 @@
   </header>
   <main>
     <div class="main-layout">
-      <!-- Main indicators (simplified without charts) -->
+      <!-- Main indicators (simplified without charts ) -->
       <section id="main-indicators" class="standard-section">
-        <div id="quotes" class="vertical-quotes"></div>
+        <div id="quotes" class="vertical-quotes">
+          <!-- Preços serão inseridos aqui pelo JavaScript -->
+        </div>
       </section>
       
       <!-- Market Sentiment -->
@@ -38,9 +40,9 @@
             <div class="indicator-title">BTC Dominance</div>
             <div class="indicator-value" id="btc-dominance">
               <div class="gauge">
-                <div class="gauge-fill" style="width: 52%;"></div>
+                <div class="gauge-fill" style="width: 61.7%;"></div>
               </div>
-              <div class="gauge-value">52% - Moderate</div>
+              <div class="gauge-value">61.7% - High</div>
               <div class="indicator-change">+0.8% (24h)</div>
             </div>
           </div>
@@ -50,7 +52,7 @@
               <div class="gauge">
                 <div class="gauge-fill" style="width: 38%;"></div>
               </div>
-              <div class="gauge-value">3.8% - Low</div>
+              <div class="gauge-value">6.3% - Moderate</div>
               <div class="indicator-change">-0.5% (24h)</div>
             </div>
           </div>
@@ -60,7 +62,7 @@
               <div class="gauge">
                 <div class="gauge-fill" style="width: 68%;"></div>
               </div>
-              <div class="gauge-value">$78.5B - High</div>
+              <div class="gauge-value">$22.3B - Moderate</div>
               <div class="indicator-change">+12% (24h)</div>
             </div>
           </div>
@@ -68,9 +70,9 @@
             <div class="indicator-title">Fear & Greed Index</div>
             <div class="indicator-value" id="fear-greed">
               <div class="gauge">
-                <div class="gauge-fill" style="width: 65%;"></div>
+                <div class="gauge-fill" style="width: 57%;"></div>
               </div>
-              <div class="gauge-value">65 - Greed</div>
+              <div class="gauge-value">57 - Greed</div>
               <div class="indicator-change">+5% (24h)</div>
             </div>
           </div>
@@ -97,12 +99,11 @@
         </div>
       </section>
       
-      <!-- Upcoming Events (4 columns in a single row) - REORGANIZADO POR PROXIMIDADE -->
+      <!-- Upcoming Events -->
       <section id="economic-calendar" class="standard-section">
         <h2 class="section-header">Upcoming events</h2>
         <div class="calendar-container">
           <div id="events-container">
-            <!-- Events reorganizados por proximidade da data atual (13/06/2025) -->
             <div class="events-grid">
               <div class="event-item high">
                 <div class="event-date">
@@ -157,14 +158,11 @@
         </div>
       </section>
 
-
-      
       <!-- Scarcity Metrics -->
       <section id="scarcity-metrics" class="standard-section">
         <h2 class="section-header">Scarcity metrics</h2>
         <div class="scarcity-container">
           <div class="scarcity-metrics-grid">
-            <!-- Scarcity metrics will be inserted via JavaScript -->
             <div class="scarcity-metric">
               <div class="scarcity-metric-title">Stock-to-Flow</div>
               <div class="scarcity-metric-value">56</div>
@@ -187,18 +185,18 @@
             </div>
             <div class="scarcity-metric">
               <div class="scarcity-metric-title">Bitcoins Mined</div>
-              <div class="scarcity-metric-value" id="bitcoins-mined">19,368,750</div>
+              <div class="scarcity-metric-value" id="bitcoins-mined">19,880,965</div>
               <div class="scarcity-metric-description">Amount of bitcoins already mined out of 21 million total</div>
               <div class="supply-progress">
-                <div class="supply-progress-fill" style="width: 92.23%;"></div>
-                <div class="supply-progress-text">92.23% (1,631,250 remaining)</div>
+                <div class="supply-progress-fill" style="width: 94.67%;"></div>
+                <div class="supply-progress-text" id="supply-progress-text">94.67% (1,119,035 remaining)</div>
               </div>
             </div>
             <div class="scarcity-metric">
               <div class="scarcity-metric-title">Next Halving</div>
               <div class="scarcity-metric-value">April 2028</div>
               <div class="scarcity-metric-description">Event that cuts mining reward in half</div>
-              <div class="days-remaining" id="days-remaining">1056 days remaining</div>
+              <div class="days-remaining" id="days-remaining">1017 days remaining</div>
             </div>
           </div>
         </div>
@@ -212,7 +210,6 @@
         </div>
         <div class="market-cap-container">
           <div class="market-cap-visual" id="market-cap-treemap">
-            <!-- Bar visualization will be inserted via JavaScript -->
             <div class="market-cap-item">
               <div class="market-cap-item-header">
                 <div class="market-cap-item-name">Real Estate</div>
@@ -286,7 +283,7 @@
           </div>
           <button id="sources-toggle" class="sources-button">Show sources</button>
           <div class="market-cap-sources" id="market-cap-sources">
-            <p>Sources: Visual Capitalist, Bank for International Settlements (BIS), McKinsey Global Institute, World Gold Council, <a href="https://www.onceinaspecies.com/" target="_blank">Jesse Myers (onceinaspecies.com)</a></p>
+            <p>Sources: Visual Capitalist, Bank for International Settlements (BIS), McKinsey Global Institute, World Gold Council, <a href="https://www.onceinaspecies.com/" target="_blank">Jesse Myers (onceinaspecies.com )</a></p>
           </div>
         </div>
       </section>
@@ -295,11 +292,10 @@
       <section id="news-summary" class="standard-section">
         <h2 class="section-header">Latest news</h2>
         <div id="news-content">
-          <!-- News will be inserted via JavaScript -->
           <div class="news-grid">
-            <a href="https://bitcoinmagazine.com/" target="_blank" class="news-item">
+            <a href="https://bitcoinmagazine.com/" target="_blank" class="news-item bitcoin-news">
               <div class="news-content">
-                <div class="news-source">Bitcoin Magazine</div>
+                <div class="news-source bitcoin">Bitcoin Magazine</div>
                 <div class="news-title">Bitcoin Surpasses $100,000 for First Time in History</div>
                 <div class="news-description">The world's largest cryptocurrency has reached a new all-time high, breaking the psychological barrier of $100,000.</div>
                 <div class="news-date">May 21, 2025 14:32 UTC</div>
@@ -307,23 +303,23 @@
             </a>
             <a href="https://blockworks.co/" target="_blank" class="news-item">
               <div class="news-content">
-                <div class="news-source">Blockworks</div>
+                <div class="news-source crypto">Blockworks</div>
                 <div class="news-title">Central Banks Accelerate Digital Currency Development</div>
                 <div class="news-description">Major central banks are fast-tracking CBDC projects in response to growing cryptocurrency adoption.</div>
                 <div class="news-date">May 20, 2025 09:15 UTC</div>
               </div>
             </a>
-            <a href="https://bitcointimes.news/" target="_blank" class="news-item">
+            <a href="https://bitcointimes.news/" target="_blank" class="news-item bitcoin-news">
               <div class="news-content">
-                <div class="news-source">The Bitcoin Times</div>
+                <div class="news-source bitcoin">The Bitcoin Times</div>
                 <div class="news-title">Gold Reaches Record High Amid Inflation Concerns</div>
                 <div class="news-description">The precious metal continues its upward trajectory as investors seek protection from rising inflation.</div>
                 <div class="news-date">May 19, 2025 16:45 UTC</div>
               </div>
             </a>
-            <a href="https://bitcoinmagazine.com/" target="_blank" class="news-item">
+            <a href="https://bitcoinmagazine.com/" target="_blank" class="news-item bitcoin-news">
               <div class="news-content">
-                <div class="news-source">Bitcoin Magazine</div>
+                <div class="news-source bitcoin">Bitcoin Magazine</div>
                 <div class="news-title">Institutional Adoption Drives Bitcoin to New Heights</div>
                 <div class="news-description">Major corporations and investment funds continue to allocate significant portions of their portfolios to Bitcoin.</div>
                 <div class="news-date">May 18, 2025 11:20 UTC</div>
@@ -331,7 +327,7 @@
             </a>
             <a href="https://cointelegraph.com/" target="_blank" class="news-item">
               <div class="news-content">
-                <div class="news-source">Cointelegraph</div>
+                <div class="news-source crypto">Cointelegraph</div>
                 <div class="news-title">Lightning Network Reaches 10,000 Nodes Milestone</div>
                 <div class="news-description">Bitcoin's Layer 2 scaling solution continues to grow, enabling faster and cheaper transactions.</div>
                 <div class="news-date">May 17, 2025 08:30 UTC</div>
@@ -339,7 +335,7 @@
             </a>
             <a href="https://decrypt.co/" target="_blank" class="news-item">
               <div class="news-content">
-                <div class="news-source">Decrypt</div>
+                <div class="news-source crypto">Decrypt</div>
                 <div class="news-title">Mining Difficulty Adjustment Signals Network Strength</div>
                 <div class="news-description">Bitcoin's mining difficulty reaches new all-time high, demonstrating the network's robust security.</div>
                 <div class="news-date">May 16, 2025 13:45 UTC</div>
@@ -352,11 +348,11 @@
       <!-- Bitcoin Podcasts -->
       <section id="bitcoin-podcasts" class="standard-section">
         <h2 class="section-header">Bitcoin podcasts</h2>
-        <div class="podcasts-grid" id="podcasts-container">
-          <!-- Podcasts will be loaded dynamically with video thumbnails -->
+        <div class="podcasts-grid" id="podcasts-grid">
+          <!-- Podcasts serão carregados dinamicamente -->
         </div>
       </section>
-
+      
       <!-- Horizontal sections layout for Word of Satoshi and Support -->
       <div class="horizontal-sections">
         <!-- Word of Satoshi -->
@@ -364,39 +360,53 @@
           <h2 class="section-header">Word of Satoshi</h2>
           <div class="quote-container">
             <blockquote id="satoshi-quote">
-              "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust."
+              "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks."
             </blockquote>
             <div class="quote-author">— Satoshi Nakamoto</div>
           </div>
         </section>
-
+        
         <!-- Support Section -->
-        <section id="support" class="standard-section">
+        <section id="support">
           <h2 class="section-header">Support</h2>
           <div class="donation-container">
-            <p style="margin-bottom: 1rem; color: #666; font-size: 0.9rem;">Support this project with Bitcoin:</p>
+            <p>Support this project:</p>
             <div class="donation-address">
               <div class="donation-address-text" id="donation-address">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
-              <button class="copy-button" onclick="copyToClipboard()">Copy Address</button>
+              <button class="copy-button" onclick="copyToClipboard( )">Copy Address</button>
             </div>
           </div>
         </section>
       </div>
     </div>
   </main>
-
+  
   <footer>
     <div class="footer-content">
-      <div>
-        <p>&copy; 2025 Scarcity Panel. Data provided by various sources.</p>
+      <div class="footer-text">
+        <p>&copy; 2025 Scarcity Panel. Data updated every 5 minutes.</p>
       </div>
       <div class="footer-prices" id="footer-prices">
-        <!-- Footer prices will be inserted via JavaScript -->
+        <!-- Prices will be inserted via JavaScript -->
       </div>
     </div>
   </footer>
-
+  
   <script src="script.js"></script>
+  <script>
+    function copyToClipboard() {
+      const addressText = document.getElementById('donation-address').textContent;
+      navigator.clipboard.writeText(addressText).then(() => {
+        const button = document.querySelector('.copy-button');
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        setTimeout(() => {
+          button.textContent = originalText;
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+    }
+  </script>
 </body>
 </html>
-
