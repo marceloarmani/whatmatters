@@ -1,5 +1,5 @@
 // Configuração da API Alpha Vantage
-const ALPHA_VANTAGE_API_KEY = "YXNV7ACP45FN4RZC";
+const ALPHA_VANTAGE_API_KEY = "YXNV7ACP45FN4RZC"; // Sua chave de API
 const ALPHA_VANTAGE_BASE_URL = "https://www.alphavantage.co/query";
 
 // Valores de fallback atualizados (devem ser atualizados manualmente periodicamente)
@@ -12,8 +12,6 @@ const FALLBACK_VALUES = {
   sp500: { name: "S&P 500", price: "5,950.00", change: "+0.3%", positive: true }
 };
 
-
-
 const quotes = [
   "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.",
   "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks.",
@@ -23,7 +21,7 @@ const quotes = [
   "With e-currency based on cryptographic proof, without the need to trust a third party middleman, money can be secure and transactions effortless."
 ];
 
-// --- Funções de busca de dados com APIs confiáveis --- 
+// --- Funções de busca de dados com APIs confiáveis ---
 
 // Função para buscar o preço do Bitcoin usando CoinGecko API (FUNCIONA)
 async function fetchBitcoinPrice() {
@@ -70,36 +68,35 @@ async function fetchSilverPrice() {
   }
 }
 
-
 // Função melhorada para Treasury Yield com múltiplas tentativas
 async function fetchTreasuryYield() {
   try {
     // Tentativa 1: Alpha Vantage (pode não funcionar corretamente)
     const url = `${ALPHA_VANTAGE_BASE_URL}?function=TREASURY_YIELD&interval=daily&maturity=10year&apikey=${ALPHA_VANTAGE_API_KEY}`;
     const response = await fetch(url);
-    
+
     if (response.ok) {
       const data = await response.json();
       if (data && data.data && data.data.length >= 2) {
         const latestData = data.data[0];
         const previousData = data.data[1];
-        
+
         // Verificar se os dados são recentes (não de 2007)
         const dataDate = new Date(latestData.date);
         const currentYear = new Date().getFullYear();
-        
+
         if (dataDate.getFullYear() >= currentYear - 1) {
           const currentYield = parseFloat(latestData.value);
           const previousYield = parseFloat(previousData.value);
           const change = currentYield - previousYield;
-          
+
           const formattedYield = `${currentYield.toFixed(2)}%`;
           const formattedChange = change >= 0 ? `+${change.toFixed(2)}%` : `${change.toFixed(2)}%`;
           return { name: "10-Year Treasury Yield", price: formattedYield, change: formattedChange, positive: change >= 0 };
         }
       }
     }
-    
+
     throw new Error('Alpha Vantage data is outdated or unavailable');
   } catch (error) {
     console.error('Erro ao buscar Treasury Yield:', error);
@@ -114,27 +111,27 @@ async function fetchDollarIndex() {
     // Tentativa 1: Alpha Vantage EUR/USD
     const url = `${ALPHA_VANTAGE_BASE_URL}?function=FX_DAILY&from_symbol=EUR&to_symbol=USD&apikey=${ALPHA_VANTAGE_API_KEY}`;
     const response = await fetch(url);
-    
+
     if (response.ok) {
       const data = await response.json();
       if (data && data['Time Series FX (Daily)']) {
         const timeSeries = data['Time Series FX (Daily)'];
         const dates = Object.keys(timeSeries).sort().reverse();
-        
+
         if (dates.length >= 2) {
           const latestDate = new Date(dates[0]);
           const currentYear = new Date().getFullYear();
-          
+
           // Verificar se os dados são recentes
           if (latestDate.getFullYear() >= currentYear - 1) {
             const latestRate = parseFloat(timeSeries[dates[0]]['4. close']);
             const previousRate = parseFloat(timeSeries[dates[1]]['4. close']);
-            
+
             // Aproximação do DXY baseada no EUR/USD
             const dxyApprox = 100 / latestRate * 0.95;
             const previousDxy = 100 / previousRate * 0.95;
             const change = ((dxyApprox - previousDxy) / previousDxy) * 100;
-            
+
             const formattedPrice = dxyApprox.toFixed(2);
             const formattedChange = change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
             return { name: "Dollar Index", price: formattedPrice, change: formattedChange, positive: change >= 0 };
@@ -142,7 +139,7 @@ async function fetchDollarIndex() {
         }
       }
     }
-    
+
     throw new Error('Alpha Vantage FX data unavailable or outdated');
   } catch (error) {
     console.error('Erro ao buscar Dollar Index:', error);
@@ -157,23 +154,23 @@ async function fetchSP500() {
     // Tentativa 1: Alpha Vantage SPY
     const url = `${ALPHA_VANTAGE_BASE_URL}?function=TIME_SERIES_DAILY&symbol=SPY&apikey=${ALPHA_VANTAGE_API_KEY}`;
     const response = await fetch(url);
-    
+
     if (response.ok) {
       const data = await response.json();
       if (data && data['Time Series (Daily)']) {
         const timeSeries = data['Time Series (Daily)'];
         const dates = Object.keys(timeSeries).sort().reverse();
-        
+
         if (dates.length >= 2) {
           const latestDate = new Date(dates[0]);
           const currentYear = new Date().getFullYear();
-          
+
           // Verificar se os dados são recentes
           if (latestDate.getFullYear() >= currentYear - 1) {
             const latestPrice = parseFloat(timeSeries[dates[0]]['4. close']);
             const previousPrice = parseFloat(timeSeries[dates[1]]['4. close']);
             const change = ((latestPrice - previousPrice) / previousPrice) * 100;
-            
+
             // Converter SPY para S&P 500 (aproximadamente SPY * 10)
             const sp500Price = latestPrice * 10;
             const formattedPrice = sp500Price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -183,7 +180,7 @@ async function fetchSP500() {
         }
       }
     }
-    
+
     throw new Error('Alpha Vantage stock data unavailable or outdated');
   } catch (error) {
     console.error('Erro ao buscar S&P 500:', error);
@@ -206,14 +203,13 @@ async function fetchMinedBitcoins() {
   }
 }
 
-
 // Função para buscar dados de sentimento de mercado (FUNCIONA)
 async function fetchMarketSentiment() {
   try {
     // Buscar Fear & Greed Index
     const fearGreedResponse = await fetch('https://api.alternative.me/fng/');
     let fearGreedData = { value: 65, classification: 'Greed' };
-    
+
     if (fearGreedResponse.ok) {
       const fearGreedJson = await fearGreedResponse.json();
       if (fearGreedJson && fearGreedJson.data && fearGreedJson.data[0]) {
@@ -227,9 +223,9 @@ async function fetchMarketSentiment() {
     // Buscar dominância do Bitcoin
     const dominanceResponse = await fetch('https://api.coingecko.com/api/v3/global');
     let btcDominance = 61.2;
-    
+
     if (dominanceResponse.ok) {
-      const dominanceJson = await dominanceResponse.json();
+      const dominanceJson = await dominanceJson.json();
       if (dominanceJson && dominanceJson.data && dominanceJson.data.market_cap_percentage) {
         btcDominance = dominanceJson.data.market_cap_percentage.btc.toFixed(1);
       }
@@ -245,7 +241,7 @@ async function fetchMarketSentiment() {
           const prices = volatilityData.prices.map(p => p[1]);
           const returns = [];
           for (let i = 1; i < prices.length; i++) {
-            returns.push((prices[i] - prices[i-1]) / prices[i-1]);
+            returns.push((prices[i] - prices[i - 1]) / prices[i - 1]);
           }
           const mean = returns.reduce((a, b) => a + b, 0) / returns.length;
           const variance = returns.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / returns.length;
@@ -304,51 +300,50 @@ async function fetchMarketSentiment() {
   }
 }
 
-// --- Funções de Renderização e Atualização --- 
+// --- Funções de Renderização e Atualização ---
 
-function renderQuotes() {
+function renderQuotes(updatedAssets) {
   const quotesContainer = document.getElementById('quotes');
   if (!quotesContainer) return;
+  // Limpa o conteúdo existente para evitar duplicação
   quotesContainer.innerHTML = '';
 
-  fetchAllLatestPrices().then(updatedAssets => {
-    updatedAssets.forEach(asset => {
-      const quoteWrapper = document.createElement('div');
-      quoteWrapper.className = 'quote-wrapper';
-      const quote = document.createElement('div');
-      quote.className = 'quote';
-      const quoteLeft = document.createElement('div');
-      quoteLeft.className = 'quote-left';
-      const nameStrong = document.createElement('strong');
-      nameStrong.textContent = asset.name;
-      let tooltip = '';
-      if (asset.name === "10-Year Treasury Yield") {
-        tooltip = `<span class="index-tooltip">The yield on the U.S. 10-year Treasury note, a key benchmark for interest rates.</span>`;
-      } else if (asset.name === "Dollar Index") {
-        tooltip = `<span class="index-tooltip">Measures the value of the U.S. dollar relative to a basket of foreign currencies.</span>`;
-      } else if (asset.name === "S&P 500") {
-        tooltip = `<span class="index-tooltip">Stock market index tracking the performance of 500 large companies listed on U.S. exchanges.</span>`;
-      }
-      quoteLeft.appendChild(nameStrong);
-      quoteLeft.innerHTML += tooltip;
-      const quoteRight = document.createElement('div');
-      quoteRight.className = 'quote-right';
-      const quotePrice = document.createElement('span');
-      quotePrice.className = 'quote-price';
-      quotePrice.textContent = asset.price;
-      const quoteChange = document.createElement('span');
-      quoteChange.className = `quote-change ${asset.positive ? 'positive' : 'negative'}`;
-      quoteChange.textContent = asset.change;
-      quoteRight.appendChild(quotePrice);
-      quoteRight.appendChild(document.createElement('br'));
-      quoteRight.appendChild(quoteChange);
-      quote.appendChild(quoteLeft);
-      quote.appendChild(quoteRight);
-      quoteWrapper.appendChild(quote);
-      quotesContainer.appendChild(quoteWrapper);
-    });
-    updateFooterPrices(updatedAssets);
+  updatedAssets.forEach(asset => {
+    const quoteWrapper = document.createElement('div');
+    quoteWrapper.className = 'quote-wrapper';
+    const quote = document.createElement('div');
+    quote.className = 'quote';
+    const quoteLeft = document.createElement('div');
+    quoteLeft.className = 'quote-left';
+    const nameStrong = document.createElement('strong');
+    nameStrong.textContent = asset.name;
+    let tooltip = '';
+    if (asset.name === "10-Year Treasury Yield") {
+      tooltip = `<span class="index-tooltip">The yield on the U.S. 10-year Treasury note, a key benchmark for interest rates.</span>`;
+    } else if (asset.name === "Dollar Index") {
+      tooltip = `<span class="index-tooltip">Measures the value of the U.S. dollar relative to a basket of foreign currencies.</span>`;
+    } else if (asset.name === "S&P 500") {
+      tooltip = `<span class="index-tooltip">Stock market index tracking the performance of 500 large companies listed on U.S. exchanges.</span>`;
+    }
+    quoteLeft.appendChild(nameStrong);
+    quoteLeft.innerHTML += tooltip;
+    const quoteRight = document.createElement('div');
+    quoteRight.className = 'quote-right';
+    const quotePrice = document.createElement('span');
+    quotePrice.className = 'quote-price';
+    quotePrice.textContent = asset.price;
+    const quoteChange = document.createElement('span');
+    quoteChange.className = `quote-change ${asset.positive ? 'positive' : 'negative'}`;
+    quoteChange.textContent = asset.change;
+    quoteRight.appendChild(quotePrice);
+    quoteRight.appendChild(document.createElement('br'));
+    quoteRight.appendChild(quoteChange);
+    quote.appendChild(quoteLeft);
+    quote.appendChild(quoteRight);
+    quoteWrapper.appendChild(quote);
+    quotesContainer.appendChild(quoteWrapper);
   });
+  updateFooterPrices(updatedAssets);
 }
 
 async function fetchAllLatestPrices() {
@@ -363,7 +358,7 @@ async function fetchAllLatestPrices() {
     ];
     const results = await Promise.allSettled(promises);
     const updatedAssets = [];
-    
+
     results.forEach((result, index) => {
       if (result.status === 'fulfilled' && result.value) {
         updatedAssets[index] = result.value;
@@ -373,7 +368,7 @@ async function fetchAllLatestPrices() {
         updatedAssets[index] = FALLBACK_VALUES[fallbackKeys[index]];
       }
     });
-    
+
     return updatedAssets;
   } catch (error) {
     console.error('Erro ao buscar todos os preços atualizados:', error);
@@ -407,14 +402,13 @@ async function updateScarcityMetrics() {
   }
 }
 
-
 // Função para atualizar a contagem regressiva do Halving
 function updateHalvingCountdown() {
   const daysRemainingElement = document.getElementById('days-remaining');
   const nextHalvingDateElement = document.querySelector('#scarcity-metrics .scarcity-metric:nth-child(4) .scarcity-metric-value');
   if (!daysRemainingElement || !nextHalvingDateElement) return;
 
-  const halvingDate = new Date(Date.UTC(2028, 2, 26, 0, 0, 0));
+  const halvingDate = new Date(Date.UTC(2028, 2, 26, 0, 0, 0)); // Mês é 0-indexado (Março = 2)
   const now = new Date();
   const nowUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
 
@@ -434,7 +428,7 @@ function updateHalvingCountdown() {
 async function updateMarketSentiment() {
   try {
     const sentimentData = await fetchMarketSentiment();
-    
+
     // Atualizar Fear & Greed Index
     const fearGreedElement = document.getElementById('fear-greed');
     if (fearGreedElement) {
@@ -509,7 +503,7 @@ async function updateMarketSentiment() {
             const change = data.bitcoin.usd_24h_change;
             const formattedMarketCap = `$${(marketCap / 1e12).toFixed(1)}T`;
             const formattedChange = change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
-            
+
             const gaugeValue = bitcoinMarketCapElement.querySelector('.gauge-value');
             const indicatorChange = bitcoinMarketCapElement.querySelector('.indicator-change');
             const gaugeFill = bitcoinMarketCapElement.querySelector('.gauge-fill');
@@ -536,7 +530,7 @@ async function updateGlobalMarketCap() {
   try {
     const globalResponse = await fetch('https://api.coingecko.com/api/v3/global');
     let bitcoinMarketCap = 2.1;
-    
+
     if (globalResponse.ok) {
       const globalData = await globalResponse.json();
       if (globalData && globalData.data) {
@@ -549,11 +543,11 @@ async function updateGlobalMarketCap() {
       const valueElement = bitcoinMarketCapItem.querySelector('.market-cap-item-value');
       const fillElement = bitcoinMarketCapItem.querySelector('.market-cap-item-fill');
       const percentageElement = bitcoinMarketCapItem.querySelector('.market-cap-item-percentage');
-      
+
       if (valueElement && fillElement && percentageElement) {
         const formattedValue = `$${bitcoinMarketCap.toFixed(1)}T`;
         valueElement.textContent = formattedValue;
-        
+
         const totalGlobalAssets = 690.7;
         const newPercentage = (bitcoinMarketCap / totalGlobalAssets) * 100;
         fillElement.style.width = `${newPercentage.toFixed(1)}%`;
@@ -606,7 +600,7 @@ async function fetchRedditCryptoNews() {
   try {
     const subreddits = ['Bitcoin', 'CryptoCurrency', 'btc'];
     const allPosts = [];
-    
+
     for (const subreddit of subreddits) {
       try {
         // Simular busca do Reddit (substituir por API real se disponível)
@@ -616,7 +610,7 @@ async function fetchRedditCryptoNews() {
         console.error(`Erro ao buscar posts do r/${subreddit}:`, error);
       }
     }
-    
+
     return allPosts.slice(0, 6); // Retornar apenas 6 posts mais relevantes
   } catch (error) {
     console.error('Erro ao buscar notícias do Reddit:', error);
@@ -653,14 +647,14 @@ async function simulateRedditAPI(subreddit) {
       score: 756
     }
   ];
-  
+
   return samplePosts;
 }
 
 // Função para buscar notícias de fontes especializadas via RSS/API
 async function fetchSpecializedCryptoNews() {
   const newsItems = [];
-  
+
   // Simular busca de fontes especializadas
   const specializedNews = [
     {
@@ -706,7 +700,7 @@ async function fetchSpecializedCryptoNews() {
       date: new Date(Date.now() - 19800000).toISOString()
     }
   ];
-  
+
   return specializedNews;
 }
 
@@ -719,28 +713,28 @@ async function updateLatestNews() {
       renderNews(newsCache.data);
       return;
     }
-    
+
     console.log('🔄 Atualizando notícias de fontes não-mainstream...');
-    
+
     // Buscar notícias de múltiplas fontes
     const [redditNews, specializedNews] = await Promise.all([
       fetchRedditCryptoNews(),
       fetchSpecializedCryptoNews()
     ]);
-    
+
     // Combinar e ordenar por relevância/data
     const allNews = [...redditNews, ...specializedNews];
     const sortedNews = allNews
       .sort((a, b) => new Date(b.date) - new Date(a.date))
       .slice(0, 6); // Manter apenas 6 notícias mais recentes
-    
+
     // Atualizar cache
     newsCache.data = sortedNews;
     newsCache.lastUpdate = now;
-    
+
     // Renderizar notícias
     renderNews(sortedNews);
-    
+
     console.log('✅ Notícias atualizadas com sucesso');
   } catch (error) {
     console.error('❌ Erro ao atualizar notícias:', error);
@@ -755,15 +749,15 @@ async function updateLatestNews() {
 function renderNews(newsItems) {
   const newsContainer = document.querySelector('#news-content .news-grid');
   if (!newsContainer) return;
-  
+
   newsContainer.innerHTML = '';
-  
+
   newsItems.forEach(item => {
     const newsElement = document.createElement('a');
     newsElement.href = item.url;
     newsElement.target = '_blank';
     newsElement.className = 'news-item';
-    
+
     const formattedDate = new Date(item.date).toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',
@@ -772,7 +766,7 @@ function renderNews(newsItems) {
       minute: '2-digit',
       timeZone: 'UTC'
     }) + ' UTC';
-    
+
     newsElement.innerHTML = `
       <div class="news-content">
         <div class="news-source">${item.source}</div>
@@ -781,7 +775,7 @@ function renderNews(newsItems) {
         <div class="news-date">${formattedDate}</div>
       </div>
     `;
-    
+
     newsContainer.appendChild(newsElement);
   });
 }
@@ -791,77 +785,87 @@ function renderNews(newsItems) {
 function updateFooterPrices(currentAssets) {
   const footerPrices = document.getElementById('footer-prices');
   if (!footerPrices) return;
-  footerPrices.innerHTML = '';
+  footerPrices.innerHTML = ''; // Limpa o conteúdo antes de adicionar
+
   currentAssets.forEach(asset => {
     const priceItem = document.createElement('span');
     priceItem.className = 'footer-price-item';
-    priceItem.innerHTML = `<strong>${asset.name}:</strong> ${asset.price} <span class="${asset.positive ? 'positive' : 'negative'}">(${asset.change})</span>`;
+    priceItem.innerHTML = `<strong>${asset.name}:</strong> ${asset.price} <span class="${asset.positive ? 'positive' : 'negative'}">${asset.change}</span>`;
     footerPrices.appendChild(priceItem);
   });
 }
 
-function toggleSources() {
-  const sourcesDiv = document.getElementById('market-cap-sources');
-  const toggleButton = document.getElementById('sources-toggle');
-  if (sourcesDiv && toggleButton) {
-    if (sourcesDiv.style.display === 'none' || sourcesDiv.style.display === '') {
-      sourcesDiv.style.display = 'block';
-      toggleButton.textContent = 'Hide sources';
-    } else {
-      sourcesDiv.style.display = 'none';
-      toggleButton.textContent = 'Show sources';
-    }
+// --- Funções para copiar endereço de Bitcoin ---
+function setupCopyButton() {
+  const copyButton = document.querySelector('.copy-button');
+  const donationAddressText = document.querySelector('.donation-address-text');
+
+  if (copyButton && donationAddressText) {
+    copyButton.addEventListener('click', () => {
+      const address = donationAddressText.textContent;
+      navigator.clipboard.writeText(address).then(() => {
+        alert('Endereço Bitcoin copiado!');
+        // Opcional: Adicionar feedback visual temporário
+        copyButton.textContent = 'Copiado!';
+        setTimeout(() => {
+          copyButton.textContent = 'Copiar Endereço';
+        }, 2000);
+      }).catch(err => {
+        console.error('Erro ao copiar:', err);
+        alert('Falha ao copiar o endereço. Por favor, copie manualmente.');
+      });
+    });
   }
 }
 
-// --- Inicialização --- 
-
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('🚀 Scarcity Panel - Versão Melhorada Carregada');
-  console.log('✅ APIs Funcionando: Bitcoin (CoinGecko), Sentimento de Mercado');
-  console.log('⚠️ APIs com Fallback: Gold, Silver, Treasury, Dollar Index, S&P 500');
-  
-  renderQuotes();
-  updateScarcityMetrics();
-  updateHalvingCountdown();
-  updateMarketSentiment();
-  updateGlobalMarketCap();
-  updateLatestNews(); // ADICIONADO: Atualização inicial das notícias
-  
-  // Configurar botão de fontes
-  const sourcesButton = document.getElementById('sources-toggle');
-  if (sourcesButton) {
-    sourcesButton.addEventListener('click', toggleSources);
+// Função para randomizar citação de Satoshi
+function setRandomSatoshiQuote() {
+  const satoshiQuoteElement = document.getElementById('satoshi-quote');
+  if (satoshiQuoteElement) {
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    satoshiQuoteElement.textContent = `"${quotes[randomIndex]}"`;
   }
+}
+
+
+// NOVO: Função para inicializar o dashboard, garantindo que as chamadas não se dupliquem
+async function initializeDashboard() {
+  console.log('Iniciando o dashboard...');
+
+  // Carrega e renderiza os preços iniciais
+  const initialAssets = await fetchAllLatestPrices();
+  renderQuotes(initialAssets); // Renderiza os preços na seção principal e no rodapé
+
+  // Atualiza outras métricas em paralelo
+  await Promise.all([
+    updateScarcityMetrics(),
+    updateHalvingCountdown(),
+    updateMarketSentiment(),
+    updateGlobalMarketCap(),
+    updateLatestNews(),
+    setRandomSatoshiQuote() // Define uma citação de Satoshi aleatória na inicialização
+  ]);
+
+  console.log('Dashboard inicializado com sucesso.');
+}
+
+// Inicia a atualização dos dados quando o DOM estiver completamente carregado
+document.addEventListener('DOMContentLoaded', () => {
+  initializeDashboard(); // Chama a função de inicialização UMA VEZ.
+
+  // Configura os intervalos para atualizações periódicas
+  // (Adapte os tempos conforme a necessidade da API e a frequência de atualização desejada)
+  setInterval(async () => {
+    const updatedAssets = await fetchAllLatestPrices();
+    renderQuotes(updatedAssets);
+  }, 60000); // Atualiza preços a cada 1 minuto (60000 ms)
+
+  setInterval(updateScarcityMetrics, 300000); // Atualiza escassez a cada 5 minutos
+  setInterval(updateHalvingCountdown, 3600000); // Atualiza halving a cada hora
+  setInterval(updateMarketSentiment, 300000); // Atualiza sentimento a cada 5 minutos
+  setInterval(updateGlobalMarketCap, 300000); // Atualiza market cap global a cada 5 minutos
+  setInterval(updateLatestNews, 3600000); // Atualiza notícias a cada hora
+  setInterval(setRandomSatoshiQuote, 10000); // Muda a citação a cada 10 segundos
   
-  // Atualizar dados a cada 5 minutos
-  setInterval(() => {
-    renderQuotes();
-    updateScarcityMetrics(); // ADICIONADO: Atualização automática das métricas de escassez
-    updateMarketSentiment();
-    updateGlobalMarketCap();
-  }, 300000);
-  
-  // Atualização diária às 00:00 UTC para dados que mudam menos frequentemente
-  const now = new Date();
-  const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0) - now;
-  
-  setTimeout(() => {
-    // Primeira atualização diária
-    updateScarcityMetrics();
-    updateHalvingCountdown();
-    updateLatestNews(); // ADICIONADO: Atualização diária das notícias
-    
-    // Configurar atualização diária recorrente (24 horas = 86400000 ms)
-    setInterval(() => {
-      updateScarcityMetrics();
-      updateHalvingCountdown();
-      updateLatestNews(); // ADICIONADO: Atualização diária das notícias
-    }, 86400000);
-  }, msUntilMidnight);
-  
-  // Atualização das notícias a cada 2 horas para manter conteúdo fresco
-  setInterval(() => {
-    updateLatestNews();
-  }, 7200000); // 2 horas em ms
+  setupCopyButton(); // Configura o botão de copiar
 });
