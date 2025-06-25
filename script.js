@@ -1,11 +1,9 @@
+
 // Configuração da API Alpha Vantage
-const ALPHA_VANTAGE_API_KEY = "YXNV7ACP45FN4RZC"; // Sua chave Alpha Vantage
+const ALPHA_VANTAGE_API_KEY = "YXNV7ACP45FN4RZC";
 const ALPHA_VANTAGE_BASE_URL = "https://www.alphavantage.co/query";
 
-// Chave da API do YouTube - SUBSTITUA PELA SUA CHAVE REAL
-const YOUTUBE_API_KEY = "SUA_CHAVE_DE_API_DO_YOUTUBE_AQUI"; 
-
-// Valores de fallback atualizados (devem ser atualizados manualmente periodicamente )
+// Valores de fallback atualizados (devem ser atualizados manualmente periodicamente)
 const FALLBACK_VALUES = {
   bitcoin: { name: "Bitcoin", price: "$104,586.00", change: "-0.3%", positive: false },
   gold: { name: "Gold", price: "$3,433.47", change: "+1.60%", positive: true },
@@ -14,6 +12,8 @@ const FALLBACK_VALUES = {
   dollar: { name: "Dollar Index", price: "106.50", change: "+0.1%", positive: true },
   sp500: { name: "S&P 500", price: "5,950.00", change: "+0.3%", positive: true }
 };
+
+
 
 const quotes = [
   "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.",
@@ -24,40 +24,12 @@ const quotes = [
   "With e-currency based on cryptographic proof, without the need to trust a third party middleman, money can be secure and transactions effortless."
 ];
 
-// Canais de podcast do YouTube
-const podcastChannels = [
-  {
-    name: "Coin Stories Podcast",
-    host: "Natalie Brunell",
-    description: "Investing journalist and Bitcoin educator exploring the intersection of money, technology, and freedom through compelling stories and expert interviews.",
-    channelId: "UC4dnz1g9y_s40eK2_a-K_fQ" // Natalie Brunell
-  },
-  {
-    name: "The Bitcoin Standard Podcast",
-    host: "Saifedean Ammous",
-    description: "Author of \"The Bitcoin Standard\" exploring Austrian economics, sound money principles, and Bitcoin's role in the future of monetary systems.",
-    channelId: "UCgR_4bSE4b_B1z0z9h4w92A" // Saifedean Ammous
-  },
-  {
-    name: "What Bitcoin Did",
-    host: "Peter McCormack",
-    description: "Interviews with leading figures in the Bitcoin and cryptocurrency world, covering technology, economics, and politics.",
-    channelId: "UCY0gJ9g-4fJd-o2-l2_j9wQ" // What Bitcoin Did
-  },
-  {
-    name: "Bitcoin Magazine",
-    host: "Various",
-    description: "Official YouTube channel for Bitcoin Magazine, featuring interviews, news, and analysis on Bitcoin.",
-    channelId: "UCYJ_f_Y4o-Y2S_o3D3t2A_g" // Bitcoin Magazine
-  }
-];
-
 // --- Funções de busca de dados com APIs confiáveis --- 
 
 // Função para buscar o preço do Bitcoin usando CoinGecko API (FUNCIONA)
 async function fetchBitcoinPrice() {
   try {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true' );
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
     if (data && data.bitcoin) {
@@ -99,6 +71,8 @@ async function fetchSilverPrice() {
   }
 }
 
+
+// Função melhorada para Treasury Yield com múltiplas tentativas
 async function fetchTreasuryYield() {
   try {
     // Tentativa 1: Alpha Vantage (pode não funcionar corretamente)
@@ -135,6 +109,7 @@ async function fetchTreasuryYield() {
   }
 }
 
+// Função melhorada para Dollar Index
 async function fetchDollarIndex() {
   try {
     // Tentativa 1: Alpha Vantage EUR/USD
@@ -177,6 +152,7 @@ async function fetchDollarIndex() {
   }
 }
 
+// Função melhorada para S&P 500
 async function fetchSP500() {
   try {
     // Tentativa 1: Alpha Vantage SPY
@@ -220,7 +196,7 @@ async function fetchSP500() {
 // Função para buscar a quantidade de Bitcoins minerados (FUNCIONA)
 async function fetchMinedBitcoins() {
   try {
-    const response = await fetch('https://blockchain.info/q/totalbc?cors=true' );
+    const response = await fetch('https://blockchain.info/q/totalbc?cors=true');
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const totalbcSatoshis = await response.text();
     const totalbc = parseFloat(totalbcSatoshis) / 100000000;
@@ -231,11 +207,12 @@ async function fetchMinedBitcoins() {
   }
 }
 
+
 // Função para buscar dados de sentimento de mercado (FUNCIONA)
 async function fetchMarketSentiment() {
   try {
     // Buscar Fear & Greed Index
-    const fearGreedResponse = await fetch('https://api.alternative.me/fng/' );
+    const fearGreedResponse = await fetch('https://api.alternative.me/fng/');
     let fearGreedData = { value: 65, classification: 'Greed' };
     
     if (fearGreedResponse.ok) {
@@ -249,7 +226,7 @@ async function fetchMarketSentiment() {
     }
 
     // Buscar dominância do Bitcoin
-    const dominanceResponse = await fetch('https://api.coingecko.com/api/v3/global' );
+    const dominanceResponse = await fetch('https://api.coingecko.com/api/v3/global');
     let btcDominance = 61.2;
     
     if (dominanceResponse.ok) {
@@ -262,7 +239,7 @@ async function fetchMarketSentiment() {
     // Buscar volatilidade do Bitcoin
     let volatility = 6.9;
     try {
-      const volatilityResponse = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30' );
+      const volatilityResponse = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30');
       if (volatilityResponse.ok) {
         const volatilityData = await volatilityResponse.json();
         if (volatilityData && volatilityData.prices) {
@@ -283,7 +260,7 @@ async function fetchMarketSentiment() {
     // Buscar volume de transações
     let transactionVolume = 25.1;
     try {
-      const volumeResponse = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin' );
+      const volumeResponse = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin');
       if (volumeResponse.ok) {
         const volumeData = await volumeResponse.json();
         if (volumeData && volumeData.market_data && volumeData.market_data.total_volume) {
@@ -297,7 +274,7 @@ async function fetchMarketSentiment() {
     // Buscar hash rate (pode não funcionar sempre)
     let hashRate = 0;
     try {
-      const hashRateResponse = await fetch('https://blockchain.info/q/hashrate' );
+      const hashRateResponse = await fetch('https://blockchain.info/q/hashrate');
       if (hashRateResponse.ok) {
         const hashRateText = await hashRateResponse.text();
         const hashRateValue = parseFloat(hashRateText);
@@ -431,13 +408,14 @@ async function updateScarcityMetrics() {
   }
 }
 
+
 // Função para atualizar a contagem regressiva do Halving
 function updateHalvingCountdown() {
   const daysRemainingElement = document.getElementById('days-remaining');
   const nextHalvingDateElement = document.querySelector('#scarcity-metrics .scarcity-metric:nth-child(4) .scarcity-metric-value');
   if (!daysRemainingElement || !nextHalvingDateElement) return;
 
-  const halvingDate = new Date(Date.UTC(2028, 2, 26, 0, 0, 0)); // Março de 2028
+  const halvingDate = new Date(Date.UTC(2028, 2, 26, 0, 0, 0));
   const now = new Date();
   const nowUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
 
@@ -515,704 +493,7 @@ async function updateMarketSentiment() {
           gaugeFill.style.width = `${Math.min((sentimentData.hashRate / 600) * 100, 100)}%`;
         } else {
           gaugeValue.textContent = `0 EH/s - Record High`;
-          gaugeFill.style.width = `72%`; // Fallback para manter a aparência
-        }
-      }
-    }
-
-    // Atualizar Market Cap do Bitcoin
-    const bitcoinMarketCapElement = document.getElementById('bitcoin-market-cap');
-    if (bitcoinMarketCapElement) {
-      try {
-        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_market_cap=true&include_24hr_change=true' );
-        if (response.ok) {
-          const data = await response.json();
-          if (data && data.bitcoin) {
-            const marketCap = data.bitcoin.usd_market_cap;
-            const change = data.bitcoin.usd_24h_change;
-            const formattedMarketCap = `$${(marketCap / 1e12).toFixed(1)}T`;
-            const formattedChange = change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
-            
-            const gaugeValue = bitcoinMarketCapElement.querySelector('.gauge-value');
-            const indicatorChange = bitcoinMarketCapElement.querySelector('.indicator-change');
-            const gaugeFill = bitcoinMarketCapElement.querySelector('.gauge-fill');
-            if (gaugeValue && indicatorChange && gaugeFill) {
-              gaugeValue.textContent = `${formattedMarketCap} - All-time High`;
-              indicatorChange.textContent = `${formattedChange} (24h)`;
-              indicatorChange.className = `indicator-change ${change >= 0 ? '' : 'negative'}`;
-              gaugeFill.style.width = `${Math.min((marketCap / 3e12) * 100, 100)}%`;
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Erro ao buscar market cap do Bitcoin:', error);
-      }
-    }
-
-  } catch (error) {
-    console.error('Erro ao atualizar sentimento de mercado:', error);
-  }
-}
-
-// Função para atualizar a capitalização de mercado global
-async function updateGlobalMarketCap() {
-  try {
-    const globalResponse = await fetch('https://api.coingecko.com/api/v3/global' );
-    let bitcoinMarketCap = 2.1;
-    
-    if (globalResponse.ok) {
-      const globalData = await globalResponse.json();
-      if (globalData && globalData.data) {
-        bitcoinMarketCap = globalData.data.market_cap_percentage.btc * globalData.data.total_market_cap.usd / 100 / 1e12;
-      }
-    }
-
-    const bitcoinMarketCapItem = document.querySelector('.market-cap-item:last-child');
-    if (bitcoinMarketCapItem) {
-      const valueElement = bitcoinMarketCapItem.querySelector('.market-cap-item-value');
-      const fillElement = bitcoinMarketCapItem.querySelector('.market-cap-item-fill');
-      const percentageElement = bitcoinMarketCapItem.querySelector('.market-cap-item-percentage');
-      
-      if (valueElement && fillElement && percentageElement) {
-        const formattedValue = `$${bitcoinMarketCap.toFixed(1)}T`;
-        valueElement.textContent = formattedValue;
-        
-        const totalGlobalAssets = 690.7; // Valor fixo do seu HTML
-        const newPercentage = (bitcoinMarketCap / totalGlobalAssets) * 100;
-        fillElement.style.width = `${newPercentage.toFixed(1)}%`;
-        percentageElement.textContent = `${newPercentage.toFixed(1)}%`;
-      }
-    }
-
-  } catch (error) {
-    console.error('Erro ao atualizar capitalização de mercado global:', error);
-  }
-}
-
-// --- Funções de atualização de notícias automáticas ---
-
-// Fontes não-mainstream priorizadas
-const NON_MAINSTREAM_SOURCES = [
-  'Bitcoin Magazine',
-  'The Defiant',
-  'Decrypt',
-  'Blockworks',
-  'The Block',
-  'BeInCrypto',
-  'U.Today',
-  'Bitcoinist',
-  'The Crypto Times',
-  'CoinGape'
-];
-
-// Fontes mainstream a evitar
-const MAINSTREAM_SOURCES_TO_AVOID = [
-  'Bloomberg',
-  'Forbes',
-  'CNBC',
-  'Reuters',
-  'Wall Street Journal',
-  'CNN',
-  'BBC',
-  'Associated Press'
-];
-
-// Cache de notícias para evitar requests excessivos
-let newsCache = {
-  data: [],
-  lastUpdate: 0,
-  cacheTimeout: 3600000 // 1 hora em ms
-};
-
-// Função para buscar notícias do Reddit (fontes não-mainstream)
-async function fetchRedditCryptoNews() {
-  try {
-    const subreddits = ['Bitcoin', 'CryptoCurrency', 'btc'];
-    const allPosts = [];
-    
-    
-// Simulação de API do Reddit (substituir por implementação real)
-async function simulateRedditAPI(subreddit) {
-  // Esta é uma simulação - em produção, usar API real do Reddit
-  const samplePosts = [
-    {
-      title: "Bitcoin Network Hash Rate Reaches New All-Time High",
-      description: "The Bitcoin network's computational power continues to grow, demonstrating increasing security and miner confidence.",
-      source: `r/${subreddit}`,
-      url: `https://www.reddit.com/r/${subreddit}/`,
-      date: new Date( ).toISOString(),
-      score: 1250
-    },
-    {
-      title: "Lightning Network Adoption Surges in El Salvador",
-      description: "Local businesses report significant increase in Lightning Network transactions following recent infrastructure improvements.",
-      source: `r/${subreddit}`,
-      url: `https://www.reddit.com/r/${subreddit}/`,
-      date: new Date(Date.now( ) - 3600000).toISOString(),
-      score: 890
-    },
-    {
-      title: "Major Mining Pool Announces Carbon Neutral Operations",
-      description: "Leading Bitcoin mining pool commits to 100% renewable energy sources by end of 2025.",
-      source: `r/${subreddit}`,
-      url: `https://www.reddit.com/r/${subreddit}/`,
-      date: new Date(Date.now( ) - 7200000).toISOString(),
-      score: 756
-    }
-  ];
-  
-  return samplePosts;
-}
-
-// Função para buscar notícias de fontes especializadas via RSS/API
-async function fetchSpecializedCryptoNews() {
-  const newsItems = [];
-  
-  // Simular busca de fontes especializadas
-  const specializedNews = [
-    {
-      title: "Bitcoin ETF Inflows Hit Record High This Week",
-      description: "Institutional demand for Bitcoin exposure through ETFs reaches unprecedented levels as adoption accelerates.",
-      source: "Bitcoin Magazine",
-      url: "https://bitcoinmagazine.com/",
-      date: new Date(Date.now( ) - 1800000).toISOString()
-    },
-    {
-      title: "DeFi Protocol Launches Bitcoin-Backed Lending",
-      description: "New decentralized finance protocol enables users to borrow against Bitcoin collateral with competitive rates.",
-      source: "The Defiant",
-      url: "https://thedefiant.io/",
-      date: new Date(Date.now( ) - 5400000).toISOString()
-    },
-    {
-      title: "Taproot Adoption Reaches 80% Among Bitcoin Wallets",
-      description: "Latest Bitcoin upgrade sees widespread adoption as wallet providers implement privacy and efficiency improvements.",
-      source: "Decrypt",
-      url: "https://decrypt.co/",
-      date: new Date(Date.now( ) - 9000000).toISOString()
-    },
-    {
-      title: "Institutional Bitcoin Holdings Surpass $100B Milestone",
-      description: "Corporate treasuries and investment funds now hold over $100 billion worth of Bitcoin, marking historic achievement.",
-      source: "Blockworks",
-      url: "https://blockworks.co/",
-      date: new Date(Date.now( ) - 12600000).toISOString()
-    },
-    {
-      title: "Bitcoin Mining Difficulty Adjusts to New Record",
-      description: "Network difficulty reaches all-time high as mining competition intensifies following recent price movements.",
-      source: "Bitcoinist",
-      url: "https://bitcoinist.com/",
-      date: new Date(Date.now( ) - 16200000).toISOString()
-    },
-    {
-      title: "Layer 2 Solutions See 300% Growth in Transaction Volume",
-      description: "Bitcoin's second-layer scaling solutions experience massive growth as users seek faster, cheaper transactions.",
-      source: "The Block",
-      url: "https://theblock.co/",
-      date: new Date(Date.now( ) - 19800000).toISOString()
-    }
-  ];
-  
-  return specializedNews;
-}
-
-// Função principal para atualizar notícias
-async function updateLatestNews() {
-  try {
-    // Verificar cache
-    const now = Date.now();
-    if (newsCache.data.length > 0 && (now - newsCache.lastUpdate) < newsCache.cacheTimeout) {
-      renderNews(newsCache.data);
-      return;
-    }
-    
-    console.log('🔄 Atualizando notícias de fontes não-mainstream...');
-    
-    // Buscar notícias de múltiplas fontes
-    const [redditNews, specializedNews] = await Promise.all([
-      fetchRedditCryptoNews(),
-      fetchSpecializedCryptoNews()
-    ]);
-    
-    // Combinar e ordenar por relevância/data
-    const allNews = [...redditNews, ...specializedNews];
-    const sortedNews = allNews
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .slice(0, 6); // Manter apenas 6 notícias mais recentes
-    
-    // Atualizar cache
-    newsCache.data = sortedNews;
-    newsCache.lastUpdate = now;
-    
-    // Renderizar notícias
-    renderNews(sortedNews);
-    
-    console.log('✅ Notícias atualizadas com sucesso');
-  } catch (error) {
-    console.error('❌ Erro ao atualizar notícias:', error);
-    // Em caso de erro, manter notícias do cache se disponíveis
-    if (newsCache.data.length > 0) {
-      renderNews(newsCache.data);
-    }
-  }
-}
-
-// Função para renderizar notícias na página
-function renderNews(newsItems) {
-  const newsContainer = document.querySelector('#news-content .news-grid');
-  if (!newsContainer) return;
-  
-  newsContainer.innerHTML = '';
-  
-  newsItems.forEach(item => {
-    const newsElement = document.createElement('a');
-    newsElement.href = item.url;
-    newsElement.target = '_blank';
-    newsElement.className = 'news-item';
-    
-    const formattedDate = new Date(item.date).toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'UTC'
-    }) + ' UTC';
-    
-    newsElement.innerHTML = `
-      <div class="news-content">
-        <div class="news-source">${item.source}</div>
-        <div class="news-title">${item.title}</div>
-        <div class="news-description">${item.description}</div>
-        <div class="news-date">${formattedDate}</div>
-      </div>
-    `;
-    
-    newsContainer.appendChild(newsElement);
-  });
-}
-
-// --- Fim das funções de notícias ---
-
-function updateFooterPrices(currentAssets) {
-  const footerPrices = document.getElementById('footer-prices');
-  if (!footerPrices) return;
-  footerPrices.innerHTML = '';
-  currentAssets.forEach(asset => {
-    const priceItem = document.createElement('span');
-    priceItem.className = 'footer-price-item';
-    priceItem.innerHTML = `<strong>${asset.name}:</strong> ${asset.price} <span class="${asset.positive ? 'positive' : 'negative'}">(${asset.change})</span>`;
-    footerPrices.appendChild(priceItem);
-  });
-}
-
-function toggleSources() {
-  const sourcesDiv = document.getElementById('market-cap-sources');
-  const toggleButton = document.getElementById('sources-toggle');
-  if (sourcesDiv && toggleButton) {
-    if (sourcesDiv.style.display === 'none' || sourcesDiv.style.display === '') {
-      sourcesDiv.style.display = 'block';
-      toggleButton.textContent = 'Hide sources';
-    } else {
-      sourcesDiv.style.display = 'none';
-      toggleButton.textContent = 'Show sources';
-    }
-  }
-}
-
-// Função para copiar endereço de doação
-function copyToClipboard() {
-  const addressText = document.getElementById('donation-address').textContent;
-  navigator.clipboard.writeText(addressText).then(() => {
-    const button = document.querySelector('.copy-button');
-    const originalText = button.textContent;
-    button.textContent = 'Copied!';
-    setTimeout(() => {
-      button.textContent = originalText;
-    }, 2000);
-  }).catch(err => {
-    console.error('Failed to copy: ', err);
-  });
-}
-
-// Função para atualizar a citação de Satoshi Nakamoto
-function updateSatoshiQuote() {
-  const satoshiQuoteElement = document.getElementById('satoshi-quote');
-  if (satoshiQuoteElement) {
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    satoshiQuoteElement.textContent = `"${quotes[randomIndex]}"`;
-  }
-}
-
-// --- Funções para Podcasts do YouTube ---
-
-async function fetchLatestYouTubeVideo(channelId) {
-  if (!YOUTUBE_API_KEY || YOUTUBE_API_KEY === "SUA_CHAVE_DE_API_DO_YOUTUBE_AQUI") {
-    console.warn("YOUTUBE_API_KEY não configurada. A seção de podcasts não funcionará.");
-    return null;
-  }
-  try {
-    const response = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_API_KEY}&channelId=${channelId}&part=snippet,id&order=date&maxResults=1&type=video` );
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error(`Erro ao buscar vídeo do YouTube para o canal ${channelId}:`, errorData);
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    if (data.items && data.items.length > 0) {
-      const video = data.items[0];
-      return {
-        id: video.id.videoId,
-        title: video.snippet.title,
-        thumbnail: video.snippet.thumbnails.high.url,
-        publishedAt: video.snippet.publishedAt
-      };
-    }
-    return null;
-  } catch (error) {
-    console.error(`Falha ao buscar vídeo do YouTube para o canal ${channelId}:`, error);
-    return null;
-  }
-}
-
-async function renderPodcasts() {
-  const podcastsGrid = document.querySelector('#bitcoin-podcasts .podcasts-grid');
-  if (!podcastsGrid) return;
-  podcastsGrid.innerHTML = '';
-
-  for (const podcast of podcastChannels) {
-    const latestVideo = await fetchLatestYouTubeVideo(podcast.channelId);
-    
-    const podcastItem = document.createElement('div');
-    podcastItem.className = 'podcast-item';
-
-    let videoContent = '';
-    if (latestVideo) {
-      const videoUrl = `https://www.youtube.com/watch?v=${latestVideo.id}`;
-      const publishedDate = new Date(latestVideo.publishedAt ).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-      videoContent = `
-        <a href="${videoUrl}" target="_blank">
-          <img src="${latestVideo.thumbnail}" alt="${latestVideo.title}" class="podcast-video-thumbnail">
-        </a>
-        <div class="podcast-content">
-          <div class="podcast-header">
-            <div class="podcast-icon">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#fff">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-              </svg>
-            </div>
-            <div class="podcast-info">
-              <h3 class="podcast-title">${podcast.name}</h3>
-              <p class="podcast-host">${podcast.host}</p>
-            </div>
-          </div>
-          <p class="podcast-description">${podcast.description}</p>
-          <h4 class="podcast-video-title">${latestVideo.title}</h4>
-          <p class="podcast-video-date">Published: ${publishedDate}</p>
-          <a href="${videoUrl}" target="_blank" class="podcast-link">
-            <span>Watch Latest Video</span>
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-              <path d="M7 17L17 7M17 7H7M17 7V17"/>
-            </svg>
-          </a>
-        </div>
-      `;
-    } else {
-      // Fallback se não conseguir carregar o vídeo
-      videoContent = `
-        <div class="podcast-content">
-          <div class="podcast-header">
-            <div class="podcast-icon">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#fff">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-              </svg>
-            </div>
-            <div class="podcast-info">
-              <h3 class="podcast-title">${podcast.name}</h3>
-              <p class="podcast-host">${podcast.host}</p>
-            </div>
-          </div>
-          <p class="podcast-description">${podcast.description}</p>
-          <p>Could not load latest video. Please check YouTube API Key or channel ID.</p>
-          <a href="https://www.youtube.com/channel/${podcast.channelId}" target="_blank" class="podcast-link">
-            <span>Visit Channel</span>
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-              <path d="M7 17L17 7M17 7H7M17 7V17"/>
-            </svg>
-          </a>
-        </div>
-      `;
-    }
-    podcastItem.innerHTML = videoContent;
-    podcastsGrid.appendChild(podcastItem );
-  }
-}
-
-// --- Inicialização --- 
-
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('🚀 Scarcity Panel - Versão Melhorada Carregada');
-  console.log('✅ APIs Funcionando: Bitcoin (CoinGecko), Sentimento de Mercado');
-  console.log('⚠️ APIs com Fallback: Gold, Silver, Treasury, Dollar Index, S&P 500');
-  
-  renderQuotes();
-  updateScarcityMetrics();
-  updateHalvingCountdown();
-  updateMarketSentiment();
-  updateGlobalMarketCap();
-  updateLatestNews(); // ADICIONADO: Atualização inicial das notícias
-  updateSatoshiQuote(); // ADICIONADO: Atualização inicial da citação de Satoshi
-  renderPodcasts(); // ADICIONADO: Renderização inicial dos podcasts
-  
-  // Configurar botão de fontes
-  const sourcesButton = document.getElementById('sources-toggle');
-  if (sourcesButton) {
-    sourcesButton.addEventListener('click', toggleSources);
-  }
-  
-  // Configurar botão de copiar endereço
-  const copyButton = document.querySelector('.copy-button');
-  if (copyButton) {
-    copyButton.addEventListener('click', copyToClipboard);
-  }
-
-  // Atualizar dados a cada 5 minutos
-  setInterval(() => {
-    renderQuotes();
-    updateScarcityMetrics();
-    updateMarketSentiment();
-    updateGlobalMarketCap();
-  }, 300000); // 5 minutos
-
-  // Atualizar citação de Satoshi a cada 30 segundos
-  setInterval(updateSatoshiQuote, 30000); // 30 segundos
-  
-  // Atualização diária às 00:00 UTC para dados que mudam menos frequentemente
-  const now = new Date();
-  const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0) - now;
-  
-  setTimeout(() => {
-    // Primeira atualização diária
-    updateScarcityMetrics();
-    updateHalvingCountdown();
-    updateLatestNews();
-    renderPodcasts(); // Atualiza podcasts diariamente também
-    
-    // Configurar atualização diária recorrente (24 horas = 86400000 ms)
-    setInterval(() => {
-      updateScarcityMetrics();
-      updateHalvingCountdown();
-      updateLatestNews();
-      renderPodcasts(); // Atualiza podcasts diariamente também
-    }, 86400000);
-  }, msUntilMidnight);
-  
-  // Atualização das notícias e podcasts a cada 2 horas para manter conteúdo fresco
-  setInterval(() => {
-    updateLatestNews();
-    renderPodcasts(); // Atualiza podcasts a cada 2 horas
-  }, 7200000); // 2 horas em ms
-});
-Ótimo! Muito obrigado pela sua paciência e por seguir as instruções.
-
-Como o erro `SyntaxError` em `script.js:586` indica que o arquivo está cortado, vou continuar enviando as partes que faltam.
-
-Aqui está a **Parte 2 de 3** do arquivo `script.js`. Por favor, **adicione este código ao final do que você já colou** no seu arquivo `script.js`.
-
----
-
-### `script.js` - Parte 2 de 3
-
-```javascript
-// --- Funções de Renderização e Atualização --- 
-
-function renderQuotes() {
-  const quotesContainer = document.getElementById('quotes');
-  if (!quotesContainer) return;
-  quotesContainer.innerHTML = '';
-
-  fetchAllLatestPrices().then(updatedAssets => {
-    updatedAssets.forEach(asset => {
-      const quoteWrapper = document.createElement('div');
-      quoteWrapper.className = 'quote-wrapper';
-      const quote = document.createElement('div');
-      quote.className = 'quote';
-      const quoteLeft = document.createElement('div');
-      quoteLeft.className = 'quote-left';
-      const nameStrong = document.createElement('strong');
-      nameStrong.textContent = asset.name;
-      let tooltip = '';
-      if (asset.name === "10-Year Treasury Yield") {
-        tooltip = `<span class="index-tooltip">The yield on the U.S. 10-year Treasury note, a key benchmark for interest rates.</span>`;
-      } else if (asset.name === "Dollar Index") {
-        tooltip = `<span class="index-tooltip">Measures the value of the U.S. dollar relative to a basket of foreign currencies.</span>`;
-      } else if (asset.name === "S&P 500") {
-        tooltip = `<span class="index-tooltip">Stock market index tracking the performance of 500 large companies listed on U.S. exchanges.</span>`;
-      }
-      quoteLeft.appendChild(nameStrong);
-      quoteLeft.innerHTML += tooltip;
-      const quoteRight = document.createElement('div');
-      quoteRight.className = 'quote-right';
-      const quotePrice = document.createElement('span');
-      quotePrice.className = 'quote-price';
-      quotePrice.textContent = asset.price;
-      const quoteChange = document.createElement('span');
-      quoteChange.className = `quote-change ${asset.positive ? 'positive' : 'negative'}`;
-      quoteChange.textContent = asset.change;
-      quoteRight.appendChild(quotePrice);
-      quoteRight.appendChild(document.createElement('br'));
-      quoteRight.appendChild(quoteChange);
-      quote.appendChild(quoteLeft);
-      quote.appendChild(quoteRight);
-      quoteWrapper.appendChild(quote);
-      quotesContainer.appendChild(quoteWrapper);
-    });
-    updateFooterPrices(updatedAssets);
-  });
-}
-
-async function fetchAllLatestPrices() {
-  try {
-    const promises = [
-      fetchBitcoinPrice(),
-      fetchGoldPrice(),
-      fetchSilverPrice(),
-      fetchTreasuryYield(),
-      fetchDollarIndex(),
-      fetchSP500()
-    ];
-    const results = await Promise.allSettled(promises);
-    const updatedAssets = [];
-    
-    results.forEach((result, index) => {
-      if (result.status === 'fulfilled' && result.value) {
-        updatedAssets[index] = result.value;
-      } else {
-        // Usar valores de fallback se a API falhar
-        const fallbackKeys = ['bitcoin', 'gold', 'silver', 'treasury', 'dollar', 'sp500'];
-        updatedAssets[index] = FALLBACK_VALUES[fallbackKeys[index]];
-      }
-    });
-    
-    return updatedAssets;
-  } catch (error) {
-    console.error('Erro ao buscar todos os preços atualizados:', error);
-    return Object.values(FALLBACK_VALUES);
-  }
-}
-
-// Função para atualizar as métricas de escassez
-async function updateScarcityMetrics() {
-  const minedElement = document.getElementById('bitcoins-mined');
-  const progressFillElement = document.querySelector('.supply-progress-fill');
-  const progressTextElement = document.querySelector('.supply-progress-text');
-  const totalPossibleBitcoins = 21000000;
-
-  if (minedElement && progressFillElement && progressTextElement) {
-    try {
-      const minedBitcoins = await fetchMinedBitcoins();
-      const formattedMinedBitcoins = minedBitcoins.toLocaleString('en-US', { maximumFractionDigits: 0 });
-      minedElement.textContent = formattedMinedBitcoins;
-
-      const percentageMined = (minedBitcoins / totalPossibleBitcoins) * 100;
-      const remainingBitcoins = totalPossibleBitcoins - minedBitcoins;
-      const formattedRemaining = remainingBitcoins.toLocaleString('en-US', { maximumFractionDigits: 0 });
-
-      progressFillElement.style.width = `${percentageMined.toFixed(2)}%`;
-      progressTextElement.textContent = `${percentageMined.toFixed(2)}% (${formattedRemaining} remaining)`;
-
-    } catch (error) {
-      console.error('Erro ao atualizar métricas de escassez:', error);
-    }
-  }
-}
-
-// Função para atualizar a contagem regressiva do Halving
-function updateHalvingCountdown() {
-  const daysRemainingElement = document.getElementById('days-remaining');
-  const nextHalvingDateElement = document.querySelector('#scarcity-metrics .scarcity-metric:nth-child(4) .scarcity-metric-value');
-  if (!daysRemainingElement || !nextHalvingDateElement) return;
-
-  const halvingDate = new Date(Date.UTC(2028, 2, 26, 0, 0, 0)); // Março de 2028
-  const now = new Date();
-  const nowUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
-
-  const diffTime = halvingDate - nowUtc;
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays >= 0) {
-    daysRemainingElement.textContent = `${diffDays} days remaining`;
-    nextHalvingDateElement.textContent = `March 2028 (Est.)`;
-  } else {
-    daysRemainingElement.textContent = `Halving occurred`;
-    nextHalvingDateElement.textContent = `Completed`;
-  }
-}
-
-// Função para atualizar os indicadores de sentimento de mercado
-async function updateMarketSentiment() {
-  try {
-    const sentimentData = await fetchMarketSentiment();
-    
-    // Atualizar Fear & Greed Index
-    const fearGreedElement = document.getElementById('fear-greed');
-    if (fearGreedElement) {
-      const gaugeValue = fearGreedElement.querySelector('.gauge-value');
-      const gaugeFill = fearGreedElement.querySelector('.gauge-fill');
-      if (gaugeValue && gaugeFill) {
-        gaugeValue.textContent = `${sentimentData.fearGreed.value} - ${sentimentData.fearGreed.classification}`;
-        gaugeFill.style.width = `${sentimentData.fearGreed.value}%`;
-      }
-    }
-
-    // Atualizar BTC Dominance
-    const btcDominanceElement = document.getElementById('btc-dominance');
-    if (btcDominanceElement) {
-      const gaugeValue = btcDominanceElement.querySelector('.gauge-value');
-      const gaugeFill = btcDominanceElement.querySelector('.gauge-fill');
-      if (gaugeValue && gaugeFill) {
-        gaugeValue.textContent = `${sentimentData.btcDominance}% - Moderate`;
-        gaugeFill.style.width = `${sentimentData.btcDominance}%`;
-      }
-    }
-
-    // Atualizar Volatilidade
-    const volatilityElement = document.getElementById('volatility');
-    if (volatilityElement) {
-      const gaugeValue = volatilityElement.querySelector('.gauge-value');
-      const gaugeFill = volatilityElement.querySelector('.gauge-fill');
-      if (gaugeValue && gaugeFill) {
-        const volatilityLevel = sentimentData.volatility < 5 ? 'Low' : sentimentData.volatility < 10 ? 'Medium' : 'High';
-        gaugeValue.textContent = `${sentimentData.volatility.toFixed(1)}% - ${volatilityLevel}`;
-        gaugeFill.style.width = `${Math.min(sentimentData.volatility * 4, 100)}%`;
-      }
-    }
-
-    // Atualizar Volume de Transações
-    const transactionVolumeElement = document.getElementById('transaction-volume');
-    if (transactionVolumeElement) {
-      const gaugeValue = transactionVolumeElement.querySelector('.gauge-value');
-      const gaugeFill = transactionVolumeElement.querySelector('.gauge-fill');
-      if (gaugeValue && gaugeFill) {
-        const volumeLevel = sentimentData.transactionVolume > 50 ? 'High' : sentimentData.transactionVolume > 25 ? 'Medium' : 'Low';
-        gaugeValue.textContent = `$${sentimentData.transactionVolume}B - ${volumeLevel}`;
-        gaugeFill.style.width = `${Math.min(sentimentData.transactionVolume, 100)}%`;
-      }
-    }
-
-    // Atualizar Hash Rate da Rede
-    const networkHashRateElement = document.getElementById('network-hash-rate');
-    if (networkHashRateElement) {
-      const gaugeValue = networkHashRateElement.querySelector('.gauge-value');
-      const gaugeFill = networkHashRateElement.querySelector('.gauge-fill');
-      if (gaugeValue && gaugeFill) {
-        if (sentimentData.hashRate > 0) {
-          gaugeValue.textContent = `${sentimentData.hashRate} EH/s - Record High`;
-          gaugeFill.style.width = `${Math.min((sentimentData.hashRate / 600) * 100, 100)}%`;
-        } else {
-          gaugeValue.textContent = `0 EH/s - Record High`;
-          gaugeFill.style.width = `72%`; // Fallback para manter a aparência
+          gaugeFill.style.width = `72%`;
         }
       }
     }
@@ -1274,7 +555,7 @@ async function updateGlobalMarketCap() {
         const formattedValue = `$${bitcoinMarketCap.toFixed(1)}T`;
         valueElement.textContent = formattedValue;
         
-        const totalGlobalAssets = 690.7; // Valor fixo do seu HTML
+        const totalGlobalAssets = 690.7;
         const newPercentage = (bitcoinMarketCap / totalGlobalAssets) * 100;
         fillElement.style.width = `${newPercentage.toFixed(1)}%`;
         percentageElement.textContent = `${newPercentage.toFixed(1)}%`;
@@ -1351,24 +632,24 @@ async function simulateRedditAPI(subreddit) {
     {
       title: "Bitcoin Network Hash Rate Reaches New All-Time High",
       description: "The Bitcoin network's computational power continues to grow, demonstrating increasing security and miner confidence.",
-      source: `r/${subreddit}`,
-      url: `https://www.reddit.com/r/${subreddit}/`,
+      source: "r/Bitcoin",
+      url: `https://reddit.com/r/${subreddit}`,
       date: new Date().toISOString(),
       score: 1250
     },
     {
       title: "Lightning Network Adoption Surges in El Salvador",
       description: "Local businesses report significant increase in Lightning Network transactions following recent infrastructure improvements.",
-      source: `r/${subreddit}`,
-      url: `https://www.reddit.com/r/${subreddit}/`,
+      source: "r/Bitcoin",
+      url: `https://reddit.com/r/${subreddit}`,
       date: new Date(Date.now() - 3600000).toISOString(),
       score: 890
     },
     {
       title: "Major Mining Pool Announces Carbon Neutral Operations",
       description: "Leading Bitcoin mining pool commits to 100% renewable energy sources by end of 2025.",
-      source: `r/${subreddit}`,
-      url: `https://www.reddit.com/r/${subreddit}/`,
+      source: "r/Bitcoin",
+      url: `https://reddit.com/r/${subreddit}`,
       date: new Date(Date.now() - 7200000).toISOString(),
       score: 756
     }
@@ -1534,134 +815,6 @@ function toggleSources() {
   }
 }
 
-// Função para copiar endereço de doação
-function copyToClipboard() {
-  const addressText = document.getElementById('donation-address').textContent;
-  navigator.clipboard.writeText(addressText).then(() => {
-    const button = document.querySelector('.copy-button');
-    const originalText = button.textContent;
-    button.textContent = 'Copied!';
-    setTimeout(() => {
-      button.textContent = originalText;
-    }, 2000);
-  }).catch(err => {
-    console.error('Failed to copy: ', err);
-  });
-}
-
-// Função para atualizar a citação de Satoshi Nakamoto
-function updateSatoshiQuote() {
-  const satoshiQuoteElement = document.getElementById('satoshi-quote');
-  if (satoshiQuoteElement) {
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    satoshiQuoteElement.textContent = `"${quotes[randomIndex]}"`;
-  }
-}
-```
-// --- Funções para Podcasts do YouTube ---
-
-async function fetchLatestYouTubeVideo(channelId) {
-  if (!YOUTUBE_API_KEY || YOUTUBE_API_KEY === "SUA_CHAVE_DE_API_DO_YOUTUBE_AQUI") {
-    console.warn("YOUTUBE_API_KEY não configurada. A seção de podcasts não funcionará.");
-    return null;
-  }
-  try {
-    const response = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_API_KEY}&channelId=${channelId}&part=snippet,id&order=date&maxResults=1&type=video` );
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error(`Erro ao buscar vídeo do YouTube para o canal ${channelId}:`, errorData);
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    if (data.items && data.items.length > 0) {
-      const video = data.items[0];
-      return {
-        id: video.id.videoId,
-        title: video.snippet.title,
-        thumbnail: video.snippet.thumbnails.high.url,
-        publishedAt: video.snippet.publishedAt
-      };
-    }
-    return null;
-  } catch (error) {
-    console.error(`Falha ao buscar vídeo do YouTube para o canal ${channelId}:`, error);
-    return null;
-  }
-}
-
-async function renderPodcasts() {
-  const podcastsGrid = document.querySelector('#bitcoin-podcasts .podcasts-grid');
-  if (!podcastsGrid) return;
-  podcastsGrid.innerHTML = '';
-
-  for (const podcast of podcastChannels) {
-    const latestVideo = await fetchLatestYouTubeVideo(podcast.channelId);
-    
-    const podcastItem = document.createElement('div');
-    podcastItem.className = 'podcast-item';
-
-    let videoContent = '';
-    if (latestVideo) {
-      const videoUrl = `https://www.youtube.com/watch?v=${latestVideo.id}`;
-      const publishedDate = new Date(latestVideo.publishedAt ).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-      videoContent = `
-        <a href="${videoUrl}" target="_blank">
-          <img src="${latestVideo.thumbnail}" alt="${latestVideo.title}" class="podcast-video-thumbnail">
-        </a>
-        <div class="podcast-content">
-          <div class="podcast-header">
-            <div class="podcast-icon">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#fff">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-              </svg>
-            </div>
-            <div class="podcast-info">
-              <h3 class="podcast-title">${podcast.name}</h3>
-              <p class="podcast-host">${podcast.host}</p>
-            </div>
-          </div>
-          <p class="podcast-description">${podcast.description}</p>
-          <h4 class="podcast-video-title">${latestVideo.title}</h4>
-          <p class="podcast-video-date">Published: ${publishedDate}</p>
-          <a href="${videoUrl}" target="_blank" class="podcast-link">
-            <span>Watch Latest Video</span>
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-              <path d="M7 17L17 7M17 7H7M17 7V17"/>
-            </svg>
-          </a>
-        </div>
-      `;
-    } else {
-      // Fallback se não conseguir carregar o vídeo
-      videoContent = `
-        <div class="podcast-content">
-          <div class="podcast-header">
-            <div class="podcast-icon">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#fff">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-              </svg>
-            </div>
-            <div class="podcast-info">
-              <h3 class="podcast-title">${podcast.name}</h3>
-              <p class="podcast-host">${podcast.host}</p>
-            </div>
-          </div>
-          <p class="podcast-description">${podcast.description}</p>
-          <p>Could not load latest video. Please check YouTube API Key or channel ID.</p>
-          <a href="https://www.youtube.com/channel/${podcast.channelId}" target="_blank" class="podcast-link">
-            <span>Visit Channel</span>
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-              <path d="M7 17L17 7M17 7H7M17 7V17"/>
-            </svg>
-          </a>
-        </div>
-      `;
-    }
-    podcastItem.innerHTML = videoContent;
-    podcastsGrid.appendChild(podcastItem );
-  }
-}
-
 // --- Inicialização --- 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1675,8 +828,6 @@ document.addEventListener('DOMContentLoaded', () => {
   updateMarketSentiment();
   updateGlobalMarketCap();
   updateLatestNews(); // ADICIONADO: Atualização inicial das notícias
-  updateSatoshiQuote(); // ADICIONADO: Atualização inicial da citação de Satoshi
-  renderPodcasts(); // ADICIONADO: Renderização inicial dos podcasts
   
   // Configurar botão de fontes
   const sourcesButton = document.getElementById('sources-toggle');
@@ -1684,22 +835,13 @@ document.addEventListener('DOMContentLoaded', () => {
     sourcesButton.addEventListener('click', toggleSources);
   }
   
-  // Configurar botão de copiar endereço
-  const copyButton = document.querySelector('.copy-button');
-  if (copyButton) {
-    copyButton.addEventListener('click', copyToClipboard);
-  }
-
   // Atualizar dados a cada 5 minutos
   setInterval(() => {
     renderQuotes();
-    updateScarcityMetrics();
+    updateScarcityMetrics(); // ADICIONADO: Atualização automática das métricas de escassez
     updateMarketSentiment();
     updateGlobalMarketCap();
-  }, 300000); // 5 minutos
-
-  // Atualizar citação de Satoshi a cada 30 segundos
-  setInterval(updateSatoshiQuote, 30000); // 30 segundos
+  }, 300000);
   
   // Atualização diária às 00:00 UTC para dados que mudam menos frequentemente
   const now = new Date();
@@ -1709,21 +851,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Primeira atualização diária
     updateScarcityMetrics();
     updateHalvingCountdown();
-    updateLatestNews();
-    renderPodcasts(); // Atualiza podcasts diariamente também
+    updateLatestNews(); // ADICIONADO: Atualização diária das notícias
     
     // Configurar atualização diária recorrente (24 horas = 86400000 ms)
     setInterval(() => {
       updateScarcityMetrics();
       updateHalvingCountdown();
-      updateLatestNews();
-      renderPodcasts(); // Atualiza podcasts diariamente também
+      updateLatestNews(); // ADICIONADO: Atualização diária das notícias
     }, 86400000);
   }, msUntilMidnight);
   
-  // Atualização das notícias e podcasts a cada 2 horas para manter conteúdo fresco
+  // Atualização das notícias a cada 2 horas para manter conteúdo fresco
   setInterval(() => {
     updateLatestNews();
-    renderPodcasts(); // Atualiza podcasts a cada 2 horas
   }, 7200000); // 2 horas em ms
 });
