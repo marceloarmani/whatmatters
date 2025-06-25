@@ -811,9 +811,6 @@ footer {
   .scarcity-metrics-grid {
     grid-template-columns: 1fr;
   }
-  
-  .footer-prices {
-    flex-direction: column;
-    gap: 5px;
-  }
 }
+
+
