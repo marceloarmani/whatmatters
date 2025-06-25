@@ -25,7 +25,7 @@
   </header>
   <main>
     <div class="main-layout">
-      <!-- Main indicators (simplified without charts ) -->
+      <!-- Main indicators (simplified without charts) -->
       <section id="main-indicators" class="standard-section">
         <div id="quotes" class="vertical-quotes"></div>
       </section>
@@ -286,7 +286,7 @@
           </div>
           <button id="sources-toggle" class="sources-button">Show sources</button>
           <div class="market-cap-sources" id="market-cap-sources">
-            <p>Sources: Visual Capitalist, Bank for International Settlements (BIS), McKinsey Global Institute, World Gold Council, <a href="https://www.onceinaspecies.com/" target="_blank">Jesse Myers (onceinaspecies.com )</a></p>
+            <p>Sources: Visual Capitalist, Bank for International Settlements (BIS), McKinsey Global Institute, World Gold Council, <a href="https://www.onceinaspecies.com/" target="_blank">Jesse Myers (onceinaspecies.com)</a></p>
           </div>
         </div>
       </section>
@@ -353,7 +353,68 @@
       <section id="bitcoin-podcasts" class="standard-section">
         <h2 class="section-header">Bitcoin podcasts</h2>
         <div class="podcasts-grid">
-          <!-- Podcast content will be inserted here by JavaScript -->
+          <div class="podcast-item">
+            <div class="podcast-header">
+              <div class="podcast-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#f7931a">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <div class="podcast-info">
+                <h3 class="podcast-title">Coin Stories Podcast</h3>
+                <p class="podcast-host">Natalie Brunell</p>
+              </div>
+            </div>
+            <p class="podcast-description">Investing journalist and Bitcoin educator exploring the intersection of money, technology, and freedom through compelling stories and expert interviews.</p>
+            <a href="https://www.youtube.com/@nataliebrunell" target="_blank" class="podcast-link">
+              <span>Watch on YouTube</span>
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <path d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </a>
+          </div>
+          
+          <div class="podcast-item">
+            <div class="podcast-header">
+              <div class="podcast-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#f7931a">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <div class="podcast-info">
+                <h3 class="podcast-title">The Jack Mallers Show</h3>
+                <p class="podcast-host">Jack Mallers</p>
+              </div>
+            </div>
+            <p class="podcast-description">CEO of Strike covering the biggest stories in Bitcoin, macroeconomics, financial markets, and the future of money with live weekly episodes.</p>
+            <a href="https://www.youtube.com/channel/UC3ol9RQbQHqle_Uly6w9LfA" target="_blank" class="podcast-link">
+              <span>Watch on YouTube</span>
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <path d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </a>
+          </div>
+          
+          <div class="podcast-item">
+            <div class="podcast-header">
+              <div class="podcast-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#f7931a">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <div class="podcast-info">
+                <h3 class="podcast-title">The Bitcoin Standard Podcast</h3>
+                <p class="podcast-host">Saifedean Ammous</p>
+              </div>
+            </div>
+            <p class="podcast-description">Author of "The Bitcoin Standard" exploring Austrian economics, sound money principles, and Bitcoin's role in the future of monetary systems.</p>
+            <a href="https://www.youtube.com/@saifedean" target="_blank" class="podcast-link">
+              <span>Watch on YouTube</span>
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <path d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </a>
+          </div>
         </div>
       </section>
       
@@ -364,7 +425,7 @@
           <h2 class="section-header">Word of Satoshi</h2>
           <div class="quote-container">
             <blockquote id="satoshi-quote">
-              <!-- Satoshi quote will be inserted here by JavaScript -->
+              "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust."
             </blockquote>
             <div class="quote-author">— Satoshi Nakamoto</div>
           </div>
@@ -377,7 +438,7 @@
             <p>Support this project:</p>
             <div class="donation-address">
               <div class="donation-address-text" id="donation-address">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
-              <button class="copy-button" onclick="copyToClipboard( )">Copy Address</button>
+              <button class="copy-button" onclick="copyToClipboard()">Copy Address</button>
             </div>
           </div>
         </section>
@@ -397,5 +458,54 @@
   </footer>
   
   <script src="script.js"></script>
+  <script>
+    function copyToClipboard() {
+      const addressText = document.getElementById('donation-address').textContent;
+      navigator.clipboard.writeText(addressText).then(() => {
+        const button = document.querySelector('.copy-button');
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        setTimeout(() => {
+          button.textContent = originalText;
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      renderQuotes();
+      updateScarcityMetrics();
+      updateMarketSentiment();
+      updateSatoshiQuote();
+      
+      // Update data every 5 minutes
+      setInterval(() => {
+        renderQuotes();
+        updateScarcityMetrics();
+        updateMarketSentiment();
+      }, 300000);
+      
+      // Update Satoshi quote every 30 seconds
+      setInterval(updateSatoshiQuote, 30000);
+      
+      // Sources toggle functionality
+      const sourcesToggle = document.getElementById('sources-toggle');
+      const sourcesDiv = document.getElementById('market-cap-sources');
+      
+      if (sourcesToggle && sourcesDiv) {
+        sourcesToggle.addEventListener('click', function() {
+          if (sourcesDiv.style.display === 'none' || sourcesDiv.style.display === '') {
+            sourcesDiv.style.display = 'block';
+            sourcesToggle.textContent = 'Hide sources';
+          } else {
+            sourcesDiv.style.display = 'none';
+            sourcesToggle.textContent = 'Show sources';
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>
