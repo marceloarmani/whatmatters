@@ -25,6 +25,10 @@
   </header>
   <main>
     <div class="main-layout">
+      <section id="main-indicators" class="standard-section">
+        <div id="quotes" class="vertical-quotes"></div>
+      </section>
+      
       <section id="market-sentiment" class="standard-section">
         <h2 class="section-header">Market sentiment</h2>
         <div class="sentiment-indicators">
@@ -455,7 +459,7 @@
 
     // Initialize the page
     document.addEventListener('DOMContentLoaded', function() {
-      renderQuotes();
+      renderQuotes(); // This will render the quotes once on page load
       updateScarcityMetrics();
       updateMarketSentiment();
       updateSatoshiQuote();
