@@ -608,7 +608,7 @@ a:hover {
   color: #777;
 }
 
-/* Bitcoin Podcasts Section - Modern Design (OVERWRITES/ADDS TO EXISTING) */
+/* Bitcoin Podcasts Section - Modern Design (OVERWRITING ORIGINAL PODCAST STYLES) */
 #bitcoin-podcasts {
   padding: 2.5rem 0; /* Consistent padding for the section */
 }
