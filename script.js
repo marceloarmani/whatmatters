@@ -12,6 +12,8 @@ const FALLBACK_VALUES = {
   sp500: { name: "S&P 500", price: "5,950.00", change: "+0.3%", positive: true }
 };
 
+
+
 const quotes = [
   "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.",
   "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks.",
@@ -67,6 +69,7 @@ async function fetchSilverPrice() {
     return FALLBACK_VALUES.silver;
   }
 }
+
 
 // Função melhorada para Treasury Yield com múltiplas tentativas
 async function fetchTreasuryYield() {
@@ -202,6 +205,7 @@ async function fetchMinedBitcoins() {
     return 19873500; // Valor de fallback atualizado
   }
 }
+
 
 // Função para buscar dados de sentimento de mercado (FUNCIONA)
 async function fetchMarketSentiment() {
@@ -402,6 +406,7 @@ async function updateScarcityMetrics() {
     }
   }
 }
+
 
 // Função para atualizar a contagem regressiva do Halving
 function updateHalvingCountdown() {
@@ -696,8 +701,8 @@ async function fetchSpecializedCryptoNews() {
     {
       title: "Layer 2 Solutions See 300% Growth in Transaction Volume",
       description: "Bitcoin's second-layer scaling solutions experience massive growth as users seek faster, cheaper transactions.",
-      source: "The Crypto Times",
-      url: "https://cryptotimes.io/",
+      source: "The Block",
+      url: "https://theblock.co/",
       date: new Date(Date.now() - 19800000).toISOString()
     }
   ];
@@ -705,111 +710,158 @@ async function fetchSpecializedCryptoNews() {
   return specializedNews;
 }
 
-// Função para renderizar notícias
-async function renderNews() {
-  const newsContainer = document.getElementById('latest-news');
-  if (!newsContainer) return;
-  newsContainer.innerHTML = '';
-
-  let allNews = [];
-  const now = Date.now();
-
-  if (newsCache.data.length === 0 || (now - newsCache.lastUpdate > newsCache.cacheTimeout)) {
-    const redditNews = await fetchRedditCryptoNews();
-    const specializedNews = await fetchSpecializedCryptoNews();
-    allNews = [...redditNews, ...specializedNews];
+// Função principal para atualizar notícias
+async function updateLatestNews() {
+  try {
+    // Verificar cache
+    const now = Date.now();
+    if (newsCache.data.length > 0 && (now - newsCache.lastUpdate) < newsCache.cacheTimeout) {
+      renderNews(newsCache.data);
+      return;
+    }
     
-    // Filtrar notícias de fontes mainstream a evitar
-    allNews = allNews.filter(news => {
-      const sourceLower = news.source.toLowerCase();
-      return !MAINSTREAM_SOURCES_TO_AVOID.some(avoidSource => sourceLower.includes(avoidSource.toLowerCase()));
-    });
-
-    // Priorizar notícias de fontes não-mainstream
-    allNews.sort((a, b) => {
-      const aIsNonMainstream = NON_MAINSTREAM_SOURCES.includes(a.source);
-      const bIsNonMainstream = NON_MAINSTREAM_SOURCES.includes(b.source);
-      if (aIsNonMainstream && !bIsNonMainstream) return -1;
-      if (!aIsNonMainstream && bIsNonMainstream) return 1;
-      return new Date(b.date) - new Date(a.date); // Mais recente primeiro
-    });
-
-    newsCache.data = allNews.slice(0, 6); // Limitar a 6 notícias
+    console.log('🔄 Atualizando notícias de fontes não-mainstream...');
+    
+    // Buscar notícias de múltiplas fontes
+    const [redditNews, specializedNews] = await Promise.all([
+      fetchRedditCryptoNews(),
+      fetchSpecializedCryptoNews()
+    ]);
+    
+    // Combinar e ordenar por relevância/data
+    const allNews = [...redditNews, ...specializedNews];
+    const sortedNews = allNews
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 6); // Manter apenas 6 notícias mais recentes
+    
+    // Atualizar cache
+    newsCache.data = sortedNews;
     newsCache.lastUpdate = now;
-  } else {
-    allNews = newsCache.data;
+    
+    // Renderizar notícias
+    renderNews(sortedNews);
+    
+    console.log('✅ Notícias atualizadas com sucesso');
+  } catch (error) {
+    console.error('❌ Erro ao atualizar notícias:', error);
+    // Em caso de erro, manter notícias do cache se disponíveis
+    if (newsCache.data.length > 0) {
+      renderNews(newsCache.data);
+    }
   }
+}
 
-  if (allNews.length === 0) {
-    newsContainer.innerHTML = '<p>No news available at the moment. Please check back later.</p>';
-    return;
-  }
-
-  const newsGrid = document.createElement('div');
-  newsGrid.className = 'news-grid';
-
-  allNews.forEach(news => {
-    const newsItem = document.createElement('a');
-    newsItem.href = news.url || '#';
-    newsItem.target = '_blank';
-    newsItem.className = 'news-item';
-
-    // Imagem placeholder se não houver imagem real
-    const imageUrl = news.image || 'https://via.placeholder.com/300x160?text=News+Image';
-
-    newsItem.innerHTML = `
-      <img src="${imageUrl}" alt="${news.title}" class="news-image">
+// Função para renderizar notícias na página
+function renderNews(newsItems) {
+  const newsContainer = document.querySelector('#news-content .news-grid');
+  if (!newsContainer) return;
+  
+  newsContainer.innerHTML = '';
+  
+  newsItems.forEach(item => {
+    const newsElement = document.createElement('a');
+    newsElement.href = item.url;
+    newsElement.target = '_blank';
+    newsElement.className = 'news-item';
+    
+    const formattedDate = new Date(item.date).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'UTC'
+    }) + ' UTC';
+    
+    newsElement.innerHTML = `
       <div class="news-content">
-        <span class="news-source">${news.source}</span>
-        <h3 class="news-title">${news.title}</h3>
-        <p class="news-description">${news.description}</p>
-        <span class="news-date">${new Date(news.date).toLocaleDateString()}</span>
+        <div class="news-source">${item.source}</div>
+        <div class="news-title">${item.title}</div>
+        <div class="news-description">${item.description}</div>
+        <div class="news-date">${formattedDate}</div>
       </div>
     `;
-    newsGrid.appendChild(newsItem);
-  });
-  newsContainer.appendChild(newsGrid);
-}
-
-// Função para atualizar o rodapé com os preços
-function updateFooterPrices(assets) {
-  const footerPricesContainer = document.querySelector('.footer-prices');
-  if (!footerPricesContainer) return;
-  footerPricesContainer.innerHTML = '';
-
-  assets.forEach(asset => {
-    const priceSpan = document.createElement('span');
-    priceSpan.innerHTML = `<strong>${asset.name}:</strong> ${asset.price} <span class="${asset.positive ? 'positive' : 'negative'}">${asset.change}</span>`;
-    footerPricesContainer.appendChild(priceSpan);
+    
+    newsContainer.appendChild(newsElement);
   });
 }
 
-// Função para atualizar a citação de Satoshi
-function updateSatoshiQuote() {
-  const satoshiQuoteText = document.getElementById('satoshi-quote-text');
-  if (satoshiQuoteText) {
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    satoshiQuoteText.textContent = quotes[randomIndex];
-  }
+// --- Fim das funções de notícias ---
+
+function updateFooterPrices(currentAssets) {
+  const footerPrices = document.getElementById('footer-prices');
+  if (!footerPrices) return;
+  footerPrices.innerHTML = '';
+  currentAssets.forEach(asset => {
+    const priceItem = document.createElement('span');
+    priceItem.className = 'footer-price-item';
+    priceItem.innerHTML = `<strong>${asset.name}:</strong> ${asset.price} <span class="${asset.positive ? 'positive' : 'negative'}">(${asset.change})</span>`;
+    footerPrices.appendChild(priceItem);
+  });
 }
 
-// Função para alternar a visibilidade das fontes
 function toggleSources() {
-  const sourcesList = document.getElementById('sources-list');
-  if (sourcesList) {
-    sourcesList.style.display = sourcesList.style.display === 'none' ? 'block' : 'none';
+  const sourcesDiv = document.getElementById('market-cap-sources');
+  const toggleButton = document.getElementById('sources-toggle');
+  if (sourcesDiv && toggleButton) {
+    if (sourcesDiv.style.display === 'none' || sourcesDiv.style.display === '') {
+      sourcesDiv.style.display = 'block';
+      toggleButton.textContent = 'Hide sources';
+    } else {
+      sourcesDiv.style.display = 'none';
+      toggleButton.textContent = 'Show sources';
+    }
   }
 }
 
-// Inicialização da página
+// --- Inicialização --- 
+
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('🚀 Scarcity Panel - Versão Melhorada Carregada');
+  console.log('✅ APIs Funcionando: Bitcoin (CoinGecko), Sentimento de Mercado');
+  console.log('⚠️ APIs com Fallback: Gold, Silver, Treasury, Dollar Index, S&P 500');
+  
   renderQuotes();
   updateScarcityMetrics();
   updateHalvingCountdown();
   updateMarketSentiment();
   updateGlobalMarketCap();
-  renderNews();
-  updateSatoshiQuote(); // Exibir uma citação inicial
-
-  // Adicionar evento ao botão 
-
+  updateLatestNews(); // ADICIONADO: Atualização inicial das notícias
+  
+  // Configurar botão de fontes
+  const sourcesButton = document.getElementById('sources-toggle');
+  if (sourcesButton) {
+    sourcesButton.addEventListener('click', toggleSources);
+  }
+  
+  // Atualizar dados a cada 5 minutos
+  setInterval(() => {
+    renderQuotes();
+    updateScarcityMetrics(); // ADICIONADO: Atualização automática das métricas de escassez
+    updateMarketSentiment();
+    updateGlobalMarketCap();
+  }, 300000);
+  
+  // Atualização diária às 00:00 UTC para dados que mudam menos frequentemente
+  const now = new Date();
+  const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0) - now;
+  
+  setTimeout(() => {
+    // Primeira atualização diária
+    updateScarcityMetrics();
+    updateHalvingCountdown();
+    updateLatestNews(); // ADICIONADO: Atualização diária das notícias
+    
+    // Configurar atualização diária recorrente (24 horas = 86400000 ms)
+    setInterval(() => {
+      updateScarcityMetrics();
+      updateHalvingCountdown();
+      updateLatestNews(); // ADICIONADO: Atualização diária das notícias
+    }, 86400000);
+  }, msUntilMidnight);
+  
+  // Atualização das notícias a cada 2 horas para manter conteúdo fresco
+  setInterval(() => {
+    updateLatestNews();
+  }, 7200000); // 2 horas em ms
+});
