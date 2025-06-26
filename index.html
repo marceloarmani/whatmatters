@@ -442,54 +442,5 @@
   </footer>
   
   <script src="script.js"></script>
-  <script>
-    function copyToClipboard() {
-      const addressText = document.getElementById('donation-address').textContent;
-      navigator.clipboard.writeText(addressText).then(() => {
-        const button = document.querySelector('.copy-button');
-        const originalText = button.textContent;
-        button.textContent = 'Copied!';
-        setTimeout(() => {
-          button.textContent = originalText;
-        }, 2000);
-      }).catch(err => {
-        console.error('Failed to copy: ', err);
-      });
-    }
-
-    // Initialize the page
-    document.addEventListener('DOMContentLoaded', function() {
-      renderQuotes(); // This will render the quotes once on page load
-      updateScarcityMetrics();
-      updateMarketSentiment();
-      updateSatoshiQuote();
-      
-      // Update data every 5 minutes
-      setInterval(() => {
-        // Removed renderQuotes() from here to prevent duplication
-        updateScarcityMetrics();
-        updateMarketSentiment();
-      }, 300000);
-      
-      // Update Satoshi quote every 30 seconds
-      setInterval(updateSatoshiQuote, 30000);
-      
-      // Sources toggle functionality
-      const sourcesToggle = document.getElementById('sources-toggle');
-      const sourcesDiv = document.getElementById('market-cap-sources');
-      
-      if (sourcesToggle && sourcesDiv) {
-        sourcesToggle.addEventListener('click', function() {
-          if (sourcesDiv.style.display === 'none' || sourcesDiv.style.display === '') {
-            sourcesDiv.style.display = 'block';
-            sourcesToggle.textContent = 'Hide sources';
-          } else {
-            sourcesDiv.style.display = 'none';
-            sourcesToggle.textContent = 'Show sources';
-          }
-        });
-      }
-    });
-  </script>
 </body>
 </html>
