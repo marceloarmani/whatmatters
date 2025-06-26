@@ -1,3 +1,8 @@
+Peço desculpas! Houve um erro e o código não foi incluído na minha resposta anterior.
+
+Aqui está o conteúdo COMPLETO e ATUALIZADO do seu arquivo `style.css`, incluindo as melhorias para a seção de podcasts. Por favor, substitua todo o conteúdo do seu arquivo `style.css` por este:
+
+```css
 body {
   font-family: 'Segoe UI', sans-serif;
   background: #f9f9f9;
@@ -657,6 +662,102 @@ header.compact-header p {
   color: #999;
 }
 
+/* Bitcoin Podcasts Section */
+#bitcoin-podcasts {
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+}
+
+.podcasts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.podcast-item {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Pushes link to bottom */
+}
+
+.podcast-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.podcast-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.podcast-icon {
+  flex-shrink: 0; /* Prevent icon from shrinking */
+  margin-right: 0.8rem;
+}
+
+.podcast-icon svg {
+  width: 40px;
+  height: 40px;
+  fill: #f7931a; /* Bitcoin orange */
+}
+
+.podcast-info {
+  flex-grow: 1;
+}
+
+.podcast-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.podcast-host {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}
+
+.podcast-description {
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  flex-grow: 1; /* Allows description to take available space */
+}
+
+.podcast-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #f7931a;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+  margin-top: auto; /* Pushes the link to the bottom */
+}
+
+.podcast-link:hover {
+  color: #e67e00;
+}
+
+.podcast-link svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor; /* Inherits color from parent */
+}
+
+
 /* Horizontal sections layout for Word of Satoshi and Support */
 .horizontal-sections {
   display: grid;
@@ -780,6 +881,10 @@ footer {
   .news-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .podcasts-grid {
+    grid-template-columns: repeat(2, 1fr); /* Adjust for smaller screens */
+  }
 }
 
 @media (max-width: 767px) {
@@ -800,6 +905,10 @@ footer {
     flex-direction: column;
     gap: 10px;
   }
+
+  .podcasts-grid {
+    grid-template-columns: 1fr; /* Single column on very small screens */
+  }
 }
 
 @media (max-width: 575px) {
@@ -817,3 +926,4 @@ footer {
     gap: 5px;
   }
 }
+```
