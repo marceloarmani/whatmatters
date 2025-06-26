@@ -608,113 +608,45 @@ a:hover {
   color: #777;
 }
 
-/* Bitcoin Podcasts Section - Modern Design (OVERWRITING ORIGINAL PODCAST STYLES) */
+/* Bitcoin Podcasts Section (Original/Old Layout) */
 #bitcoin-podcasts {
-  padding: 2.5rem 0; /* Consistent padding for the section */
+  /* Original padding or general section padding if it exists */
 }
 
 .podcasts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid, minimum 300px wide cards */
-  gap: 1.5rem; /* Space between podcast cards */
-  padding: 1rem; /* Padding around the grid */
-  max-width: 1200px; /* Max width for the grid */
-  margin: 0 auto; /* Center the grid */
+  /* Original grid layout for podcasts, or inherited from general grid rules */
 }
 
 .podcast-item {
-  background-color: #2c2c2c; /* Darker background for cards */
-  border-radius: 12px; /* Slightly more rounded corners */
-  padding: 1.5rem; /* Internal padding */
-  display: flex;
-  flex-direction: column; /* Stack content vertically */
-  justify-content: space-between; /* Distribute space to push link to bottom */
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Softer, modern shadow */
-  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effects */
-  overflow: hidden; /* Ensure content stays within borders */
-}
-
-.podcast-item:hover {
-  transform: translateY(-5px); /* Subtle lift effect on hover */
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4); /* Enhanced shadow on hover */
+  /* Original styling for individual podcast items */
 }
 
 .podcast-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem; /* Space below header */
+  /* Original styling for podcast header */
 }
 
 .podcast-icon {
-  flex-shrink: 0; /* Prevent icon from shrinking */
-  width: 48px; /* Larger icon size */
-  height: 48px;
-  margin-right: 1rem; /* Space between icon and text */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f7931a; /* Icon background */
-  border-radius: 50%; /* Circular icon container */
-}
-
-.podcast-icon svg {
-  width: 28px; /* SVG size within the circle */
-  height: 28px;
-  fill: #1a1a1a; /* Icon color */
+  /* Original styling for podcast icons */
 }
 
 .podcast-info {
-  flex-grow: 1; /* Allow info to take remaining space */
+  /* Original styling for podcast info */
 }
 
 .podcast-title {
-  font-size: 1.35rem; /* Slightly larger title */
-  color: #f0f0f0; /* Lighter color for title */
-  margin: 0;
-  margin-bottom: 0.25rem;
-  line-height: 1.2;
+  /* Original styling for podcast titles */
 }
 
 .podcast-host {
-  font-size: 0.95rem; /* Host name size */
-  color: #bbb; /* Slightly muted color for host */
-  margin: 0;
+  /* Original styling for podcast hosts */
 }
 
 .podcast-description {
-  font-size: 0.9rem; /* Description font size */
-  color: #a0a0a0; /* Muted color for description */
-  line-height: 1.6;
-  margin-bottom: 1.25rem; /* Space before the link */
-  flex-grow: 1; /* Allows description to take up available space */
+  /* Original styling for podcast descriptions */
 }
 
 .podcast-link {
-  display: inline-flex; /* Use inline-flex for proper alignment of text and icon */
-  align-items: center;
-  color: #f7931a; /* Accent color for the link */
-  text-decoration: none; /* No underline by default */
-  font-weight: 600; /* Bolder text for link */
-  font-size: 0.9rem;
-  transition: color 0.2s ease;
-  margin-top: 1rem; /* Ensure space from description */
-}
-
-.podcast-link:hover {
-  color: #e67e00; /* Darker accent on hover */
-  text-decoration: underline; /* Underline on hover */
-}
-
-.podcast-link svg {
-  width: 18px; /* Icon size for the link */
-  height: 18px;
-  margin-left: 8px; /* Space between text and icon */
-  fill: currentColor; /* Inherit color from parent */
-  transition: transform 0.2s ease;
-}
-
-.podcast-link:hover svg {
-  transform: translateX(3px); /* Small animation on icon on hover */
+  /* Original styling for podcast links */
 }
 
 /* Word of Satoshi Section */
@@ -905,30 +837,6 @@ footer {
     font-size: 0.8rem;
   }
 
-  /* Podcast responsiveness for smaller screens */
-  #bitcoin-podcasts {
-    padding: 1.5rem 0.5rem; /* Adjust padding for smaller screens */
-  }
-
-  .podcasts-grid {
-    grid-template-columns: 1fr; /* Single column on smaller screens */
-    padding: 0.5rem;
-  }
-
-  .podcast-item {
-    padding: 1.25rem;
-  }
-
-  .podcast-title {
-    font-size: 1.2rem;
-  }
-
-  .podcast-host,
-  .podcast-description,
-  .podcast-link {
-    font-size: 0.85rem;
-  }
-
   .sentiment-indicators,
   .scarcity-metrics-grid,
   .news-grid {
@@ -967,17 +875,5 @@ footer {
 }
 
 @media (max-width: 480px) {
-  .podcast-item {
-    padding: 1rem;
-  }
-
-  .podcast-icon {
-    width: 40px;
-    height: 40px;
-  }
-
-  .podcast-icon svg {
-    width: 24px;
-    height: 24px;
-  }
+  /* Original podcast media queries, if any */
 }
