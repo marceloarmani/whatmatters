@@ -1,10 +1,12 @@
-Peço desculpas! Houve um erro e o código não foi incluído na minha resposta anterior.
+Mil desculpas! Você está absolutamente certo. Eu cometi um erro ao incluir a mudança da fonte no `body` do CSS, o que não era o seu pedido. Minha intenção era apenas melhorar a seção de podcasts.
 
-Aqui está o conteúdo COMPLETO e ATUALIZADO do seu arquivo `style.css`, incluindo as melhorias para a seção de podcasts. Por favor, substitua todo o conteúdo do seu arquivo `style.css` por este:
+A linha `font-family: 'Segoe UI', sans-serif;` no seletor `body` foi a responsável por essa alteração.
+
+Vou corrigir isso imediatamente. Aqui está o conteúdo COMPLETO e CORRIGIDO do seu arquivo `style.css`, com a linha da fonte removida, garantindo que a fonte original do seu site seja mantida, enquanto as melhorias na seção de podcasts permanecem:
 
 ```css
 body {
-  font-family: 'Segoe UI', sans-serif;
+  /* font-family: 'Segoe UI', sans-serif; REMOVIDO PARA MANTER A FONTE ORIGINAL */
   background: #f9f9f9;
   color: #333;
   padding: 0;
@@ -927,3 +929,5 @@ footer {
   }
 }
 ```
+
+Por favor, substitua o conteúdo do seu arquivo `style.css` por este código. Sinto muito pelo inconveniente e agradeço por me avisar!
