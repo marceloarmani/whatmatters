@@ -1,5 +1,5 @@
 body {
-  font-family: 'Segoe UI', sans-serif; /* Restaurado conforme seu arquivo original */
+  font-family: 'Segoe UI', sans-serif;
   background: #f9f9f9;
   color: #333;
   padding: 0;
@@ -26,7 +26,7 @@ header.compact-header {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E" );
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   opacity: 0.1;
   z-index: 0;
 }
@@ -657,7 +657,7 @@ header.compact-header p {
   color: #999;
 }
 
-/* Bitcoin Podcasts Section */
+/* Bitcoin Podcasts Section - MELHORADO */
 #bitcoin-podcasts {
   background: #fff;
   padding: 1.2rem;
@@ -668,24 +668,78 @@ header.compact-header p {
 
 .podcasts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 1.5rem;
 }
 
 .podcast-item {
   background: #f8f9fa;
-  border-radius: 8px;
-  padding: 1.2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Pushes link to bottom */
+  overflow: hidden;
+  border: 1px solid #e9ecef;
 }
 
 .podcast-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* Thumbnail da capa do vídeo */
+.podcast-thumbnail {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #f7931a, #e67e00);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.podcast-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.podcast-item:hover .podcast-thumbnail img {
+  transform: scale(1.05);
+}
+
+/* Placeholder para quando não há imagem */
+.podcast-thumbnail-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+}
+
+.podcast-thumbnail-placeholder svg {
+  width: 60px;
+  height: 60px;
+  fill: white;
+  margin-bottom: 0.5rem;
+}
+
+.podcast-thumbnail-placeholder span {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Conteúdo do podcast */
+.podcast-content {
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .podcast-header {
@@ -695,14 +749,14 @@ header.compact-header p {
 }
 
 .podcast-icon {
-  flex-shrink: 0; /* Prevent icon from shrinking */
+  flex-shrink: 0;
   margin-right: 0.8rem;
 }
 
 .podcast-icon svg {
-  width: 40px;
-  height: 40px;
-  fill: #f7931a; /* Bitcoin orange */
+  width: 35px;
+  height: 35px;
+  fill: #f7931a;
 }
 
 .podcast-info {
@@ -713,13 +767,15 @@ header.compact-header p {
   font-size: 1.1rem;
   font-weight: 600;
   color: #2c3e50;
-  margin: 0;
+  margin: 0 0 0.2rem 0;
+  line-height: 1.3;
 }
 
 .podcast-host {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #666;
   margin: 0;
+  font-weight: 500;
 }
 
 .podcast-description {
@@ -727,31 +783,69 @@ header.compact-header p {
   color: #555;
   line-height: 1.5;
   margin-bottom: 1rem;
-  flex-grow: 1; /* Allows description to take available space */
+  flex-grow: 1;
+}
+
+/* Informações do último vídeo */
+.podcast-latest-video {
+  background: rgba(247, 147, 26, 0.1);
+  border-radius: 6px;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border-left: 3px solid #f7931a;
+}
+
+.podcast-video-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.3rem;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.podcast-video-date {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 0.3rem;
+}
+
+.podcast-video-views {
+  font-size: 0.75rem;
+  color: #888;
 }
 
 .podcast-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
   color: #f7931a;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.9rem;
-  transition: color 0.2s ease;
-  margin-top: auto; /* Pushes the link to the bottom */
+  transition: all 0.2s ease;
+  margin-top: auto;
+  padding: 0.6rem 1rem;
+  background: rgba(247, 147, 26, 0.1);
+  border-radius: 6px;
+  border: 1px solid rgba(247, 147, 26, 0.2);
 }
 
 .podcast-link:hover {
   color: #e67e00;
+  background: rgba(247, 147, 26, 0.15);
+  border-color: rgba(247, 147, 26, 0.3);
+  transform: translateY(-1px);
 }
 
 .podcast-link svg {
   width: 16px;
   height: 16px;
-  fill: currentColor; /* Inherits color from parent */
+  fill: currentColor;
 }
-
 
 /* Horizontal sections layout for Word of Satoshi and Support */
 .horizontal-sections {
@@ -822,4 +916,209 @@ blockquote {
   font-size: 0.8rem;
   color: #555;
   background: #fff;
-  padding:
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #eee;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.copy-button {
+  align-self: flex-start;
+  padding: 0.4rem 0.8rem;
+  background: #f7931a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.copy-button:hover {
+  background: #e67e00;
+}
+
+/* Footer - MELHORADO */
+footer {
+  background: linear-gradient(135deg, #2c3e50 0%, #1a1a1a 100%);
+  color: #fff;
+  padding: 2rem 0 1rem;
+  margin-top: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #f7931a, #d4af37, #6a5acd);
+}
+
+.footer-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: center;
+}
+
+.footer-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.footer-text p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.footer-text .footer-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #f7931a;
+  margin-bottom: 0.3rem;
+}
+
+.footer-prices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  min-width: 200px;
+}
+
+.footer-price-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.8rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.footer-price-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateX(3px);
+}
+
+.footer-price-item.bitcoin {
+  border-left-color: #f7931a;
+}
+
+.footer-price-item.gold {
+  border-left-color: #d4af37;
+}
+
+.footer-price-item.sp500 {
+  border-left-color: #4682b4;
+}
+
+.footer-price-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.footer-price-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.footer-bottom {
+  grid-column: 1 / -1;
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-bottom p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Responsiveness */
+@media (max-width: 991px) {
+  .sentiment-indicators {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .news-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .podcasts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .footer-prices {
+    align-self: center;
+  }
+}
+
+@media (max-width: 767px) {
+  .sentiment-indicators {
+    grid-template-columns: 1fr;
+  }
+  
+  .events-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
+  }
+  
+  .horizontal-sections {
+    grid-template-columns: 1fr;
+  }
+
+  .podcasts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-prices {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .footer-price-item {
+    min-width: 140px;
+  }
+}
+
+@media (max-width: 575px) {
+  .news-grid,
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .scarcity-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .footer-prices {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .footer-price-item {
+    min-width: auto;
+  }
+}
+
