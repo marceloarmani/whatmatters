@@ -1,6 +1,11 @@
 // Configuração da API Alpha Vantage
 const ALPHA_VANTAGE_API_KEY = "YXNV7ACP45FN4RZC";
 const ALPHA_VANTAGE_BASE_URL = "https://www.alphavantage.co/query";
+
+// CONFIGURAÇÃO DAS APIS - ADICIONE SUAS CHAVES AQUI
+const YOUTUBE_API_KEY = ""; // Adicione sua chave da YouTube Data API v3
+const NEWS_API_KEY = ""; // Adicione sua chave da NewsAPI ou similar
+
 // Valores de fallback atualizados (devem ser atualizados manualmente periodicamente)
 const FALLBACK_VALUES = {
   bitcoin: { name: "Bitcoin", price: "$104,586.00", change: "-0.3%", positive: false },
@@ -10,6 +15,35 @@ const FALLBACK_VALUES = {
   dollar: { name: "Dollar Index", price: "106.50", change: "+0.1%", positive: true },
   sp500: { name: "S&P 500", price: "5,950.00", change: "+0.3%", positive: true }
 };
+
+// Configuração dos canais de podcast do YouTube
+const PODCAST_CHANNELS = [
+  {
+    title: "Coin Stories Podcast",
+    host: "Natalie Brunell",
+    description: "Investing journalist and Bitcoin educator exploring the intersection of money, technology, and freedom through compelling stories and expert interviews.",
+    youtubeUrl: "https://www.youtube.com/@NatalieBrunell",
+    channelId: "UCxJ-T4p6iMHNyOZU8-8-wgQ", // ID do canal da Natalie Brunell
+    playlistId: "UUxJ-T4p6iMHNyOZU8-8-wgQ" // ID da playlist de uploads
+  },
+  {
+    title: "The Jack Mallers Show",
+    host: "Jack Mallers",
+    description: "CEO of Strike covering the biggest stories in Bitcoin, macroeconomics, financial markets, and the future of money with live weekly episodes.",
+    youtubeUrl: "https://www.youtube.com/@JackMallers",
+    channelId: "UC3ol9RQbQHqle_Uly6w9LfA", // ID do canal do Jack Mallers
+    playlistId: "UU3ol9RQbQHqle_Uly6w9LfA"
+  },
+  {
+    title: "The Bitcoin Standard Podcast",
+    host: "Saifedean Ammous",
+    description: "Author of \"The Bitcoin Standard\" exploring Austrian economics, sound money principles, and Bitcoin's role in the future of monetary systems.",
+    youtubeUrl: "https://www.youtube.com/@saifedean",
+    channelId: "UCmvjlQyul9m6KwJZsQBZTpQ", // ID do canal do Saifedean
+    playlistId: "UUmvjlQyul9m6KwJZsQBZTpQ"
+  }
+];
+
 const quotes = [
   "The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.",
   "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks.",
@@ -18,6 +52,195 @@ const quotes = [
   "Banks must be trusted to hold our money and transfer it electronically, but they lend it out in waves of credit bubbles with barely a fraction in reserve.",
   "With e-currency based on cryptographic proof, without the need to trust a third party middleman, money can be secure and transactions effortless."
 ];
+
+// --- NOVAS FUNÇÕES PARA YOUTUBE API ---
+
+// Função para buscar o último vídeo de um canal do YouTube
+async function fetchLatestYouTubeVideo(channelId, playlistId) {
+  if (!YOUTUBE_API_KEY) {
+    console.warn('YouTube API key not configured');
+    return null;
+  }
+
+  try {
+    // Buscar o último vídeo da playlist de uploads do canal
+    const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=1&order=date&key=${YOUTUBE_API_KEY}`;
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`YouTube API error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.items && data.items.length > 0) {
+      const video = data.items[0].snippet;
+      return {
+        title: video.title,
+        thumbnail: video.thumbnails.medium?.url || video.thumbnails.default?.url,
+        publishedAt: video.publishedAt,
+        videoId: video.resourceId.videoId,
+        description: video.description
+      };
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Erro ao buscar vídeo do YouTube:', error);
+    return null;
+  }
+}
+
+// Função para buscar estatísticas de um vídeo (views, likes, etc.)
+async function fetchVideoStats(videoId) {
+  if (!YOUTUBE_API_KEY || !videoId) {
+    return null;
+  }
+
+  try {
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}&key=${YOUTUBE_API_KEY}`;
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`YouTube API error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.items && data.items.length > 0) {
+      return data.items[0].statistics;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Erro ao buscar estatísticas do vídeo:', error);
+    return null;
+  }
+}
+
+// Função para formatar número de visualizações
+function formatViewCount(viewCount) {
+  const num = parseInt(viewCount);
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  return num.toString();
+}
+
+// Função para formatar data relativa
+function formatRelativeDate(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now - date);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays === 1) {
+    return '1 dia atrás';
+  } else if (diffDays < 7) {
+    return `${diffDays} dias atrás`;
+  } else if (diffDays < 30) {
+    const weeks = Math.floor(diffDays / 7);
+    return weeks === 1 ? '1 semana atrás' : `${weeks} semanas atrás`;
+  } else if (diffDays < 365) {
+    const months = Math.floor(diffDays / 30);
+    return months === 1 ? '1 mês atrás' : `${months} meses atrás`;
+  } else {
+    const years = Math.floor(diffDays / 365);
+    return years === 1 ? '1 ano atrás' : `${years} anos atrás`;
+  }
+}
+
+// --- NOVAS FUNÇÕES PARA NOTÍCIAS AUTOMÁTICAS ---
+
+// Função para buscar notícias de Bitcoin e criptomoedas
+async function fetchCryptoNews() {
+  // Fallback de notícias caso a API não esteja configurada
+  const fallbackNews = [
+    {
+      source: "Bitcoin Magazine",
+      title: "Bitcoin Surpasses $100,000 for First Time in History",
+      description: "The world's largest cryptocurrency has reached a new all-time high, breaking the psychological barrier of $100,000.",
+      publishedAt: new Date().toISOString(),
+      url: "https://bitcoinmagazine.com/",
+      urlToImage: null
+    },
+    {
+      source: "Blockworks",
+      title: "Central Banks Accelerate Digital Currency Development",
+      description: "Major central banks are fast-tracking CBDC projects in response to growing cryptocurrency adoption.",
+      publishedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      url: "https://blockworks.co/",
+      urlToImage: null
+    },
+    {
+      source: "The Bitcoin Times",
+      title: "Gold Reaches Record High Amid Inflation Concerns",
+      description: "The precious metal continues its upward trajectory as investors seek protection from rising inflation.",
+      publishedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      url: "https://bitcointimes.news/",
+      urlToImage: null
+    },
+    {
+      source: "Bitcoin Magazine",
+      title: "Institutional Adoption Drives Bitcoin to New Heights",
+      description: "Major corporations and investment funds continue to allocate significant portions of their portfolios to Bitcoin.",
+      publishedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      url: "https://bitcoinmagazine.com/",
+      urlToImage: null
+    },
+    {
+      source: "Cointelegraph",
+      title: "Lightning Network Reaches 10,000 Nodes Milestone",
+      description: "Bitcoin's Layer 2 scaling solution continues to grow, enabling faster and cheaper transactions.",
+      publishedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+      url: "https://cointelegraph.com/",
+      urlToImage: null
+    },
+    {
+      source: "Decrypt",
+      title: "Mining Difficulty Adjustment Signals Network Strength",
+      description: "Bitcoin's mining difficulty reaches new all-time high, demonstrating the network's robust security.",
+      publishedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      url: "https://decrypt.co/",
+      urlToImage: null
+    }
+  ];
+
+  if (!NEWS_API_KEY) {
+    console.warn('News API key not configured, using fallback news');
+    return fallbackNews;
+  }
+
+  try {
+    // Exemplo usando NewsAPI (você pode substituir por outra API de notícias)
+    const url = `https://newsapi.org/v2/everything?q=bitcoin OR cryptocurrency OR blockchain&sortBy=publishedAt&pageSize=6&apiKey=${NEWS_API_KEY}`;
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`News API error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.articles && data.articles.length > 0) {
+      return data.articles.map(article => ({
+        source: article.source.name,
+        title: article.title,
+        description: article.description,
+        publishedAt: article.publishedAt,
+        url: article.url,
+        urlToImage: article.urlToImage
+      }));
+    }
+    
+    return fallbackNews;
+  } catch (error) {
+    console.error('Erro ao buscar notícias:', error);
+    return fallbackNews;
+  }
+}
 
 // --- Funções de busca de dados com APIs confiáveis ---
 
@@ -65,7 +288,6 @@ async function fetchSilverPrice() {
     return FALLBACK_VALUES.silver;
   }
 }
-
 
 // Função melhorada para Treasury Yield com múltiplas tentativas
 async function fetchTreasuryYield() {
@@ -350,7 +572,6 @@ async function updateScarcityMetrics() {
   }
 }
 
-
 async function updateMarketSentiment() {
   const sentimentData = await fetchMarketSentiment();
 
@@ -436,136 +657,149 @@ function getHashRateClassification(hashRate) {
   return "Moderate";
 }
 
-
-// Função para buscar e renderizar as últimas notícias (FUNCIONAL)
+// FUNÇÃO ATUALIZADA PARA BUSCAR E RENDERIZAR AS NOTÍCIAS
 async function fetchAndRenderNews() {
   const newsContentDiv = document.getElementById('news-content');
   if (!newsContentDiv) return;
 
-  newsContentDiv.innerHTML = ''; // Limpa o conteúdo existente
+  // Mostrar loading
+  newsContentDiv.innerHTML = '<div class="loading">Carregando notícias...</div>';
 
-  const newsItems = [
-    {
-      source: "Bitcoin Magazine",
-      title: "Bitcoin Surpasses $100,000 for First Time in History",
-      description: "The world's largest cryptocurrency has reached a new all-time high, breaking the psychological barrier of $100,000.",
-      date: "May 21, 2025 14:32 UTC",
-      url: "https://bitcoinmagazine.com/"
-    },
-    {
-      source: "Blockworks",
-      title: "Central Banks Accelerate Digital Currency Development",
-      description: "Major central banks are fast-tracking CBDC projects in response to growing cryptocurrency adoption.",
-      date: "May 20, 2025 09:15 UTC",
-      url: "https://blockworks.co/"
-    },
-    {
-      source: "The Bitcoin Times",
-      title: "Gold Reaches Record High Amid Inflation Concerns",
-      description: "The precious metal continues its upward trajectory as investors seek protection from rising inflation.",
-      date: "May 19, 2025 16:45 UTC",
-      url: "https://bitcointimes.news/"
-    },
-    {
-      source: "Bitcoin Magazine",
-      title: "Institutional Adoption Drives Bitcoin to New Heights",
-      description: "Major corporations and investment funds continue to allocate significant portions of their portfolios to Bitcoin.",
-      date: "May 18, 2025 11:20 UTC",
-      url: "https://bitcoinmagazine.com/"
-    },
-    {
-      source: "Cointelegraph",
-      title: "Lightning Network Reaches 10,000 Nodes Milestone",
-      description: "Bitcoin's Layer 2 scaling solution continues to grow, enabling faster and cheaper transactions.",
-      date: "May 17, 2025 08:30 UTC",
-      url: "https://cointelegraph.com/"
-    },
-    {
-      source: "Decrypt",
-      title: "Mining Difficulty Adjustment Signals Network Strength",
-      description: "Bitcoin's mining difficulty reaches new all-time high, demonstrating the network's robust security.",
-      date: "May 16, 2025 13:45 UTC",
-      url: "https://decrypt.co/"
-    }
-  ];
+  try {
+    const newsItems = await fetchCryptoNews();
+    
+    newsContentDiv.innerHTML = ''; // Limpa o loading
+    
+    const newsGrid = document.createElement('div');
+    newsGrid.className = 'news-grid';
 
-  const newsGrid = document.createElement('div');
-  newsGrid.className = 'news-grid';
+    newsItems.slice(0, 6).forEach(news => {
+      const newsItem = document.createElement('a');
+      newsItem.href = news.url;
+      newsItem.target = "_blank";
+      newsItem.className = "news-item";
 
-  newsItems.forEach(news => {
-    const newsItem = document.createElement('a');
-    newsItem.href = news.url;
-    newsItem.target = "_blank";
-    newsItem.className = "news-item";
+      const formattedDate = formatRelativeDate(news.publishedAt);
 
-    newsItem.innerHTML = `
-      <div class="news-content">
-        <div class="news-source">${news.source}</div>
-        <div class="news-title">${news.title}</div>
-        <div class="news-description">${news.description}</div>
-        <div class="news-date">${news.date}</div>
-      </div>
-    `;
-    newsGrid.appendChild(newsItem);
-  });
-  newsContentDiv.appendChild(newsGrid);
+      newsItem.innerHTML = `
+        ${news.urlToImage ? `<img src="${news.urlToImage}" alt="${news.title}" class="news-image" onerror="this.style.display='none'">` : ''}
+        <div class="news-content">
+          <div class="news-source">${news.source}</div>
+          <div class="news-title">${news.title}</div>
+          <div class="news-description">${news.description || 'Descrição não disponível'}</div>
+          <div class="news-date">${formattedDate}</div>
+        </div>
+      `;
+      newsGrid.appendChild(newsItem);
+    });
+    
+    newsContentDiv.appendChild(newsGrid);
+  } catch (error) {
+    console.error('Erro ao renderizar notícias:', error);
+    newsContentDiv.innerHTML = '<div class="error">Erro ao carregar notícias</div>';
+  }
 }
 
-// Função para buscar e renderizar os podcasts (FUNCIONAL)
+// FUNÇÃO ATUALIZADA PARA BUSCAR E RENDERIZAR OS PODCASTS COM CAPAS DOS VÍDEOS
 async function fetchAndRenderPodcasts() {
   const podcastsGrid = document.querySelector('.podcasts-grid');
   if (!podcastsGrid) return;
 
-  podcastsGrid.innerHTML = ''; // Limpa o conteúdo existente
+  // Mostrar loading
+  podcastsGrid.innerHTML = '<div class="loading">Carregando podcasts...</div>';
 
-  const podcasts = [
-    {
-      title: "Coin Stories Podcast",
-      host: "Natalie Brunell",
-      description: "Investing journalist and Bitcoin educator exploring the intersection of money, technology, and freedom through compelling stories and expert interviews.",
-      youtubeUrl: "https://www.youtube.com/@NatalieBrunell"
-    },
-    {
-      title: "The Jack Mallers Show",
-      host: "Jack Mallers",
-      description: "CEO of Strike covering the biggest stories in Bitcoin, macroeconomics, financial markets, and the future of money with live weekly episodes.",
-      youtubeUrl: "https://www.youtube.com/@JackMallers"
-    },
-    {
-      title: "The Bitcoin Standard Podcast",
-      host: "Saifedean Ammous",
-      description: "Author of \"The Bitcoin Standard\" exploring Austrian economics, sound money principles, and Bitcoin's role in the future of monetary systems.",
-      youtubeUrl: "https://www.youtube.com/@saifedean"
-    }
-  ];
+  try {
+    const podcastsWithVideos = await Promise.all(
+      PODCAST_CHANNELS.map(async (podcast) => {
+        const latestVideo = await fetchLatestYouTubeVideo(podcast.channelId, podcast.playlistId);
+        let videoStats = null;
+        
+        if (latestVideo && latestVideo.videoId) {
+          videoStats = await fetchVideoStats(latestVideo.videoId);
+        }
+        
+        return {
+          ...podcast,
+          latestVideo,
+          videoStats
+        };
+      })
+    );
 
-  podcasts.forEach(podcast => {
-    const podcastItem = document.createElement('div');
-    podcastItem.className = 'podcast-item';
-    podcastItem.innerHTML = `
-      <div class="podcast-header">
-        <div class="podcast-icon">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#f7931a">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-          </svg>
+    podcastsGrid.innerHTML = ''; // Limpa o loading
+
+    podcastsWithVideos.forEach(podcast => {
+      const podcastItem = document.createElement('div');
+      podcastItem.className = 'podcast-item';
+      
+      // Thumbnail do vídeo ou placeholder
+      let thumbnailHtml = '';
+      if (podcast.latestVideo && podcast.latestVideo.thumbnail) {
+        thumbnailHtml = `
+          <div class="podcast-thumbnail">
+            <img src="${podcast.latestVideo.thumbnail}" alt="${podcast.latestVideo.title}" loading="lazy">
+          </div>
+        `;
+      } else {
+        thumbnailHtml = `
+          <div class="podcast-thumbnail">
+            <div class="podcast-thumbnail-placeholder">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="white">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              <span>Último vídeo</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // Informações do último vídeo
+      let latestVideoHtml = '';
+      if (podcast.latestVideo) {
+        const viewCount = podcast.videoStats && podcast.videoStats.viewCount 
+          ? formatViewCount(podcast.videoStats.viewCount) 
+          : 'N/A';
+        
+        latestVideoHtml = `
+          <div class="podcast-latest-video">
+            <div class="podcast-video-title">${podcast.latestVideo.title}</div>
+            <div class="podcast-video-date">${formatRelativeDate(podcast.latestVideo.publishedAt)}</div>
+            <div class="podcast-video-views">${viewCount} visualizações</div>
+          </div>
+        `;
+      }
+
+      podcastItem.innerHTML = `
+        ${thumbnailHtml}
+        <div class="podcast-content">
+          <div class="podcast-header">
+            <div class="podcast-icon">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#f7931a">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+            </div>
+            <div class="podcast-info">
+              <h3 class="podcast-title">${podcast.title}</h3>
+              <p class="podcast-host">${podcast.host}</p>
+            </div>
+          </div>
+          <p class="podcast-description">${podcast.description}</p>
+          ${latestVideoHtml}
+          <a href="${podcast.youtubeUrl}" target="_blank" class="podcast-link">
+            <span>Assistir no YouTube</span>
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </a>
         </div>
-        <div class="podcast-info">
-          <h3 class="podcast-title">${podcast.title}</h3>
-          <p class="podcast-host">${podcast.host}</p>
-        </div>
-      </div>
-      <p class="podcast-description">${podcast.description}</p>
-      <a href="${podcast.youtubeUrl}" target="_blank" class="podcast-link">
-        <span>Watch on YouTube</span>
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-          <path d="M7 17L17 7M17 7H7M17 7V17"/>
-        </svg>
-      </a>
-    `;
-    podcastsGrid.appendChild(podcastItem);
-  });
+      `;
+      podcastsGrid.appendChild(podcastItem);
+    });
+  } catch (error) {
+    console.error('Erro ao renderizar podcasts:', error);
+    podcastsGrid.innerHTML = '<div class="error">Erro ao carregar podcasts</div>';
+  }
 }
-
 
 // Função para buscar todos os preços mais recentes de uma vez
 async function fetchAllLatestPrices() {
@@ -588,22 +822,32 @@ async function fetchAllLatestPrices() {
   ].filter(Boolean); // Filtra para remover quaisquer valores nulos
 }
 
-// Função para atualizar os preços no rodapé
+// FUNÇÃO ATUALIZADA PARA O RODAPÉ MELHORADO
 async function updateFooterPrices() {
   const footerPricesDiv = document.getElementById('footer-prices');
   if (!footerPricesDiv) return;
 
+  const assetsToDisplay = await fetchAllLatestPrices();
+  
+  // Selecionar apenas Bitcoin, Gold e S&P 500 para o rodapé
+  const footerAssets = assetsToDisplay.filter(asset => 
+    asset.name === 'Bitcoin' || asset.name === 'Gold' || asset.name === 'S&P 500'
+  );
+
   footerPricesDiv.innerHTML = ''; // Limpa os preços existentes
 
-  const assetsToDisplay = await fetchAllLatestPrices();
-
-  assetsToDisplay.forEach(asset => {
+  footerAssets.forEach(asset => {
     const priceItem = document.createElement('div');
-    priceItem.className = 'footer-price-item';
+    let className = 'footer-price-item';
+    
+    if (asset.name === 'Bitcoin') className += ' bitcoin';
+    else if (asset.name === 'Gold') className += ' gold';
+    else if (asset.name === 'S&P 500') className += ' sp500';
+    
+    priceItem.className = className;
     priceItem.innerHTML = `
-      <span>${asset.name}:</span>
-      <span class="price-value ${asset.positive ? 'positive' : 'negative'}">${asset.price}</span>
-      <span class="price-change ${asset.positive ? 'positive' : 'negative'}">${asset.change}</span>
+      <span class="footer-price-name">${asset.name}</span>
+      <span class="footer-price-value">${asset.price}</span>
     `;
     footerPricesDiv.appendChild(priceItem);
   });
@@ -662,7 +906,6 @@ function renderMarketCapTreemap() {
   });
 }
 
-
 // Copy to Clipboard function for donation address
 function copyToClipboard() {
   const addressText = document.getElementById('donation-address').textContent;
@@ -685,17 +928,27 @@ document.addEventListener('DOMContentLoaded', function() {
   updateMarketSentiment();
   updateSatoshiQuote();
   renderMarketCapTreemap();
-  fetchAndRenderNews(); // Adicionado para buscar e renderizar as notícias
-  fetchAndRenderPodcasts(); // Adicionado para buscar e renderizar os podcasts
-  updateFooterPrices(); // Adicionado para atualizar os preços no rodapé
+  fetchAndRenderNews(); // Buscar e renderizar notícias atualizadas
+  fetchAndRenderPodcasts(); // Buscar e renderizar podcasts com capas
+  updateFooterPrices(); // Atualizar rodapé
 
   // Update data every 5 minutes (300000 milliseconds)
   setInterval(() => {
     renderQuotes();
     updateScarcityMetrics();
     updateMarketSentiment();
-    updateFooterPrices(); // Atualiza os preços no rodapé também
+    updateFooterPrices();
   }, 300000);
+
+  // Update news every 30 minutes (1800000 milliseconds)
+  setInterval(() => {
+    fetchAndRenderNews();
+  }, 1800000);
+
+  // Update podcasts every 2 hours (7200000 milliseconds)
+  setInterval(() => {
+    fetchAndRenderPodcasts();
+  }, 7200000);
 
   // Update Satoshi quote every 30 seconds (30000 milliseconds)
   setInterval(updateSatoshiQuote, 30000);
@@ -716,3 +969,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
