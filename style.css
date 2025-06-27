@@ -1,12 +1,5 @@
-Mil desculpas! Você está absolutamente certo. Eu cometi um erro ao incluir a mudança da fonte no `body` do CSS, o que não era o seu pedido. Minha intenção era apenas melhorar a seção de podcasts.
-
-A linha `font-family: 'Segoe UI', sans-serif;` no seletor `body` foi a responsável por essa alteração.
-
-Vou corrigir isso imediatamente. Aqui está o conteúdo COMPLETO e CORRIGIDO do seu arquivo `style.css`, com a linha da fonte removida, garantindo que a fonte original do seu site seja mantida, enquanto as melhorias na seção de podcasts permanecem:
-
-```css
 body {
-  /* font-family: 'Segoe UI', sans-serif; REMOVIDO PARA MANTER A FONTE ORIGINAL */
+  font-family: 'Segoe UI', sans-serif; /* Restaurado conforme seu arquivo original */
   background: #f9f9f9;
   color: #333;
   padding: 0;
@@ -33,7 +26,7 @@ header.compact-header {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E" );
   opacity: 0.1;
   z-index: 0;
 }
@@ -829,105 +822,4 @@ blockquote {
   font-size: 0.8rem;
   color: #555;
   background: #fff;
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid #eee;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.copy-button {
-  align-self: flex-start;
-  padding: 0.4rem 0.8rem;
-  background: #f7931a;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  transition: all 0.2s ease;
-}
-
-.copy-button:hover {
-  background: #e67e00;
-}
-
-/* Footer */
-footer {
-  text-align: center;
-  padding: 1rem;
-  color: #7f8c8d;
-  font-size: 0.8rem;
-  margin-top: 1.5rem; /* Consistent spacing */
-}
-
-.footer-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.footer-prices {
-  display: flex;
-  gap: 15px;
-}
-
-/* Responsiveness */
-@media (max-width: 991px) {
-  .sentiment-indicators {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .news-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .podcasts-grid {
-    grid-template-columns: repeat(2, 1fr); /* Adjust for smaller screens */
-  }
-}
-
-@media (max-width: 767px) {
-  .sentiment-indicators {
-    grid-template-columns: 1fr;
-  }
-  
-  .events-grid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, auto);
-  }
-  
-  .horizontal-sections {
-    grid-template-columns: 1fr;
-  }
-  
-  .footer-content {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .podcasts-grid {
-    grid-template-columns: 1fr; /* Single column on very small screens */
-  }
-}
-
-@media (max-width: 575px) {
-  .news-grid,
-  .events-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .scarcity-metrics-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .footer-prices {
-    flex-direction: column;
-    gap: 5px;
-  }
-}
-```
-
-Por favor, substitua o conteúdo do seu arquivo `style.css` por este código. Sinto muito pelo inconveniente e agradeço por me avisar!
+  padding:
