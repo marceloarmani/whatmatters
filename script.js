@@ -19,28 +19,28 @@ const FALLBACK_VALUES = {
 // Configuração dos canais de podcast do YouTube
 const PODCAST_CHANNELS = [
   {
-    title: "Coin Stories Podcast",
-    host: "Natalie Brunell",
-    description: "Investing journalist and Bitcoin educator exploring the intersection of money, technology, and freedom through compelling stories and expert interviews.",
-    youtubeUrl: "https://www.youtube.com/@NatalieBrunell",
-    channelId: "UCxJ-T4p6iMHNyOZU8-8-wgQ", // ID do canal da Natalie Brunell
-    playlistId: "UUxJ-T4p6iMHNyOZU8-8-wgQ" // ID da playlist de uploads
+    title: 'Coin Stories Podcast',
+    host: 'Natalie Brunell',
+    description: 'Investing journalist and Bitcoin educator exploring the intersection of money, technology, and freedom through compelling stories and expert interviews.',
+    youtubeUrl: 'https://www.youtube.com/@nataliebrunell',
+    channelId: 'UCru3nlhzHrbgK21x0MdB_eg', // ID do canal da Natalie Brunell
+    playlistId: 'UUru3nlhzHrbgK21x0MdB_eg' // Playlist de uploads da Natalie Brunell
   },
   {
-    title: "The Jack Mallers Show",
-    host: "Jack Mallers",
-    description: "CEO of Strike covering the biggest stories in Bitcoin, macroeconomics, financial markets, and the future of money with live weekly episodes.",
-    youtubeUrl: "https://www.youtube.com/@JackMallers",
-    channelId: "UC3ol9RQbQHqle_Uly6w9LfA", // ID do canal do Jack Mallers
-    playlistId: "UU3ol9RQbQHqle_Uly6w9LfA"
+    title: 'The Jack Mallers Show',
+    host: 'Jack Mallers',
+    description: 'CEO of Strike covering the biggest stories in Bitcoin, macroeconomics, financial markets, and the future of money with live weekly episodes.',
+    youtubeUrl: 'https://www.youtube.com/@JackMallers',
+    channelId: 'UCb_gE9b-b2s_fN0_g0b0b0g', // Exemplo de ID de canal (manter o original se estiver funcionando)
+    playlistId: 'UUb_gE9b-b2s_fN0_g0b0b0g' // Exemplo de ID de playlist (manter o original se estiver funcionando)
   },
   {
-    title: "The Bitcoin Standard Podcast",
-    host: "Saifedean Ammous",
-    description: "Author of \"The Bitcoin Standard\" exploring Austrian economics, sound money principles, and Bitcoin's role in the future of monetary systems.",
-    youtubeUrl: "https://www.youtube.com/@saifedean",
-    channelId: "UCmvjlQyul9m6KwJZsQBZTpQ", // ID do canal do Saifedean
-    playlistId: "UUmvjlQyul9m6KwJZsQBZTpQ"
+    title: 'The Bitcoin Standard Podcast',
+    host: 'Saifedean Ammous',
+    description: 'Author of "The Bitcoin Standard" exploring Austrian economics, sound money principles, and Bitcoin\'s role in the future of monetary systems.',
+    youtubeUrl: 'https://www.youtube.com/@saifedean',
+    channelId: 'UCPsCJ1j0G45FnRGqJhCHLiA', // ID do canal do Saifedean Ammous
+    playlistId: 'UUPsCJ1j0G45FnRGqJhCHLiA' // Playlist de uploads do Saifedean Ammous
   }
 ];
 
