@@ -361,7 +361,7 @@ function renderPodcasts(podcastsData) {
             <p class="podcast-host">${podcast.host}</p>
           </div>
         </div>
-        <p class="podcast-description">${podcast.description}</p>
+
         ${latestVideoHtml}
         <a href="${podcast.youtubeUrl}" target="_blank" class="podcast-link">
           Assistir no YouTube
