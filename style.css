@@ -657,19 +657,22 @@ header.compact-header p {
   color: #999;
 }
 
-/* Bitcoin Podcasts Section - MELHORADO */
+/* Bitcoin Podcasts Section - CORRIGIDO PARA LARGURA UNIFORME */
 #bitcoin-podcasts {
   background: #fff;
   padding: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem; /* Consistent spacing igual às outras seções */
+  width: 100%; /* Garantir largura uniforme */
+  max-width: none; /* Remover qualquer limitação de largura */
 }
 
 .podcasts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 1.5rem;
+  width: 100%; /* Garantir que o grid ocupe toda a largura disponível */
 }
 
 .podcast-item {
@@ -844,115 +847,7 @@ header.compact-header p {
 .podcast-link svg {
   width: 16px;
   height: 16px;
-}
-
-/* Horizontal sections */
-.horizontal-sections {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-/* Satoshi Quotes */
-#satoshi-quotes {
-  background: #fff;
-  padding: 1.2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.quote-container {
-  text-align: center;
-}
-
-#satoshi-quote {
-  font-style: italic;
-  font-size: 1rem;
-  color: #555;
-  margin: 0 0 1rem 0;
-  line-height: 1.6;
-  border-left: 4px solid #f7931a;
-  padding-left: 1rem;
-  text-align: left;
-}
-
-.quote-author {
-  font-weight: 600;
-  color: #2c3e50;
-  font-size: 0.9rem;
-}
-
-/* Support section */
-#support {
-  background: #fff;
-  padding: 1.2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.donation-container p {
-  margin-bottom: 1rem;
-  color: #555;
-}
-
-.donation-address {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.donation-address-text {
-  background: #f8f9fa;
-  padding: 0.8rem;
-  border-radius: 4px;
-  font-family: 'Courier New', monospace;
-  font-size: 0.85rem;
-  word-break: break-all;
-  border: 1px solid #e9ecef;
-}
-
-.copy-button {
-  background: #f7931a;
-  color: white;
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-}
-
-.copy-button:hover {
-  background: #e67e00;
-}
-
-/* Footer */
-footer {
-  background: #2c3e50;
-  color: #fff;
-  padding: 1rem 0;
-  margin-top: 2rem;
-}
-
-.footer-content {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.footer-text p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.8);
-}
-
-.footer-prices {
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.6);
+  fill: currentColor;
 }
 
 /* Responsive design */
@@ -961,12 +856,9 @@ footer {
     padding: 0 0.5rem;
   }
   
-  .horizontal-sections {
-    grid-template-columns: 1fr;
-  }
-  
   .sentiment-indicators {
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
   }
   
   .events-grid {
@@ -976,18 +868,19 @@ footer {
   
   .news-grid {
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
   }
   
   .podcasts-grid {
     grid-template-columns: 1fr;
   }
   
-  .footer-content {
-    flex-direction: column;
-    gap: 0.5rem;
-    text-align: center;
+  .scarcity-metrics-grid {
+    grid-template-columns: 1fr;
   }
-  
+}
+
+@media (max-width: 480px) {
   header.compact-header h1 {
     font-size: 1.5rem;
   }
@@ -995,4 +888,14 @@ footer {
   header.compact-header p {
     font-size: 0.8rem;
   }
+  
+  .standard-section {
+    padding: 1rem;
+  }
+  
+  .quote {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
 }
+
