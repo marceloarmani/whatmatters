@@ -286,6 +286,19 @@ async function loadPodcastsSection() {
     }
   }
 
+  // CORREÇÃO: Ordenar podcasts por data de publicação do último vídeo (mais recente primeiro)
+  podcastsData.sort((a, b) => {
+    // Se um dos podcasts não tem vídeo ou tem erro, colocar no final
+    if (!a.latestVideo || a.error) return 1;
+    if (!b.latestVideo || b.error) return -1;
+    
+    // Ordenar por data de publicação (mais recente primeiro)
+    const dateA = new Date(a.latestVideo.publishedAt);
+    const dateB = new Date(b.latestVideo.publishedAt);
+    
+    return dateB - dateA; // Ordem decrescente (mais recente primeiro)
+  });
+
   // Salvar no cache e renderizar
   savePodcastsToCache(podcastsData);
   renderPodcasts(podcastsData);
@@ -472,447 +485,32 @@ function showUpdateNotification() {
   }, 3000);
 }
 
-// --- FUNÇÕES PARA NOTÍCIAS AUTOMÁTICAS ---
-
-// Função para buscar notícias de Bitcoin e criptomoedas
-async function fetchCryptoNews() {
-  // Fallback de notícias caso a API não esteja configurada
-  const fallbackNews = [
-    {
-      source: "Bitcoin Magazine",
-      title: "Bitcoin Surpasses $100,000 for First Time in History",
-      description: "The world's largest cryptocurrency has reached a new all-time high, breaking the psychological barrier of $100,000.",
-      publishedAt: new Date().toISOString(),
-      url: "https://bitcoinmagazine.com/",
-      urlToImage: null
-    },
-    {
-      source: "Blockworks",
-      title: "Central Banks Accelerate Digital Currency Development",
-      description: "Major central banks are fast-tracking CBDC projects in response to growing cryptocurrency adoption.",
-      publishedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      url: "https://blockworks.co/",
-      urlToImage: null
-    },
-    {
-      source: "The Bitcoin Times",
-      title: "Gold Reaches Record High Amid Inflation Concerns",
-      description: "The precious metal continues its upward trajectory as investors seek protection from rising inflation.",
-      publishedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      url: "https://bitcointimes.news/",
-      urlToImage: null
-    },
-    {
-      source: "Bitcoin Magazine",
-      title: "Institutional Adoption Drives Bitcoin to New Heights",
-      description: "Major corporations and investment funds continue to allocate significant portions of their portfolios to Bitcoin.",
-      publishedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-      url: "https://bitcoinmagazine.com/",
-      urlToImage: null
-    },
-    {
-      source: "Cointelegraph",
-      title: "Lightning Network Reaches 10,000 Nodes Milestone",
-      description: "Bitcoin's Layer 2 scaling solution continues to grow, enabling faster and cheaper transactions.",
-      publishedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-      url: "https://cointelegraph.com/",
-      urlToImage: null
-    },
-    {
-      source: "Decrypt",
-      title: "Mining Difficulty Adjustment Signals Network Strength",
-      description: "Bitcoin's mining difficulty reaches new all-time high, demonstrating the network's robust security.",
-      publishedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-      url: "https://decrypt.co/",
-      urlToImage: null
-    }
-  ];
-
-  if (!NEWS_API_KEY) {
-    console.warn('News API key not configured, using fallback news');
-    return fallbackNews;
-  }
-
-  try {
-    // Exemplo usando NewsAPI (você pode substituir por outra API de notícias)
-    const url = `https://newsapi.org/v2/everything?q=bitcoin OR cryptocurrency OR blockchain&sortBy=publishedAt&pageSize=6&apiKey=${NEWS_API_KEY}`;
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-      throw new Error(`News API error: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (data.articles && data.articles.length > 0) {
-      return data.articles.map(article => ({
-        source: article.source.name,
-        title: article.title,
-        description: article.description,
-        publishedAt: article.publishedAt,
-        url: article.url,
-        urlToImage: article.urlToImage
-      }));
-    }
-    
-    return fallbackNews;
-  } catch (error) {
-    console.error('Erro ao buscar notícias:', error);
-    return fallbackNews;
-  }
-}
-
-// --- Funções de busca de dados com APIs confiáveis ---
-
-// Função para buscar o preço do Bitcoin usando CoinGecko API (FUNCIONA)
-async function fetchBitcoinPrice() {
-  try {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const data = await response.json();
-    if (data && data.bitcoin) {
-      const price = data.bitcoin.usd;
-      const change = data.bitcoin.usd_24h_change;
-      const formattedPrice = price.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      const formattedChange = change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
-      return { name: "Bitcoin", price: formattedPrice, change: formattedChange, positive: change >= 0 };
-    }
-    return null;
-  } catch (error) {
-    console.error('Erro ao buscar preço do Bitcoin:', error);
-    return FALLBACK_VALUES.bitcoin;
-  }
-}
-
-// Função para buscar preços de metais usando múltiplas fontes
-async function fetchGoldPrice() {
-  try {
-    // Tentativa 1: Usar uma API alternativa (simulada - na prática você precisaria de uma API real)
-    // Por enquanto, retorna valores de fallback atualizados
-    console.log('Gold API: Usando valores de fallback (APIs gratuitas não disponíveis)');
-    return FALLBACK_VALUES.gold;
-  } catch (error) {
-    console.error('Erro ao buscar preço do Ouro:', error);
-    return FALLBACK_VALUES.gold;
-  }
-}
-
-async function fetchSilverPrice() {
-  try {
-    // Tentativa 1: Usar uma API alternativa (simulada - na prática você precisaria de uma API real)
-    // Por enquanto, retorna valores de fallback atualizados
-    console.log('Silver API: Usando valores de fallback (APIs gratuitas não disponíveis)');
-    return FALLBACK_VALUES.silver;
-  } catch (error) {
-    console.error('Erro ao buscar preço da Prata:', error);
-    return FALLBACK_VALUES.silver;
-  }
-}
-
-// Função melhorada para Treasury Yield com múltiplas tentativas
-async function fetchTreasuryYield() {
-  try {
-    // Tentativa 1: Alpha Vantage (pode não funcionar corretamente)
-    const url = `${ALPHA_VANTAGE_BASE_URL}?function=TREASURY_YIELD&interval=daily&maturity=10year&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const response = await fetch(url);
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data && data.data && data.data.length >= 2) {
-        const latestData = data.data[0];
-        const previousData = data.data[1];
-
-        // Verificar se os dados são recentes (não de 2007)
-        const dataDate = new Date(latestData.date);
-        const currentYear = new Date().getFullYear();
-
-        if (dataDate.getFullYear() >= currentYear - 1) {
-          const currentYield = parseFloat(latestData.value);
-          const previousYield = parseFloat(previousData.value);
-          const change = currentYield - previousYield;
-
-          const formattedYield = `${currentYield.toFixed(2)}%`;
-          const formattedChange = change >= 0 ? `+${change.toFixed(2)}%` : `${change.toFixed(2)}%`;
-          return { name: "10-Year Treasury Yield", price: formattedYield, change: formattedChange, positive: change >= 0 };
-        }
-      }
-    }
-
-    throw new Error('Alpha Vantage data is outdated or unavailable');
-  } catch (error) {
-    console.error('Erro ao buscar Treasury Yield:', error);
-    console.log('Treasury Yield: Usando valores de fallback');
-    return FALLBACK_VALUES.treasury;
-  }
-}
-
-// Função melhorada para Dollar Index
-async function fetchDollarIndex() {
-  try {
-    // Tentativa 1: Alpha Vantage EUR/USD
-    const url = `${ALPHA_VANTAGE_BASE_URL}?function=FX_DAILY&from_symbol=EUR&to_symbol=USD&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const response = await fetch(url);
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data && data['Time Series FX (Daily)']) {
-        const timeSeries = data['Time Series FX (Daily)'];
-        const dates = Object.keys(timeSeries).sort().reverse();
-
-        if (dates.length >= 2) {
-          const latestDate = new Date(dates[0]);
-          const currentYear = new Date().getFullYear();
-
-          // Verificar se os dados são recentes
-          if (latestDate.getFullYear() >= currentYear - 1) {
-            const latestRate = parseFloat(timeSeries[dates[0]]['4. close']);
-            const previousRate = parseFloat(timeSeries[dates[1]]['4. close']);
-
-            // Aproximação do DXY baseada no EUR/USD
-            const dxyApprox = 100 / latestRate * 0.95;
-            const previousDxy = 100 / previousRate * 0.95;
-            const change = ((dxyApprox - previousDxy) / previousDxy) * 100;
-            const formattedPrice = dxyApprox.toFixed(2);
-            const formattedChange = change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
-            return { name: "Dollar Index", price: formattedPrice, change: formattedChange, positive: change >= 0 };
-          }
-        }
-      }
-    }
-    throw new Error('Alpha Vantage FX data unavailable or outdated');
-  } catch (error) {
-    console.error('Erro ao buscar Dollar Index:', error);
-    console.log('Dollar Index: Usando valores de fallback');
-    return FALLBACK_VALUES.dollar;
-  }
-}
-
-// Função melhorada para S&P 500
-async function fetchSP500() {
-  try {
-    // Tentativa 1: Alpha Vantage SPY
-    const url = `${ALPHA_VANTAGE_BASE_URL}?function=TIME_SERIES_DAILY&symbol=SPY&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const response = await fetch(url);
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data && data['Time Series (Daily)']) {
-        const timeSeries = data['Time Series (Daily)'];
-        const dates = Object.keys(timeSeries).sort().reverse();
-
-        if (dates.length >= 2) {
-          const latestDate = new Date(dates[0]);
-          const currentYear = new Date().getFullYear();
-
-          // Verificar se os dados são recentes
-          if (latestDate.getFullYear() >= currentYear - 1) {
-            const latestPrice = parseFloat(timeSeries[dates[0]]['4. close']);
-            const previousPrice = parseFloat(timeSeries[dates[1]]['4. close']);
-            const change = ((latestPrice - previousPrice) / previousPrice) * 100;
-
-            // Converter SPY para S&P 500 (aproximadamente SPY * 10)
-            const sp500Price = latestPrice * 10;
-            const formattedPrice = sp500Price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            const formattedChange = change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
-            return { name: "S&P 500", price: formattedPrice, change: formattedChange, positive: change >= 0 };
-          }
-        }
-      }
-    }
-    throw new Error('Alpha Vantage SPY data unavailable or outdated');
-  } catch (error) {
-    console.error('Erro ao buscar S&P 500:', error);
-    console.log('S&P 500: Usando valores de fallback');
-    return FALLBACK_VALUES.sp500;
-  }
-}
-
-// --- Funções de atualização da interface ---
-
-// Função para atualizar as cotações principais
-async function updateQuotes() {
-  const quotesContainer = document.getElementById('quotes');
-  if (!quotesContainer) return;
-
-  try {
-    // Buscar dados de todas as fontes
-    const [bitcoin, gold, silver, treasury, dollar, sp500] = await Promise.all([
-      fetchBitcoinPrice(),
-      fetchGoldPrice(),
-      fetchSilverPrice(),
-      fetchTreasuryYield(),
-      fetchDollarIndex(),
-      fetchSP500()
-    ]);
-
-    const assets = [bitcoin, gold, silver, treasury, dollar, sp500];
-
-    // Limpar container
-    quotesContainer.innerHTML = '';
-
-    // Criar elementos para cada ativo
-    assets.forEach(asset => {
-      if (asset) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'quote-wrapper';
-        
-        const quote = document.createElement('div');
-        quote.className = 'quote';
-        
-        quote.innerHTML = `
-          <div class="quote-left">
-            <strong>${asset.name}</strong>
-            <span class="quote-price">${asset.price}</span>
-          </div>
-          <span class="quote-change ${asset.positive ? 'positive' : 'negative'}">${asset.change}</span>
-        `;
-        
-        wrapper.appendChild(quote);
-        quotesContainer.appendChild(wrapper);
-      }
-    });
-  } catch (error) {
-    console.error('Erro ao atualizar cotações:', error);
-  }
-}
-
-// Função para atualizar notícias
-async function updateNews() {
-  try {
-    const news = await fetchCryptoNews();
-    const newsContainer = document.querySelector('#news-content .news-grid');
-    
-    if (!newsContainer) return;
-    
-    newsContainer.innerHTML = '';
-    
-    news.slice(0, 6).forEach(article => {
-      const newsItem = document.createElement('a');
-      newsItem.href = article.url;
-      newsItem.target = '_blank';
-      newsItem.className = 'news-item';
-      
-      const publishedDate = new Date(article.publishedAt);
-      const formattedDate = publishedDate.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-      
-      newsItem.innerHTML = `
-        <div class="news-content">
-          <div class="news-source">${article.source}</div>
-          <div class="news-title">${article.title}</div>
-          <div class="news-description">${article.description || ''}</div>
-          <div class="news-date">${formattedDate}</div>
-        </div>
-      `;
-      
-      newsContainer.appendChild(newsItem);
-    });
-  } catch (error) {
-    console.error('Erro ao atualizar notícias:', error);
-  }
-}
-
-// Função para atualizar citações do Satoshi
-function updateSatoshiQuote() {
-  const quoteElement = document.getElementById('satoshi-quote');
-  if (quoteElement) {
-    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-    quoteElement.textContent = randomQuote;
-  }
-}
-
-// Função para copiar endereço de doação
-function copyToClipboard() {
-  const address = document.getElementById('donation-address').textContent;
-  navigator.clipboard.writeText(address).then(() => {
-    const button = document.querySelector('.copy-button');
-    const originalText = button.textContent;
-    button.textContent = 'Copiado!';
-    setTimeout(() => {
-      button.textContent = originalText;
-    }, 2000);
-  }).catch(err => {
-    console.error('Erro ao copiar:', err);
-  });
-}
-
-// Função para mostrar/ocultar fontes
-function toggleSources() {
-  const sourcesElement = document.getElementById('market-cap-sources');
-  const button = document.getElementById('sources-toggle');
-  
-  if (sourcesElement.style.display === 'none' || sourcesElement.style.display === '') {
-    sourcesElement.style.display = 'block';
-    button.textContent = 'Hide sources';
-  } else {
-    sourcesElement.style.display = 'none';
-    button.textContent = 'Show sources';
-  }
-}
+// --- INICIALIZAÇÃO E CONFIGURAÇÃO ---
 
 // Função principal de inicialização
 async function initializeApp() {
-  console.log('Inicializando Scarcity Panel...');
+  console.log('Inicializando aplicação...');
   
-  // Carregar cache de podcasts se disponível
-  const cachedPodcasts = loadPodcastsFromCache();
-  if (cachedPodcasts) {
-    console.log('Cache de podcasts encontrado, carregando dados salvos...');
-    renderPodcasts(cachedPodcasts);
+  // Carregar dados em cache primeiro (se disponível)
+  const cachedData = loadPodcastsFromCache();
+  if (cachedData) {
+    console.log('Carregando dados em cache...');
+    renderPodcasts(cachedData);
   }
   
-  // Atualizar citação do Satoshi
-  updateSatoshiQuote();
-  
-  // Carregar dados iniciais
-  await updateQuotes();
-  await updateNews();
-  
-  // Carregar seção de podcasts com thumbnails (vai usar cache se disponível)
+  // Carregar seção de podcasts (atualizar se necessário)
   await loadPodcastsSection();
   
-  // Configurar botão de fontes
-  const sourcesButton = document.getElementById('sources-toggle');
-  if (sourcesButton) {
-    sourcesButton.addEventListener('click', toggleSources);
-  }
+  // Configurar verificação automática de atualizações a cada 30 minutos
+  setInterval(checkForPodcastUpdates, 30 * 60 * 1000);
   
-  console.log('Scarcity Panel inicializado com sucesso!');
+  console.log('Aplicação inicializada com sucesso!');
 }
 
-// Função para atualização periódica melhorada
-function startPeriodicUpdates() {
-  // Atualizar cotações a cada 5 minutos
-  setInterval(updateQuotes, 5 * 60 * 1000);
-  
-  // Atualizar notícias a cada 15 minutos
-  setInterval(updateNews, 15 * 60 * 1000);
-  
-  // Verificar atualizações de podcasts a cada 10 minutos (verificação inteligente)
-  setInterval(checkForPodcastUpdates, 10 * 60 * 1000);
-  
-  // Atualizar citação do Satoshi a cada 10 minutos
-  setInterval(updateSatoshiQuote, 10 * 60 * 1000);
-  
-  console.log('Atualizações periódicas configuradas:');
-  console.log('- Cotações: a cada 5 minutos');
-  console.log('- Notícias: a cada 15 minutos');
-  console.log('- Podcasts: verificação inteligente a cada 10 minutos');
-  console.log('- Citações: a cada 10 minutos');
+// Aguardar carregamento do DOM antes de inicializar
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+  initializeApp();
 }
-
-// Inicializar quando o DOM estiver carregado
-document.addEventListener('DOMContentLoaded', async () => {
-  await initializeApp();
-  startPeriodicUpdates();
-});
-
-// Exportar funções para uso global
-window.copyToClipboard = copyToClipboard;
-window.toggleSources = toggleSources;
 
