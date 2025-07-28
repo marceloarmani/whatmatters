@@ -207,6 +207,35 @@ function loadPodcastsFromCache() {
   return null;
 }
 
+// Função para carregar os quotes/indicadores principais
+function loadQuotes() {
+  const quotesContainer = document.getElementById('quotes');
+  if (!quotesContainer) return;
+
+  quotesContainer.innerHTML = '';
+  quotesContainer.className = 'vertical-quotes';
+
+  // Criar os quotes com os valores de fallback
+  Object.entries(FALLBACK_VALUES).forEach(([key, data]) => {
+    const quoteWrapper = document.createElement('div');
+    quoteWrapper.className = 'quote-wrapper';
+    
+    const quote = document.createElement('div');
+    quote.className = 'quote';
+    
+    quote.innerHTML = `
+      <div class="quote-left">
+        <strong>${data.name}</strong>
+        <span class="quote-price">${data.price}</span>
+      </div>
+      <span class="quote-change ${data.positive ? 'positive' : 'negative'}">${data.change}</span>
+    `;
+    
+    quoteWrapper.appendChild(quote);
+    quotesContainer.appendChild(quoteWrapper);
+  });
+}
+
 // Função melhorada para carregar a seção de podcasts com cache
 async function loadPodcastsSection() {
   const podcastsContainer = document.getElementById('bitcoin-podcasts');
@@ -490,6 +519,9 @@ function showUpdateNotification() {
 // Função principal de inicialização
 async function initializeApp() {
   console.log('Inicializando aplicação...');
+  
+  // Carregar quotes/indicadores principais
+  loadQuotes();
   
   // Carregar dados em cache primeiro (se disponível)
   const cachedData = loadPodcastsFromCache();
