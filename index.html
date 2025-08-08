@@ -6,7 +6,7 @@
   <title>Scarcity Panel</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg viewBox=\'0 0 24 24\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M11.5 1L2 6v12l9.5 5 9.5-5V6l-9.5-5zm7.5 16.5l-7.5 3.94-7.5 3.94V6.5l7.5-3.94 7.5 3.94v11z\' fill=\'%23f7931a\'/\%3E%3Cpath d=\'M8.5 12v4l3 1.5 3-1.5v-4l-3-1.5-3 1.5z\' fill=\'%23f7931a\'/\%3E%3C/svg%3E" type="image/svg+xml">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11.5 1L2 6v12l9.5 5 9.5-5V6l-9.5-5zm7.5 16.5l-7.5 3.94-7.5 3.94V6.5l7.5-3.94 7.5 3.94v11z' fill='%23f7931a'/%3E%3Cpath d='M8.5 12v4l3 1.5 3-1.5v-4l-3-1.5-3 1.5z' fill='%23f7931a'/%3E%3C/svg%3E" type="image/svg+xml">
 </head>
 <body>
   <header class="compact-header">
@@ -99,8 +99,55 @@
         <h2 class="section-header">Upcoming events</h2>
         <div class="calendar-container">
           <div id="events-container">
-            <div class="events-grid" id="events-grid">
-              <!-- Events will be loaded automatically -->
+            <div class="events-grid">
+              <div class="event-item high">
+                <div class="event-date">
+                  <span>June 17-18, 2025</span>
+                  <div class="event-impact">
+                    <div class="impact-dot"></div>
+                    <div class="impact-dot"></div>
+                    <div class="impact-dot"></div>
+                  </div>
+                </div>
+                <div class="event-title">FOMC Meeting</div>
+                <div class="event-description">Federal Reserve interest rate decision</div>
+              </div>
+              <div class="event-item medium">
+                <div class="event-date">
+                  <span>July 03, 2025</span>
+                  <div class="event-impact">
+                    <div class="impact-dot"></div>
+                    <div class="impact-dot"></div>
+                    <div class="impact-dot"></div>
+                  </div>
+                </div>
+                <div class="event-title">US Employment Report</div>
+                <div class="event-description">US labor market data</div>
+              </div>
+              <div class="event-item medium">
+                <div class="event-date">
+                  <span>August 15, 2025</span>
+                  <div class="event-impact">
+                    <div class="impact-dot"></div>
+                    <div class="impact-dot"></div>
+                    <div class="impact-dot"></div>
+                  </div>
+                </div>
+                <div class="event-title">Bitcoin ETF Review</div>
+                <div class="event-description">SEC quarterly review of Bitcoin ETF applications</div>
+              </div>
+              <div class="event-item high">
+                <div class="event-date">
+                  <span>September 18, 2025</span>
+                  <div class="event-impact">
+                    <div class="impact-dot"></div>
+                    <div class="impact-dot"></div>
+                    <div class="impact-dot"></div>
+                  </div>
+                </div>
+                <div class="event-title">Fed Rate Decision</div>
+                <div class="event-description">Federal Reserve monetary policy meeting</div>
+              </div>
             </div>
           </div>
         </div>
@@ -110,8 +157,42 @@
       <section id="scarcity-metrics" class="standard-section">
         <h2 class="section-header">Scarcity metrics</h2>
         <div class="scarcity-container">
-          <div class="scarcity-metrics-grid" id="scarcity-metrics-grid">
-            <!-- Scarcity metrics will be loaded automatically -->
+          <div class="scarcity-metrics-grid">
+            <div class="scarcity-metric">
+              <div class="scarcity-metric-title">Stock-to-Flow</div>
+              <div class="scarcity-metric-value">56</div>
+              <div class="scarcity-metric-description">Ratio between existing stock and annual production</div>
+              <div class="scarcity-comparison">
+                <div class="scarcity-comparison-item bitcoin">Bitcoin: 56</div>
+                <div class="scarcity-comparison-item gold">Gold: 62</div>
+                <div class="scarcity-comparison-item silver">Silver: 22</div>
+              </div>
+            </div>
+            <div class="scarcity-metric">
+              <div class="scarcity-metric-title">Annual Inflation</div>
+              <div class="scarcity-metric-value">1.74%</div>
+              <div class="scarcity-metric-description">Annual issuance rate relative to total supply</div>
+              <div class="scarcity-comparison">
+                <div class="scarcity-comparison-item bitcoin">Bitcoin: 1.74%</div>
+                <div class="scarcity-comparison-item gold">Gold: 1.60%</div>
+                <div class="scarcity-comparison-item silver">Silver: 4.50%</div>
+              </div>
+            </div>
+            <div class="scarcity-metric">
+              <div class="scarcity-metric-title">Bitcoins Mined</div>
+              <div class="scarcity-metric-value" id="bitcoins-mined">19,368,750</div>
+              <div class="scarcity-metric-description">Amount of bitcoins already mined out of 21 million total</div>
+              <div class="supply-progress">
+                <div class="supply-progress-fill" style="width: 92.23%;"></div>
+                <div class="supply-progress-text">92.23% (1,631,250 remaining)</div>
+              </div>
+            </div>
+            <div class="scarcity-metric">
+              <div class="scarcity-metric-title">Next Halving</div>
+              <div class="scarcity-metric-value">April 2028</div>
+              <div class="scarcity-metric-description">Event that cuts mining reward in half</div>
+              <div class="days-remaining" id="days-remaining">1056 days remaining</div>
+            </div>
           </div>
         </div>
       </section>
@@ -204,22 +285,100 @@
       <section id="news-summary" class="standard-section">
         <h2 class="section-header">Latest news</h2>
         <div id="news-content">
-          <div class="news-grid" id="news-grid">
-            <!-- News will be loaded automatically -->
+          <div class="news-grid">
+            <a href="https://bitcoinmagazine.com/" target="_blank" class="news-item">
+              <div class="news-content">
+                <div class="news-source">Bitcoin Magazine</div>
+                <div class="news-title">Bitcoin Surpasses $100,000 for First Time in History</div>
+                <div class="news-description">The world's largest cryptocurrency has reached a new all-time high, breaking the psychological barrier of $100,000.</div>
+                <div class="news-date">May 21, 2025 14:32 UTC</div>
+              </div>
+            </a>
+            <a href="https://blockworks.co/" target="_blank" class="news-item">
+              <div class="news-content">
+                <div class="news-source">Blockworks</div>
+                <div class="news-title">Central Banks Accelerate Digital Currency Development</div>
+                <div class="news-description">Major central banks are fast-tracking CBDC projects in response to growing cryptocurrency adoption.</div>
+                <div class="news-date">May 20, 2025 09:15 UTC</div>
+              </div>
+            </a>
+            <a href="https://bitcointimes.news/" target="_blank" class="news-item">
+              <div class="news-content">
+                <div class="news-source">The Bitcoin Times</div>
+                <div class="news-title">Gold Reaches Record High Amid Inflation Concerns</div>
+                <div class="news-description">The precious metal continues its upward trajectory as investors seek protection from rising inflation.</div>
+                <div class="news-date">May 19, 2025 16:45 UTC</div>
+              </div>
+            </a>
+            <a href="https://bitcoinmagazine.com/" target="_blank" class="news-item">
+              <div class="news-content">
+                <div class="news-source">Bitcoin Magazine</div>
+                <div class="news-title">Institutional Adoption Drives Bitcoin to New Heights</div>
+                <div class="news-description">Major corporations and investment funds continue to allocate significant portions of their portfolios to Bitcoin.</div>
+                <div class="news-date">May 18, 2025 11:20 UTC</div>
+              </div>
+            </a>
+            <a href="https://cointelegraph.com/" target="_blank" class="news-item">
+              <div class="news-content">
+                <div class="news-source">Cointelegraph</div>
+                <div class="news-title">Lightning Network Reaches 10,000 Nodes Milestone</div>
+                <div class="news-description">Bitcoin's Layer 2 scaling solution continues to grow, enabling faster and cheaper transactions.</div>
+                <div class="news-date">May 17, 2025 08:30 UTC</div>
+              </div>
+            </a>
+            <a href="https://bitcoinmagazine.com/" target="_blank" class="news-item">
+              <div class="news-content">
+                <div class="news-source">Bitcoin Magazine</div>
+                <div class="news-title">Mining Difficulty Adjustment Signals Network Strength</div>
+                <div class="news-description">The latest difficulty adjustment reflects the robust health and security of the Bitcoin network.</div>
+                <div class="news-date">May 16, 2025 12:15 UTC</div>
+              </div>
+            </a>
           </div>
         </div>
       </section>
-
+      
       <section id="bitcoin-podcasts" class="standard-section">
         <h2 class="section-header">Bitcoin podcasts</h2>
         <div class="podcasts-grid" id="podcasts-grid">
-          <!-- Podcasts will be loaded automatically -->
+          <!-- Podcasts serão carregados aqui -->
         </div>
       </section>
-
+    </div>
+    
+    <div class="horizontal-sections">
+      <section id="satoshi-quotes">
+        <h2 class="section-header">Word of Satoshi</h2>
+        <div class="quote-container">
+          <p id="satoshi-quote">The root problem with conventional currency is all the trust that's required to make it work. The central bank must be trusted not to debase the currency, but the history of fiat currencies is full of breaches of that trust.</p>
+          <div class="quote-author">— Satoshi Nakamoto</div>
+        </div>
+      </section>
+      
+      <section id="support">
+        <h2 class="section-header">Support</h2>
+        <div class="donation-container">
+          <p>If you find this dashboard useful, consider supporting its development:</p>
+          <div class="donation-address">
+            <div class="donation-address-text" id="donation-address">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
+            <button class="copy-button" onclick="copyToClipboard()">Copy Address</button>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
+  
+  <footer>
+    <div class="footer-content">
+      <div class="footer-text">
+        <p>&copy; 2025 Scarcity Panel. Data provided by various sources. Not financial advice.</p>
+      </div>
+      <div class="footer-prices">
+        Last updated: <span id="last-updated">Loading...</span>
+      </div>
+    </div>
+  </footer>
+  
   <script src="script.js"></script>
 </body>
 </html>
-
