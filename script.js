@@ -2,7 +2,11 @@
 const ALPHA_VANTAGE_API_KEY = "YXNV7ACP45FN4RZC";
 const ALPHA_VANTAGE_BASE_URL = "https://www.alphavantage.co/query";
 
-// Valores de fallback atualizados
+// CONFIGURAÇÃO DAS APIS - CHAVE DO YOUTUBE ADICIONADA
+const YOUTUBE_API_KEY = "AIzaSyD4Yvo1yTwoXH5bhC-Gp0g60xSpYIthP7c"; // Chave fornecida pelo usuário
+const NEWS_API_KEY = ""; // Adicione sua chave da NewsAPI ou similar
+
+// Valores de fallback atualizados (devem ser atualizados manualmente periodicamente)
 const FALLBACK_VALUES = {
   bitcoin: { name: "Bitcoin", price: "$104,586.00", change: "-0.3%", positive: false },
   gold: { name: "Gold", price: "$3,433.47", change: "+1.60%", positive: true },
@@ -12,11 +16,40 @@ const FALLBACK_VALUES = {
   sp500: { name: "S&P 500", price: "5,950.00", change: "+0.3%", positive: true }
 };
 
+// Configuração dos canais de podcast do YouTube
+const PODCAST_CHANNELS = [
+  {
+    title: 'Coin Stories Podcast',
+    host: 'Natalie Brunell',
+    description: 'Investing journalist and Bitcoin educator exploring the intersection of money, technology, and freedom through compelling stories and expert interviews.',
+    youtubeUrl: 'https://www.youtube.com/@nataliebrunell',
+    channelId: 'UCru3nlhzHrbgK21x0MdB_eg', // ID do canal da Natalie Brunell
+    playlistId: 'UUru3nlhzHrbgK21x0MdB_eg' // Playlist de uploads da Natalie Brunell
+  },
+  {
+    title: 'The Jack Mallers Show',
+    host: 'Jack Mallers',
+    description: 'CEO of Strike covering the biggest stories in Bitcoin, macroeconomics, financial markets, and the future of money with live weekly episodes.',
+    youtubeUrl: 'https://www.youtube.com/@jackmallers9929',
+    channelId: 'UCcn2uBP2TvT-z6jiCP-RhbA', // ID correto do canal do Jack Mallers
+    playlistId: 'UUcn2uBP2TvT-z6jiCP-RhbA' // Playlist de uploads do Jack Mallers (UU + channelId sem UC)
+  },
+  {
+    title: 'The Bitcoin Standard Podcast',
+    host: 'Saifedean Ammous',
+    description: 'Author of "The Bitcoin Standard" exploring Austrian economics, sound money principles, and Bitcoin\\'s role in the future of monetary systems.',
+    youtubeUrl: 'https://www.youtube.com/@saifedean',
+    channelId: 'UCPsCJ1j0G45FnRGqJhCHLiA', // ID do canal do Saifedean Ammous
+    playlistId: 'UUPsCJ1j0G45FnRGqJhCHLiA' // Playlist de uploads do Saifedean Ammous
+  }
+];
+
 // Cache para evitar requisições desnecessárias
 let dataCache = {
   events: { data: null, lastUpdate: null, updateInterval: 60 * 60 * 1000 }, // 1 hora
   news: { data: null, lastUpdate: null, updateInterval: 30 * 60 * 1000 }, // 30 minutos
-  scarcity: { data: null, lastUpdate: null, updateInterval: 60 * 60 * 1000 } // 1 hora
+  scarcity: { data: null, lastUpdate: null, updateInterval: 60 * 60 * 1000 }, // 1 hora
+  podcasts: { data: null, lastUpdate: null, updateInterval: 30 * 60 * 1000 } // 30 minutos
 };
 
 // Função para verificar se precisa atualizar dados
@@ -169,25 +202,25 @@ async function fetchUpcomingEvents() {
     // Simular busca de eventos (em produção, usar API real)
     const events = [
       {
-        date: "December 17-18, 2025",
+        date: "August 17-18, 2025",
         title: "FOMC Meeting",
         description: "Federal Reserve interest rate decision",
         impact: "high"
       },
       {
-        date: "January 03, 2026",
+        date: "August 03, 2025",
         title: "US Employment Report",
         description: "US labor market data",
         impact: "medium"
       },
       {
-        date: "February 15, 2026",
+        date: "August 15, 2025",
         title: "Bitcoin ETF Review",
         description: "SEC quarterly review of Bitcoin ETF applications",
         impact: "medium"
       },
       {
-        date: "March 18, 2026",
+        date: "August 18, 2025",
         title: "Fed Rate Decision",
         description: "Federal Reserve monetary policy meeting",
         impact: "high"
@@ -203,25 +236,25 @@ async function fetchUpcomingEvents() {
     // Retornar dados de fallback
     return [
       {
-        date: "December 17-18, 2025",
+        date: "August 17-18, 2025",
         title: "FOMC Meeting",
         description: "Federal Reserve interest rate decision",
         impact: "high"
       },
       {
-        date: "January 03, 2026",
+        date: "August 03, 2025",
         title: "US Employment Report",
         description: "US labor market data",
         impact: "medium"
       },
       {
-        date: "February 15, 2026",
+        date: "August 15, 2025",
         title: "Bitcoin ETF Review",
         description: "SEC quarterly review of Bitcoin ETF applications",
         impact: "medium"
       },
       {
-        date: "March 18, 2026",
+        date: "August 18, 2025",
         title: "Fed Rate Decision",
         description: "Federal Reserve monetary policy meeting",
         impact: "high"
@@ -244,42 +277,42 @@ async function fetchLatestNews() {
         source: "Bitcoin Magazine",
         title: "Bitcoin Surpasses $110,000 Reaching New All-Time High",
         description: "The world's largest cryptocurrency continues its bull run with institutional adoption driving demand.",
-        date: "December 8, 2025 14:32 UTC",
+        date: "August 8, 2025 14:32 UTC",
         url: "https://bitcoinmagazine.com/"
       },
       {
         source: "Blockworks",
         title: "Central Banks Accelerate Digital Currency Development",
         description: "Major central banks are fast-tracking CBDC projects in response to growing cryptocurrency adoption.",
-        date: "December 7, 2025 09:15 UTC",
+        date: "August 7, 2025 09:15 UTC",
         url: "https://blockworks.co/"
       },
       {
         source: "The Bitcoin Times",
         title: "Gold Reaches Record High Amid Inflation Concerns",
         description: "The precious metal continues its upward trajectory as investors seek protection from rising inflation.",
-        date: "December 6, 2025 16:45 UTC",
+        date: "August 6, 2025 16:45 UTC",
         url: "https://bitcointimes.news/"
       },
       {
         source: "Bitcoin Magazine",
         title: "Institutional Adoption Drives Bitcoin to New Heights",
         description: "Major corporations and investment funds continue to allocate significant portions of their portfolios to Bitcoin.",
-        date: "December 5, 2025 11:20 UTC",
+        date: "August 5, 2025 11:20 UTC",
         url: "https://bitcoinmagazine.com/"
       },
       {
         source: "Cointelegraph",
         title: "Lightning Network Reaches 15,000 Nodes Milestone",
         description: "Bitcoin's Layer 2 scaling solution continues to grow, enabling faster and cheaper transactions.",
-        date: "December 4, 2025 08:30 UTC",
+        date: "August 4, 2025 08:30 UTC",
         url: "https://cointelegraph.com/"
       },
       {
         source: "Bitcoin Magazine",
         title: "Mining Difficulty Reaches All-Time High",
         description: "Bitcoin network security strengthens as mining difficulty adjusts to record levels.",
-        date: "December 3, 2025 13:45 UTC",
+        date: "August 3, 2025 13:45 UTC",
         url: "https://bitcoinmagazine.com/"
       }
     ];
@@ -296,45 +329,367 @@ async function fetchLatestNews() {
         source: "Bitcoin Magazine",
         title: "Bitcoin Surpasses $110,000 Reaching New All-Time High",
         description: "The world's largest cryptocurrency continues its bull run with institutional adoption driving demand.",
-        date: "December 8, 2025 14:32 UTC",
+        date: "August 8, 2025 14:32 UTC",
         url: "https://bitcoinmagazine.com/"
       },
       {
         source: "Blockworks",
         title: "Central Banks Accelerate Digital Currency Development",
         description: "Major central banks are fast-tracking CBDC projects in response to growing cryptocurrency adoption.",
-        date: "December 7, 2025 09:15 UTC",
+        date: "August 7, 2025 09:15 UTC",
         url: "https://blockworks.co/"
       },
       {
         source: "The Bitcoin Times",
         title: "Gold Reaches Record High Amid Inflation Concerns",
         description: "The precious metal continues its upward trajectory as investors seek protection from rising inflation.",
-        date: "December 6, 2025 16:45 UTC",
+        date: "August 6, 2025 16:45 UTC",
         url: "https://bitcointimes.news/"
       },
       {
         source: "Bitcoin Magazine",
         title: "Institutional Adoption Drives Bitcoin to New Heights",
         description: "Major corporations and investment funds continue to allocate significant portions of their portfolios to Bitcoin.",
-        date: "December 5, 2025 11:20 UTC",
+        date: "August 5, 2025 11:20 UTC",
         url: "https://bitcoinmagazine.com/"
       },
       {
         source: "Cointelegraph",
         title: "Lightning Network Reaches 15,000 Nodes Milestone",
         description: "Bitcoin's Layer 2 scaling solution continues to grow, enabling faster and cheaper transactions.",
-        date: "December 4, 2025 08:30 UTC",
+        date: "August 4, 2025 08:30 UTC",
         url: "https://cointelegraph.com/"
       },
       {
         source: "Bitcoin Magazine",
         title: "Mining Difficulty Reaches All-Time High",
         description: "Bitcoin network security strengthens as mining difficulty adjusts to record levels.",
-        date: "December 3, 2025 13:45 UTC",
+        date: "August 3, 2025 13:45 UTC",
         url: "https://bitcoinmagazine.com/"
       }
     ];
+  }
+}
+
+// --- FUNÇÕES PARA YOUTUBE API ---
+
+// Função para buscar o último vídeo de um canal do YouTube
+async function fetchLatestYouTubeVideo(channelId, playlistId) {
+  if (!YOUTUBE_API_KEY) {
+    console.warn('YouTube API key not configured');
+    return null;
+  }
+
+  try {
+    // Buscar o último vídeo da playlist de uploads do canal
+    const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=1&order=date&key=${YOUTUBE_API_KEY}`;
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`YouTube API error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.items && data.items.length > 0) {
+      const video = data.items[0].snippet;
+      return {
+        title: video.title,
+        thumbnail: video.thumbnails.medium?.url || video.thumbnails.default?.url,
+        publishedAt: video.publishedAt,
+        videoId: video.resourceId.videoId,
+        description: video.description
+      };
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Erro ao buscar vídeo do YouTube:', error);
+    return null;
+  }
+}
+
+// Função para buscar estatísticas de um vídeo (views, likes, etc.)
+async function fetchVideoStats(videoId) {
+  if (!YOUTUBE_API_KEY || !videoId) {
+    return null;
+  }
+
+  try {
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}&key=${YOUTUBE_API_KEY}`;
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`YouTube API error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.items && data.items.length > 0) {
+      return data.items[0].statistics;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Erro ao buscar estatísticas do vídeo:', error);
+    return null;
+  }
+}
+
+// Função para formatar número de visualizações
+function formatViewCount(viewCount) {
+  const num = parseInt(viewCount);
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  return num.toString();
+}
+
+// Função para formatar data relativa
+function formatRelativeDate(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now - date);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays === 1) {
+    return '1 dia atrás';
+  } else if (diffDays < 7) {
+    return `${diffDays} dias atrás`;
+  } else if (diffDays < 30) {
+    const weeks = Math.floor(diffDays / 7);
+    return weeks === 1 ? '1 semana atrás' : `${weeks} semanas atrás`;
+  } else if (diffDays < 365) {
+    const months = Math.floor(diffDays / 30);
+    return months === 1 ? '1 mês atrás' : `${months} meses atrás`;
+  } else {
+    const years = Math.floor(diffDays / 365);
+    return years === 1 ? '1 ano atrás' : `${years} anos atrás`;
+  }
+}
+
+// Função melhorada para carregar a seção de podcasts com cache
+async function loadPodcastsSection() {
+  const podcastsContainer = document.getElementById('bitcoin-podcasts');
+  
+  if (!podcastsContainer) {
+    console.warn('Seção de podcasts não encontrada');
+    return;
+  }
+
+  // Criar o HTML da seção se não existir
+  if (!podcastsContainer.querySelector('.podcasts-grid')) {
+    podcastsContainer.innerHTML = `
+      <h2 class="section-header">Bitcoin podcasts</h2>
+      <div class="podcasts-grid" id="podcasts-grid">
+        <!-- Podcasts serão carregados aqui -->
+      </div>
+    `;
+  }
+
+  const podcastsGrid = document.getElementById('podcasts-grid');
+  
+  // Verificar se precisa atualizar ou se pode usar cache
+  if (!shouldUpdate('podcasts') && dataCache.podcasts.data) {
+    console.log('Usando dados em cache para podcasts');
+    renderPodcasts(dataCache.podcasts.data);
+    return;
+  }
+
+  // Mostrar indicador de carregamento
+  podcastsGrid.innerHTML = `
+    <div style="text-align: center; padding: 2rem; color: #666; grid-column: 1 / -1;">
+      <div style="display: inline-block; width: 20px; height: 20px; border: 2px solid #f7931a; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin-right: 0.5rem;"></div>
+      Atualizando podcasts...
+    </div>
+    <style>
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  `;
+
+  const podcastsData = [];
+
+  // Carregar cada podcast
+  for (const podcast of PODCAST_CHANNELS) {
+    try {
+      console.log(`Buscando dados para ${podcast.title}...`);
+      
+      // Buscar o último vídeo do canal
+      const latestVideo = await fetchLatestYouTubeVideo(podcast.channelId, podcast.playlistId);
+      
+      // Buscar estatísticas do vídeo se disponível
+      let videoStats = null;
+      if (latestVideo && latestVideo.videoId) {
+        videoStats = await fetchVideoStats(latestVideo.videoId);
+      }
+
+      podcastsData.push({
+        ...podcast,
+        latestVideo,
+        videoStats
+      });
+      
+      // Pequeno delay entre as requisições para evitar rate limiting
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+    } catch (error) {
+      console.error(`Erro ao carregar podcast ${podcast.title}:`, error);
+      
+      // Adicionar dados de fallback em caso de erro
+      podcastsData.push({
+        ...podcast,
+        latestVideo: null,
+        videoStats: null,
+        error: true
+      });
+    }
+  }
+
+  // Salvar no cache e renderizar
+  saveToCache('podcasts', podcastsData);
+  renderPodcasts(podcastsData);
+  
+  console.log('Podcasts atualizados com sucesso!');
+}
+
+// Função para renderizar os podcasts na interface
+function renderPodcasts(podcastsData) {
+  const podcastsGrid = document.getElementById('podcasts-grid');
+  
+  if (!podcastsGrid) return;
+  
+  // Limpar conteúdo existente
+  podcastsGrid.innerHTML = '';
+
+  podcastsData.forEach(podcast => {
+    const podcastElement = document.createElement('div');
+    podcastElement.className = 'podcast-item';
+    
+    // Determinar a thumbnail a ser usada
+    let thumbnailHtml = '';
+    if (podcast.latestVideo && podcast.latestVideo.thumbnail) {
+      thumbnailHtml = `<img src="${podcast.latestVideo.thumbnail}" alt="Thumbnail do último vídeo de ${podcast.title}" loading="lazy">`;
+    } else {
+      // Placeholder se não houver thumbnail
+      thumbnailHtml = `
+        <div class="podcast-thumbnail-placeholder">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+          </svg>
+          <span>${podcast.error ? 'Erro ao carregar' : 'Último vídeo'}</span>
+        </div>
+      `;
+    }
+
+    // Informações do último vídeo
+    let latestVideoHtml = '';
+    if (podcast.latestVideo && !podcast.error) {
+      const viewsText = podcast.videoStats && podcast.videoStats.viewCount ? 
+        `${formatViewCount(podcast.videoStats.viewCount)} visualizações` : 
+        'Visualizações não disponíveis';
+      
+      latestVideoHtml = `
+        <div class="podcast-latest-video">
+          <div class="podcast-video-title">${podcast.latestVideo.title}</div>
+          <div class="podcast-video-date">${formatRelativeDate(podcast.latestVideo.publishedAt)}</div>
+          <div class="podcast-video-views">${viewsText}</div>
+        </div>
+      `;
+    } else if (podcast.error) {
+      latestVideoHtml = `
+        <div class="podcast-latest-video" style="background: rgba(244, 67, 54, 0.1); border-left-color: #f44336;">
+          <div class="podcast-video-title">Erro ao carregar último vídeo</div>
+          <div class="podcast-video-date">Tente novamente mais tarde</div>
+        </div>
+      `;
+    }
+
+    podcastElement.innerHTML = `
+      <div class="podcast-thumbnail">
+        ${thumbnailHtml}
+      </div>
+      <div class="podcast-content">
+        <div class="podcast-header">
+          <div class="podcast-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+            </svg>
+          </div>
+          <div class="podcast-info">
+            <h3 class="podcast-title">${podcast.title}</h3>
+            <p class="podcast-host">${podcast.host}</p>
+          </div>
+        </div>
+
+        ${latestVideoHtml}
+        <a href="${podcast.youtubeUrl}" target="_blank" class="podcast-link">
+          Assistir no YouTube
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+            <path d="M7 17L17 7M17 7H7M17 7V17"/>
+          </svg>
+        </a>
+      </div>
+    `;
+
+    podcastsGrid.appendChild(podcastElement);
+  });
+}
+
+// Função para verificar atualizações em segundo plano
+async function checkForPodcastUpdates() {
+  if (!shouldUpdate('podcasts')) {
+    return;
+  }
+  
+  console.log('Verificando atualizações de podcasts em segundo plano...');
+  
+  try {
+    // Verificar apenas os IDs dos últimos vídeos para detectar mudanças
+    const currentVideoIds = [];
+    
+    for (const podcast of PODCAST_CHANNELS) {
+      try {
+        const latestVideo = await fetchLatestYouTubeVideo(podcast.channelId, podcast.playlistId);
+        if (latestVideo && latestVideo.videoId) {
+          currentVideoIds.push(latestVideo.videoId);
+        }
+        
+        // Delay entre requisições
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } catch (error) {
+        console.warn(`Erro ao verificar atualizações para ${podcast.title}:`, error);
+      }
+    }
+    
+    // Comparar com cache para detectar mudanças
+    if (dataCache.podcasts.data) {
+      const cachedVideoIds = dataCache.podcasts.data
+        .filter(p => p.latestVideo && p.latestVideo.videoId)
+        .map(p => p.latestVideo.videoId);
+      
+      const hasChanges = currentVideoIds.some(id => !cachedVideoIds.includes(id)) ||
+                        cachedVideoIds.some(id => !currentVideoIds.includes(id));
+      
+      if (hasChanges) {
+        console.log('Novos vídeos detectados! Atualizando seção de podcasts...');
+        await loadPodcastsSection();
+        
+        // Notificar usuário sobre atualização (opcional)
+        showUpdateNotification();
+      } else {
+        console.log('Nenhuma atualização de podcast detectada.');
+        // Atualizar timestamp do cache mesmo sem mudanças
+        dataCache.podcasts.lastUpdate = Date.now();
+        saveToCache('podcasts', dataCache.podcasts.data);
+      }
+    }
+    
+  } catch (error) {
+    console.error('Erro ao verificar atualizações de podcasts:', error);
   }
 }
 
@@ -482,6 +837,14 @@ async function loadAllSections() {
   } catch (error) {
     console.error('Erro ao carregar métricas de escassez:', error);
   }
+
+  // Carregar podcasts
+  try {
+    await loadPodcastsSection();
+    console.log('Podcasts carregados com sucesso');
+  } catch (error) {
+    console.error('Erro ao carregar podcasts:', error);
+  }
 }
 
 // Função para carregar dados dos indicadores principais
@@ -523,7 +886,7 @@ function startPeriodicUpdates() {
     console.log('Verificando atualizações em segundo plano...');
     
     // Verificar se alguma seção precisa ser atualizada
-    if (shouldUpdate('events') || shouldUpdate('news') || shouldUpdate('scarcity')) {
+    if (shouldUpdate('events') || shouldUpdate('news') || shouldUpdate('scarcity') || shouldUpdate('podcasts')) {
       console.log('Atualizando dados em segundo plano...');
       await loadAllSections();
       
@@ -531,6 +894,11 @@ function startPeriodicUpdates() {
       showUpdateNotification();
     }
   }, 30 * 60 * 1000); // 30 minutos
+
+  // Verificar atualizações de podcast a cada 1 hora (menos frequente que as outras)
+  setInterval(async () => {
+    await checkForPodcastUpdates();
+  }, 60 * 60 * 1000); // 1 hora
 }
 
 // Função para mostrar notificação de atualização
@@ -582,10 +950,12 @@ document.addEventListener('DOMContentLoaded', async function() {
   const cachedEvents = loadFromCache('events');
   const cachedNews = loadFromCache('news');
   const cachedScarcity = loadFromCache('scarcity');
+  const cachedPodcasts = loadFromCache('podcasts');
   
   if (cachedEvents) renderEvents(cachedEvents);
   if (cachedNews) renderNews(cachedNews);
   if (cachedScarcity) renderScarcityMetrics(cachedScarcity);
+  if (cachedPodcasts) renderPodcasts(cachedPodcasts);
   
   // Carregar indicadores principais
   await loadMainIndicators();
